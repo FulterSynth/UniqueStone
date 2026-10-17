@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UniqueStone v0.2.1</title>
+  <title>UniqueStone v0.3.0</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -14,7 +14,6 @@
       overflow: hidden;
     }
 
-    /* ===== ЕКРАН ЗАВАНТАЖЕННЯ ===== */
     #loader {
       position: fixed;
       inset: 0;
@@ -36,7 +35,6 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ===== ЕКРАН ВХОДУ ===== */
     #auth-screen {
       display: none;
       height: 100vh;
@@ -112,7 +110,6 @@
       text-align: center;
     }
 
-    /* ===== ГОЛОВНИЙ ЕКРАН ===== */
     #main-screen {
       display: none;
       height: 100vh;
@@ -168,7 +165,6 @@
       border: 1px dashed #2a3a5e;
     }
 
-    /* ===== НИЖНЯ НАВІГАЦІЯ ===== */
     .bottom-nav {
       display: flex;
       background: #16213e;
@@ -211,13 +207,11 @@
 </head>
 <body>
 
-  <!-- ЕКРАН ЗАВАНТАЖЕННЯ -->
   <div id="loader">
     <div class="spinner"></div>
-    <h2 id="loader-status">UniqueStone v0.2.1</h2>
+    <h2 id="loader-status">UniqueStone v0.3.0</h2>
   </div>
 
-  <!-- ЕКРАН ВХОДУ / РЕЄСТРАЦІЇ -->
   <div id="auth-screen">
     <div class="auth-card">
       <div class="auth-tabs">
@@ -231,7 +225,6 @@
     </div>
   </div>
 
-  <!-- ГОЛОВНИЙ ЕКРАН -->
   <div id="main-screen">
     <div class="top-bar">
       <span class="user-nick" id="user-nick">—</span>
@@ -270,19 +263,18 @@
   </div>
 
   <script type="module">
-    // ===== ІМПОРТ FIREBASE =====
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import {
-      initializeFirestore,
-      doc,
-      getDoc,
-      setDoc
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+      getDatabase,
+      ref,
+      get,
+      set
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-    // ===== КОНФІГ FIREBASE =====
     const firebaseConfig = {
       apiKey: "AIzaSyDGltUohufVAc-FMIbO1sIvpd6xWSiaKdU",
       authDomain: "uniquestone.firebaseapp.com",
+      databaseURL: "https://uniquestone-default-rtdb.firebaseio.com",
       projectId: "uniquestone",
       storageBucket: "uniquestone.firebasestorage.app",
       messagingSenderId: "114557024409",
@@ -290,16 +282,11 @@
     };
 
     const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-    // ===== FIX: примусове довге опитування =====
-    const db = initializeFirestore(app, {
-      experimentalForceLongPolling: true
-    });
-
-    const CURRENT_VERSION = "0.2.1";
+    const CURRENT_VERSION = "0.3.0";
     document.getElementById('loader-status').innerText = "UniqueStone v" + CURRENT_VERSION;
 
-    // ===== ЕЛЕМЕНТИ =====
     const loader = document.getElementById('loader');
     const authScreen = document.getElementById('auth-screen');
     const mainScreen = document.getElementById('main-screen');
@@ -312,11 +299,9 @@
     const userNickSpan = document.getElementById('user-nick');
     const logoutBtn = document.getElementById('logout-btn');
 
-    // ===== СТАН =====
     let authMode = 'login';
     const SESSION_KEY = 'uniquestone_nick';
 
-    // ===== ПЕРЕМИКАННЯ ВКЛАДОК =====
     function setAuthMode(mode) {
       authMode = mode;
       authError.textContent = '';
@@ -333,12 +318,10 @@
     tabLogin.addEventListener('click', () => setAuthMode('login'));
     tabRegister.addEventListener('click', () => setAuthMode('register'));
 
-    // ===== ДОПОМІЖНЕ =====
     function nickToId(nick) {
       return nick.trim().toLowerCase();
     }
 
-    // ===== ОБРОБКА ВХОДУ / РЕЄСТРАЦІЇ =====
     authSubmit.addEventListener('click', async () => {
       const nick = authNick.value.trim();
       const password = authPassword.value;
@@ -356,26 +339,26 @@
       authSubmit.disabled = true;
       try {
         const userId = nickToId(nick);
-        const userRef = doc(db, 'users', userId);
-        const userSnap = await getDoc(userRef);
+        const userRef = ref(db, 'users/' + userId);
+        const snapshot = await get(userRef);
 
         if (authMode === 'register') {
-          if (userSnap.exists()) {
+          if (snapshot.exists()) {
             authError.textContent = 'Цей нік вже зайнятий.';
             return;
           }
-          await setDoc(userRef, {
+          await set(userRef, {
             nick: nick,
             password: password,
             createdAt: Date.now()
           });
           loginSuccess(nick);
         } else {
-          if (!userSnap.exists()) {
+          if (!snapshot.exists()) {
             authError.textContent = 'Користувача з таким ніком не знайдено.';
             return;
           }
-          const data = userSnap.data();
+          const data = snapshot.val();
           if (data.password !== password) {
             authError.textContent = 'Невірний пароль.';
             return;
@@ -389,7 +372,6 @@
       }
     });
 
-    // ===== УСПІШНИЙ ВХІД =====
     function loginSuccess(nick) {
       localStorage.setItem(SESSION_KEY, nick);
       authNick.value = '';
@@ -397,7 +379,6 @@
       showMain(nick);
     }
 
-    // ===== ПОКАЗ ЕКРАНІВ =====
     function showMain(nick) {
       userNickSpan.textContent = nick;
       authScreen.style.display = 'none';
@@ -409,7 +390,6 @@
       setAuthMode('login');
     }
 
-    // ===== ПЕРЕМИКАННЯ НИЖНЬОЇ НАВІГАЦІЇ =====
     const navBtns = document.querySelectorAll('.nav-btn');
     const tabContents = {
       mine: document.getElementById('tab-content-mine'),
@@ -426,13 +406,11 @@
       });
     });
 
-    // ===== ВИХІД =====
     logoutBtn.addEventListener('click', () => {
       localStorage.removeItem(SESSION_KEY);
       showAuth();
     });
 
-    // ===== ПЕРЕВІРКА СЕСІЇ =====
     const savedNick = localStorage.getItem(SESSION_KEY);
     if (savedNick) {
       showMain(savedNick);
