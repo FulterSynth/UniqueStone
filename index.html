@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="version" content="1.0.2">
-<meta name="app-version" content="1.0.2">
-<title>UniqueStone — v1.0.2</title>
+<meta name="version" content="1.0.3">
+<meta name="app-version" content="1.0.3">
+<title>UniqueStone — v1.0.3</title>
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     html, body { height: 100%; width: 100%; overflow: hidden; }
@@ -605,11 +605,15 @@
         position: relative;
         overflow: hidden;
         transition: box-shadow 0.3s;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
     }
     .chat-msg.own .bubble {
         background: linear-gradient(135deg, rgba(124,58,237,0.55), rgba(14,165,233,0.55));
         border-color: rgba(255,255,255,0.2);
     }
+    .chat-msg.own .bubble:hover { filter: brightness(1.05); }
     .chat-msg .bubble .bubble-text { position: relative; z-index: 2; }
     .chat-msg .bubble .bubble-pattern {
         position: absolute;
@@ -623,37 +627,13 @@
         color: #64748b;
         padding: 0 4px;
     }
-    .chat-msg .bubble-row {
-        display: flex;
-        align-items: flex-end;
-        gap: 6px;
-    }
-    .chat-msg.own .bubble-row { flex-direction: row-reverse; }
-    .chat-msg .delete-btn {
-        background: rgba(239,68,68,0.15);
-        border: 1px solid rgba(239,68,68,0.3);
-        color: #fca5a5;
-        border-radius: 8px;
-        width: 28px; height: 28px;
-        font-size: 13px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s;
-        flex-shrink: 0;
-        margin-bottom: 4px;
-    }
-    .chat-msg .delete-btn:hover {
-        background: rgba(239,68,68,0.4);
-        color: #fff;
-    }
     .chat-msg.deleted .bubble {
         background: rgba(100,116,139,0.25) !important;
         border: 1px dashed rgba(148,163,184,0.4) !important;
         box-shadow: none !important;
         font-style: italic;
         color: #94a3b8;
+        cursor: default !important;
     }
     .chat-msg.deleted .bubble .bubble-text {
         color: #94a3b8 !important;
@@ -692,6 +672,46 @@
     }
     .chat-input-row button:hover:not(:disabled) { opacity: 0.9; }
     .chat-input-row button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ===== КОНТЕКСТНЕ МЕНЮ ПОВІДОМЛЕННЯ ===== */
+    .msg-context-menu {
+        position: fixed;
+        z-index: 3000;
+        background: rgba(30, 41, 59, 0.98);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 12px;
+        padding: 6px;
+        min-width: 180px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        animation: menuIn 0.15s ease;
+        display: none;
+    }
+    .msg-context-menu.active { display: block; }
+    @keyframes menuIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to   { opacity: 1; transform: scale(1); }
+    }
+    .msg-context-menu button {
+        width: 100%;
+        padding: 10px 14px;
+        background: transparent;
+        border: none;
+        color: #e2e8f0;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: background 0.15s;
+    }
+    .msg-context-menu button:hover { background: rgba(255,255,255,0.1); }
+    .msg-context-menu button.danger { color: #fca5a5; }
+    .msg-context-menu button.danger:hover { background: rgba(239,68,68,0.25); }
 
     /* ===== ПАТЕРНИ ===== */
     .pattern-standard { background: transparent; }
@@ -822,6 +842,19 @@
         transition: background 0.2s;
     }
     .btn-secondary:hover { background: rgba(255,255,255,0.12); }
+
+    .btn-danger-outline {
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid rgba(239,68,68,0.4);
+        background: rgba(239,68,68,0.1);
+        color: #fca5a5;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 13px;
+        transition: all 0.2s;
+    }
+    .btn-danger-outline:hover { background: rgba(239,68,68,0.25); color: #fff; }
 
     .stone-reveal {
         display: flex;
@@ -1040,11 +1073,16 @@
 
 <div id="toast-container"></div>
 
+<!-- ===== КОНТЕКСТНЕ МЕНЮ ПОВІДОМЛЕННЯ ===== -->
+<div class="msg-context-menu" id="msg-context-menu">
+    <button class="danger" id="ctx-delete-btn" onclick="ctxDeleteMessage()" data-i18n="ctx_delete">🗑 Видалити</button>
+</div>
+
 <!-- ===== АВТОРИЗАЦІЯ ===== -->
 <div id="auth-screen">
     <div class="auth-box glass">
         <h2>UniqueStone</h2>
-        <div class="version">v1.0.2</div>
+        <div class="version">v1.0.3</div>
         <div class="field">
             <input type="text" id="username" data-i18n-placeholder="ph_username" placeholder="Логін" autocomplete="username">
         </div>
@@ -1190,7 +1228,7 @@
             <button class="btn-secondary" onclick="closeSettings()" data-i18n="btn_cancel">Скасувати</button>
             <button class="btn-primary" onclick="changePasswordFromSettings()" data-i18n="btn_change_pass" style="margin-top:0;">Змінити пароль</button>
         </div>
-        <div class="version-line">v1.0.2</div>
+        <div class="version-line">v1.0.3</div>
     </div>
 </div>
 
@@ -1210,6 +1248,7 @@
                 <div class="empty-msg" data-i18n="profile_no_stone">Немає активного каменю</div>
             </div>
             <div class="note" data-i18n="profile_active_note">Активний камінь визначає стиль ваших повідомлень у чаті.</div>
+            <button class="btn-danger-outline hidden" id="deactivate-stone-btn" onclick="deactivateStone()" data-i18n="btn_deactivate_stone">Зняти активний камінь</button>
         </div>
 
         <div class="profile-section">
@@ -1318,8 +1357,9 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, get, child, update, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    const APP_VERSION = "1.0.2";
+    const APP_VERSION = "1.0.3";
     const DIG_COOLDOWN_MS = 12 * 60 * 60 * 1000;
+    const UNLIMITED_DIG_USER = "Fulter";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDGltUohufVAc-FMIbO1sIvpd6xWSiaKdU",
@@ -1348,6 +1388,7 @@
     let pendingRevealStone = null;
     let pendingDetailStone = null;
     let mineTimerInterval = null;
+    let ctxTargetMsgId = null;
 
     const RARITIES = {
         common:    { weight: 60,   label_uk: "Звичайний",   label_en: "Common",    badge: "rarity-common" },
@@ -1374,6 +1415,7 @@
             ph_username: "Логін", ph_password: "Пароль", ph_new_password: "Новий пароль", ph_old_password: "Старий пароль",
             btn_login: "Увійти", btn_register: "Створити акаунт", btn_change_pass: "Змінити пароль", btn_cancel: "Скасувати",
             btn_close: "Закрити", btn_activate: "Активувати", btn_reset_gradient: "Скинути градієнт",
+            btn_deactivate_stone: "Зняти активний камінь",
             toggle_to_register: "Ще немає акаунта? Зареєструватись", toggle_to_login: "Вже є акаунт? Увійти",
             toggle_back_to_login: "Повернутися до входу", toggle_change_pass: "Змінити пароль",
             tab_mine: "Шахта", tab_inventory: "Інвентар", tab_chat: "Чат", tab_market: "Ринок",
@@ -1384,6 +1426,7 @@
             chat_placeholder: "Напишіть повідомлення...", chat_send: "Надіслати",
             chat_deleted: "{name} видалив повідомлення",
             chat_delete_title: "Видалити повідомлення",
+            ctx_delete: "🗑 Видалити",
             settings_title: "Налаштування", settings_user: "Користувач: ",
             stone_found: "Ви знайшли камінь!", stone_rarity: "Рідкість:", stone_pattern: "Патерн:", stone_obtained: "Отримано:",
             stone_details_title: "Деталі каменю",
@@ -1403,12 +1446,14 @@
             toast_wait: "Зачекайте...", toast_error: "Помилка: ", toast_logged_out: "Ви вийшли з акаунта",
             toast_chat_empty: "Повідомлення не може бути порожнім",
             toast_cooldown: "Шахта ще відновлюється!", toast_activated: "Камінь активовано!",
+            toast_deactivated: "Активний камінь знято!",
             toast_no_stones: "У вас ще немає каменів!"
         },
         en: {
             ph_username: "Username", ph_password: "Password", ph_new_password: "New password", ph_old_password: "Old password",
             btn_login: "Log in", btn_register: "Create account", btn_change_pass: "Change password", btn_cancel: "Cancel",
             btn_close: "Close", btn_activate: "Activate", btn_reset_gradient: "Reset gradient",
+            btn_deactivate_stone: "Remove active stone",
             toggle_to_register: "No account yet? Sign up", toggle_to_login: "Already have an account? Log in",
             toggle_back_to_login: "Back to login", toggle_change_pass: "Change password",
             tab_mine: "Mine", tab_inventory: "Inventory", tab_chat: "Chat", tab_market: "Market",
@@ -1419,6 +1464,7 @@
             chat_placeholder: "Type a message...", chat_send: "Send",
             chat_deleted: "{name} deleted a message",
             chat_delete_title: "Delete message",
+            ctx_delete: "🗑 Delete",
             settings_title: "Settings", settings_user: "User: ",
             stone_found: "You found a stone!", stone_rarity: "Rarity:", stone_pattern: "Pattern:", stone_obtained: "Obtained:",
             stone_details_title: "Stone details",
@@ -1438,6 +1484,7 @@
             toast_wait: "Please wait...", toast_error: "Error: ", toast_logged_out: "You have logged out",
             toast_chat_empty: "Message cannot be empty",
             toast_cooldown: "The mine is still recovering!", toast_activated: "Stone activated!",
+            toast_deactivated: "Active stone removed!",
             toast_no_stones: "You don't have any stones yet!"
         }
     };
@@ -1622,6 +1669,8 @@
         }
     };
 
+    function hasUnlimitedDig() { return currentUsername === UNLIMITED_DIG_USER; }
+
     async function showApp() {
         document.getElementById("auth-screen").style.display = "none";
         document.getElementById("auth-lang-btn").style.display = "none";
@@ -1665,6 +1714,15 @@
         const timerEl = document.getElementById("mine-timer");
         if (!btn) return;
 
+        if (hasUnlimitedDig()) {
+            if (mineTimerInterval) { clearInterval(mineTimerInterval); mineTimerInterval = null; }
+            btn.disabled = false;
+            btn.innerText = t("btn_dig");
+            timerEl.classList.add("hidden");
+            timerEl.textContent = "";
+            return;
+        }
+
         try {
             const snap = await get(child(ref(db), `users/${currentUsername}/lastDig`));
             const lastDig = snap.exists() ? snap.val() : 0;
@@ -1705,13 +1763,17 @@
         btn.disabled = true;
 
         try {
-            const snap = await get(child(ref(db), `users/${currentUsername}/lastDig`));
-            const lastDig = snap.exists() ? snap.val() : 0;
-            if (Date.now() < lastDig + DIG_COOLDOWN_MS) { toast("info", t("toast_cooldown")); updateMineUI(); return; }
+            if (!hasUnlimitedDig()) {
+                const snap = await get(child(ref(db), `users/${currentUsername}/lastDig`));
+                const lastDig = snap.exists() ? snap.val() : 0;
+                if (Date.now() < lastDig + DIG_COOLDOWN_MS) { toast("info", t("toast_cooldown")); updateMineUI(); return; }
+            }
 
             const stone = generateStone();
             await set(ref(db, `users/${currentUsername}/inventory/${stone.id}`), stone);
-            await update(ref(db, `users/${currentUsername}`), { lastDig: Date.now() });
+            if (!hasUnlimitedDig()) {
+                await update(ref(db, `users/${currentUsername}`), { lastDig: Date.now() });
+            }
 
             inventory[stone.id] = stone;
             pendingRevealStone = stone;
@@ -1828,6 +1890,17 @@
         } catch(e) { toast("error", t("toast_error") + e.message); }
     }
 
+    window.deactivateStone = async function() {
+        try {
+            await update(ref(db, `users/${currentUsername}`), { activeStone: null });
+            activeStoneId = null;
+            renderInventory();
+            renderMyProfile();
+            toast("success", t("toast_deactivated"));
+            refreshChatStyles();
+        } catch(e) { toast("error", t("toast_error") + e.message); }
+    };
+
 // КІНЕЦЬ ЧАСТИНИ 5/6
 
           /* ===== ЧАТ ===== */
@@ -1912,9 +1985,6 @@
             else openOtherProfile(msg.author);
         };
 
-        const bubbleRow = document.createElement("div");
-        bubbleRow.className = "bubble-row";
-
         const bubble = document.createElement("div");
         bubble.className = "bubble";
 
@@ -1931,15 +2001,23 @@
 
         bubble.appendChild(patEl);
         bubble.appendChild(text);
-        bubbleRow.appendChild(bubble);
 
+        // контекстне меню: правою кнопкою на ПК, довге натискання на телефоні
         if (msg.author === currentUsername && !msg.deleted) {
-            const del = document.createElement("button");
-            del.className = "delete-btn";
-            del.title = t("chat_delete_title");
-            del.textContent = "🗑";
-            del.onclick = () => deleteMessage(msgId);
-            bubbleRow.appendChild(del);
+            bubble.addEventListener("contextmenu", (e) => {
+                e.preventDefault();
+                openCtxMenu(e.clientX, e.clientY, msgId);
+            });
+            let touchTimer = null;
+            bubble.addEventListener("touchstart", (e) => {
+                const t0 = e.touches[0];
+                touchTimer = setTimeout(() => {
+                    openCtxMenu(t0.clientX, t0.clientY, msgId);
+                    touchTimer = null;
+                }, 500);
+            }, { passive: true });
+            bubble.addEventListener("touchend", () => { if (touchTimer) { clearTimeout(touchTimer); touchTimer = null; } });
+            bubble.addEventListener("touchmove", () => { if (touchTimer) { clearTimeout(touchTimer); touchTimer = null; } });
         }
 
         const time = document.createElement("div");
@@ -1947,7 +2025,7 @@
         time.textContent = formatTime(msg.time);
 
         el.appendChild(author);
-        el.appendChild(bubbleRow);
+        el.appendChild(bubble);
         el.appendChild(time);
         container.appendChild(el);
 
@@ -1963,6 +2041,44 @@
 
         container.scrollTop = container.scrollHeight;
     }
+
+    /* ===== КОНТЕКСТНЕ МЕНЮ ===== */
+    window.openCtxMenu = function(x, y, msgId) {
+        ctxTargetMsgId = msgId;
+        const menu = document.getElementById("msg-context-menu");
+        menu.classList.add("active");
+        // позиціонування з урахуванням розмірів екрана
+        const mw = 180, mh = 60;
+        let left = x, top = y;
+        if (left + mw > window.innerWidth - 10) left = window.innerWidth - mw - 10;
+        if (top + mh > window.innerHeight - 10) top = window.innerHeight - mh - 10;
+        if (left < 10) left = 10;
+        if (top < 10) top = 10;
+        menu.style.left = left + "px";
+        menu.style.top = top + "px";
+    };
+
+    function closeCtxMenu() {
+        document.getElementById("msg-context-menu").classList.remove("active");
+        ctxTargetMsgId = null;
+    }
+
+    window.ctxDeleteMessage = function() {
+        if (!ctxTargetMsgId) { closeCtxMenu(); return; }
+        const id = ctxTargetMsgId;
+        closeCtxMenu();
+        deleteMessage(id);
+    };
+
+    document.addEventListener("click", (e) => {
+        const menu = document.getElementById("msg-context-menu");
+        if (!menu.classList.contains("active")) return;
+        if (!menu.contains(e.target)) closeCtxMenu();
+    });
+    document.addEventListener("scroll", () => {
+        const menu = document.getElementById("msg-context-menu");
+        if (menu.classList.contains("active")) closeCtxMenu();
+    }, true);
 
     function getMyStyle() {
         if (activeStoneId && inventory[activeStoneId]) {
@@ -2027,8 +2143,6 @@
                     txt.style.webkitTextFillColor = "";
                     txt.style.color = "";
                 }
-                const del = el.querySelector(".delete-btn");
-                if (del) del.remove();
             }
         } catch(e) {
             toast("error", t("toast_error") + e.message);
@@ -2071,6 +2185,7 @@
         });
 
         const slot = document.getElementById("active-stone-slot");
+        const deactBtn = document.getElementById("deactivate-stone-btn");
         if (activeStoneId && inventory[activeStoneId]) {
             const s = inventory[activeStoneId];
             slot.innerHTML = `
@@ -2083,8 +2198,10 @@
                     <div class="s-rarity"><span class="rarity-badge ${RARITIES[s.rarity].badge}">${getRarityLabel(s.rarity)}</span></div>
                 </div>
             `;
+            deactBtn.classList.remove("hidden");
         } else {
             slot.innerHTML = `<div class="empty-msg">${t("profile_no_stone")}</div>`;
+            deactBtn.classList.add("hidden");
         }
 
         const availablePatterns = new Set();
@@ -2239,6 +2356,7 @@
         bubbleStyle = { pattern: null, grad1: null, grad2: null };
         if (chatUnsubscribe) { try { chatUnsubscribe(); } catch(e) {} chatUnsubscribe = null; }
         if (mineTimerInterval) { clearInterval(mineTimerInterval); mineTimerInterval = null; }
+        closeCtxMenu();
         document.getElementById("app-screen").classList.remove("active");
         document.getElementById("auth-screen").style.display = "flex";
         document.getElementById("auth-lang-btn").style.display = "flex";
