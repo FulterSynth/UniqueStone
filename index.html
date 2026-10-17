@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="version" content="1.0.1">
-<meta name="app-version" content="1.0.1">
-<title>UniqueStone — v1.0.1</title>
+<meta name="version" content="1.0.2">
+<meta name="app-version" content="1.0.2">
+<title>UniqueStone — v1.0.2</title>
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     html, body { height: 100%; width: 100%; overflow: hidden; }
@@ -322,7 +322,8 @@
     }
 
 /* КІНЕЦЬ ЧАСТИНИ 1/6 */
-    /* ===== ШАХТА ===== */
+
+       /* ===== ШАХТА ===== */
     .mine-visual {
         position: relative;
         width: 100%;
@@ -508,19 +509,6 @@
         0%, 100% { box-shadow: 0 0 8px rgba(239,68,68,0.5); }
         50%      { box-shadow: 0 0 16px rgba(239,68,68,0.9); }
     }
-    .inv-btn-activate {
-        padding: 6px;
-        border-radius: 7px;
-        border: none;
-        background: linear-gradient(90deg, #7c3aed, #0ea5e9);
-        color: #fff;
-        font-weight: 600;
-        font-size: 10px;
-        cursor: pointer;
-        transition: opacity 0.2s;
-    }
-    .inv-btn-activate:hover { opacity: 0.9; }
-    .inv-btn-activate:disabled { background: #475569; cursor: not-allowed; }
 
     .inventory-header {
         display: flex;
@@ -635,6 +623,45 @@
         color: #64748b;
         padding: 0 4px;
     }
+    .chat-msg .bubble-row {
+        display: flex;
+        align-items: flex-end;
+        gap: 6px;
+    }
+    .chat-msg.own .bubble-row { flex-direction: row-reverse; }
+    .chat-msg .delete-btn {
+        background: rgba(239,68,68,0.15);
+        border: 1px solid rgba(239,68,68,0.3);
+        color: #fca5a5;
+        border-radius: 8px;
+        width: 28px; height: 28px;
+        font-size: 13px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        flex-shrink: 0;
+        margin-bottom: 4px;
+    }
+    .chat-msg .delete-btn:hover {
+        background: rgba(239,68,68,0.4);
+        color: #fff;
+    }
+    .chat-msg.deleted .bubble {
+        background: rgba(100,116,139,0.25) !important;
+        border: 1px dashed rgba(148,163,184,0.4) !important;
+        box-shadow: none !important;
+        font-style: italic;
+        color: #94a3b8;
+    }
+    .chat-msg.deleted .bubble .bubble-text {
+        color: #94a3b8 !important;
+        -webkit-text-fill-color: #94a3b8 !important;
+        background: none !important;
+    }
+    .chat-msg.deleted .bubble .bubble-pattern { display: none; }
+
     .chat-input-row {
         display: flex;
         gap: 8px;
@@ -796,7 +823,6 @@
     }
     .btn-secondary:hover { background: rgba(255,255,255,0.12); }
 
-    /* ===== МОДАЛКА КАМЕНЮ ===== */
     .stone-reveal {
         display: flex;
         flex-direction: column;
@@ -851,7 +877,6 @@
         align-items: center;
     }
 
-    /* ===== ПРОФІЛЬ ===== */
     .profile-header {
         display: flex;
         flex-direction: column;
@@ -1009,7 +1034,7 @@
 </head>
 <body>
 
-/* КІНЕЦЬ ЧАСТИНИ 3/6 */
+<!-- КІНЕЦЬ ЧАСТИНИ 3/6 -->
 
    <button class="lang-btn-corner" id="auth-lang-btn" onclick="toggleLang()" title="Мова">UA</button>
 
@@ -1019,7 +1044,7 @@
 <div id="auth-screen">
     <div class="auth-box glass">
         <h2>UniqueStone</h2>
-        <div class="version">v1.0.1</div>
+        <div class="version">v1.0.2</div>
         <div class="field">
             <input type="text" id="username" data-i18n-placeholder="ph_username" placeholder="Логін" autocomplete="username">
         </div>
@@ -1165,7 +1190,7 @@
             <button class="btn-secondary" onclick="closeSettings()" data-i18n="btn_cancel">Скасувати</button>
             <button class="btn-primary" onclick="changePasswordFromSettings()" data-i18n="btn_change_pass" style="margin-top:0;">Змінити пароль</button>
         </div>
-        <div class="version-line">v1.0.1</div>
+        <div class="version-line">v1.0.2</div>
     </div>
 </div>
 
@@ -1293,7 +1318,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, get, child, update, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    const APP_VERSION = "1.0.1";
+    const APP_VERSION = "1.0.2";
     const DIG_COOLDOWN_MS = 12 * 60 * 60 * 1000;
 
     const firebaseConfig = {
@@ -1315,6 +1340,7 @@
     let currentLang = "uk";
     let currentTab = "mine";
     let chatStarted = false;
+    let chatUnsubscribe = null;
     let inventory = {};
     let activeStoneId = null;
     let bubbleStyle = { pattern: null, grad1: null, grad2: null };
@@ -1356,6 +1382,8 @@
             sort_rarity: "↓ Рідкість", sort_date: "↓ Дата",
             chat_empty: "Повідомлень ще немає. Напишіть першим!",
             chat_placeholder: "Напишіть повідомлення...", chat_send: "Надіслати",
+            chat_deleted: "{name} видалив повідомлення",
+            chat_delete_title: "Видалити повідомлення",
             settings_title: "Налаштування", settings_user: "Користувач: ",
             stone_found: "Ви знайшли камінь!", stone_rarity: "Рідкість:", stone_pattern: "Патерн:", stone_obtained: "Отримано:",
             stone_details_title: "Деталі каменю",
@@ -1389,6 +1417,8 @@
             sort_rarity: "↓ Rarity", sort_date: "↓ Date",
             chat_empty: "No messages yet. Be the first to write!",
             chat_placeholder: "Type a message...", chat_send: "Send",
+            chat_deleted: "{name} deleted a message",
+            chat_delete_title: "Delete message",
             settings_title: "Settings", settings_user: "User: ",
             stone_found: "You found a stone!", stone_rarity: "Rarity:", stone_pattern: "Pattern:", stone_obtained: "Obtained:",
             stone_details_title: "Stone details",
@@ -1806,11 +1836,14 @@
     function startChatListener() {
         if (chatStarted) return;
         chatStarted = true;
+        const container = document.getElementById("chat-messages");
+        container.innerHTML = '<div class="chat-empty" id="chat-empty">' + t("chat_empty") + '</div>';
         const messagesRef = query(ref(db, "chat/messages"), limitToLast(100));
-        onChildAdded(messagesRef, (snapshot) => {
+        if (chatUnsubscribe) { try { chatUnsubscribe(); } catch(e) {} chatUnsubscribe = null; }
+        chatUnsubscribe = onChildAdded(messagesRef, (snapshot) => {
             const msg = snapshot.val();
             if (!msg) return;
-            appendMessage(msg);
+            appendMessage(msg, snapshot.key);
             if (msg.author && msg.author !== currentUsername) {
                 loadOtherBubbleStyle(msg.author);
             }
@@ -1860,19 +1893,27 @@
         }
     }
 
-    function appendMessage(msg) {
+    function appendMessage(msg, msgId) {
         const empty = document.getElementById("chat-empty");
         if (empty) empty.remove();
 
         const container = document.getElementById("chat-messages");
         const el = document.createElement("div");
-        el.className = "chat-msg" + (msg.author === currentUsername ? " own" : "");
+        el.className = "chat-msg" + (msg.author === currentUsername ? " own" : "") + (msg.deleted ? " deleted" : "");
         el.dataset.author = msg.author || "";
+        el.dataset.msgId = msgId || "";
 
         const author = document.createElement("div");
         author.className = "author";
         author.textContent = msg.author || "?";
-        author.onclick = () => { if (msg.author && msg.author !== currentUsername) openOtherProfile(msg.author); };
+        author.onclick = () => {
+            if (!msg.author) return;
+            if (msg.author === currentUsername) openMyProfile();
+            else openOtherProfile(msg.author);
+        };
+
+        const bubbleRow = document.createElement("div");
+        bubbleRow.className = "bubble-row";
 
         const bubble = document.createElement("div");
         bubble.className = "bubble";
@@ -1882,26 +1923,42 @@
 
         const text = document.createElement("div");
         text.className = "bubble-text";
-        text.textContent = msg.text || "";
+        if (msg.deleted) {
+            text.textContent = t("chat_deleted").replace("{name}", msg.author || "?");
+        } else {
+            text.textContent = msg.text || "";
+        }
 
         bubble.appendChild(patEl);
         bubble.appendChild(text);
+        bubbleRow.appendChild(bubble);
+
+        if (msg.author === currentUsername && !msg.deleted) {
+            const del = document.createElement("button");
+            del.className = "delete-btn";
+            del.title = t("chat_delete_title");
+            del.textContent = "🗑";
+            del.onclick = () => deleteMessage(msgId);
+            bubbleRow.appendChild(del);
+        }
 
         const time = document.createElement("div");
         time.className = "time";
         time.textContent = formatTime(msg.time);
 
         el.appendChild(author);
-        el.appendChild(bubble);
+        el.appendChild(bubbleRow);
         el.appendChild(time);
         container.appendChild(el);
 
-        if (msg.author === currentUsername) {
-            applyMyBubbleStyle(bubble);
-        } else {
-            const st = otherStyles[msg.author];
-            if (st) applyBubbleStyle(bubble, st);
-            else loadOtherBubbleStyle(msg.author);
+        if (!msg.deleted) {
+            if (msg.author === currentUsername) {
+                applyMyBubbleStyle(bubble);
+            } else {
+                const st = otherStyles[msg.author];
+                if (st) applyBubbleStyle(bubble, st);
+                else loadOtherBubbleStyle(msg.author);
+            }
         }
 
         container.scrollTop = container.scrollHeight;
@@ -1949,6 +2006,34 @@
         const d = new Date(ts);
         return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
     }
+
+    window.deleteMessage = async function(msgId) {
+        if (!msgId || !currentUsername) return;
+        try {
+            await update(ref(db, "chat/messages/" + msgId), { deleted: true, text: "" });
+            const el = document.querySelector(`.chat-msg[data-msg-id="${CSS.escape(msgId)}"]`);
+            if (el) {
+                el.classList.add("deleted");
+                const bubble = el.querySelector(".bubble");
+                if (bubble) { bubble.style.background = ""; bubble.style.boxShadow = ""; }
+                const pat = el.querySelector(".bubble-pattern");
+                if (pat) pat.className = "bubble-pattern";
+                const txt = el.querySelector(".bubble-text");
+                if (txt) {
+                    txt.textContent = t("chat_deleted").replace("{name}", currentUsername);
+                    txt.style.background = "";
+                    txt.style.webkitBackgroundClip = "";
+                    txt.style.backgroundClip = "";
+                    txt.style.webkitTextFillColor = "";
+                    txt.style.color = "";
+                }
+                const del = el.querySelector(".delete-btn");
+                if (del) del.remove();
+            }
+        } catch(e) {
+            toast("error", t("toast_error") + e.message);
+        }
+    };
 
     window.sendMessage = async function() {
         const input = document.getElementById("chat-input");
@@ -2152,6 +2237,7 @@
         try { localStorage.removeItem("auth_username"); localStorage.removeItem("auth_hash"); } catch(e) {}
         currentUsername = ""; chatStarted = false; inventory = {}; activeStoneId = null;
         bubbleStyle = { pattern: null, grad1: null, grad2: null };
+        if (chatUnsubscribe) { try { chatUnsubscribe(); } catch(e) {} chatUnsubscribe = null; }
         if (mineTimerInterval) { clearInterval(mineTimerInterval); mineTimerInterval = null; }
         document.getElementById("app-screen").classList.remove("active");
         document.getElementById("auth-screen").style.display = "flex";
@@ -2215,13 +2301,11 @@
         try { localStorage.setItem("app_version", APP_VERSION); } catch(e) {}
         checkVersion();
         setInterval(checkVersion, 60000);
+        document.addEventListener("visibilitychange", () => {
+            if (!document.hidden && currentUsername) updateMineUI();
+        });
         console.log("%cUniqueStone v" + APP_VERSION, "color:#38bdf8;font-weight:bold;font-size:14px;");
     });
 </script>
 </body>
 </html>
-
-      
-
-      
-   
