@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="version" content="1.0.6">
-<meta name="app-version" content="1.0.6">
-<title>UniqueStone — v1.0.6</title>
+<meta name="version" content="1.0.7">
+<meta name="app-version" content="1.0.7">
+<title>UniqueStone — v1.0.7</title>
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     html, body { height: 100%; width: 100%; overflow: hidden; }
@@ -434,18 +434,26 @@
         text-shadow: 0 1px 3px rgba(0,0,0,0.8);
     }
 
-    /* ===== ІНВЕНТАР ===== */
+    /* ===== ІНВЕНТАР (виправлений скрол, 2 картки в рядку на телефоні) ===== */
     .inventory-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 10px;
         overflow-y: auto;
         overflow-x: hidden;
-        flex: 1;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+        flex: 1 1 0;
         min-height: 0;
         align-content: start;
-        padding-bottom: 4px;
+        padding-right: 4px;
+        padding-bottom: 8px;
     }
+    .inventory-grid::-webkit-scrollbar { width: 6px; }
+    .inventory-grid::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 3px; }
+    .inventory-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+    .inventory-grid::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.35); }
+
     .inv-card {
         background: rgba(255,255,255,0.06);
         border: 1px solid rgba(255,255,255,0.12);
@@ -455,11 +463,14 @@
         flex-direction: column;
         gap: 6px;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: background 0.2s, transform 0.2s;
         position: relative;
-        overflow: hidden;
+        min-height: 260px;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
     }
-    .inv-card:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+    .inv-card:hover { background: rgba(255,255,255,0.1); }
     .inv-card.is-active { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56,189,248,0.4); }
     .inv-card .stone-preview {
         width: 100%;
@@ -470,11 +481,14 @@
         justify-content: center;
         position: relative;
         overflow: hidden;
+        flex-shrink: 0;
     }
     .inv-card .stone-preview .gem-shape {
         width: 55%; height: 55%;
         clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
         box-shadow: 0 0 15px currentColor;
+        position: relative;
+        z-index: 2;
     }
     .inv-card .stone-name {
         font-size: 11px;
@@ -484,14 +498,47 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        flex-shrink: 0;
     }
-    .inv-card .stone-meta {
+    .inv-card .stone-rarity {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .inv-card .stone-meta-list {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
         font-size: 9px;
         color: #94a3b8;
+        flex: 1;
     }
+    .meta-row {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        line-height: 1.2;
+    }
+    .meta-row .meta-label {
+        color: #64748b;
+        white-space: nowrap;
+    }
+    .meta-row .meta-value {
+        color: #cbd5e1;
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+    }
+    .meta-row .color-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+
     .rarity-badge {
         padding: 2px 6px;
         border-radius: 5px;
@@ -544,6 +591,11 @@
         gap: 8px;
     }
     .inv-empty .big { font-size: 40px; opacity: 0.6; }
+
+    @media (max-width: 480px) {
+        .inventory-grid { grid-template-columns: repeat(2, 1fr); }
+        .inv-card { min-height: 240px; }
+    }
 
 /* КІНЕЦЬ ЧАСТИНИ 2/6 */
 
@@ -713,7 +765,7 @@
     .msg-context-menu button.danger { color: #fca5a5; }
     .msg-context-menu button.danger:hover { background: rgba(239,68,68,0.25); }
 
-    /* ===== ПАТЕРНИ ===== */
+    /* ===== ПАТЕРНИ (базові розміри) ===== */
     .pattern-standard { background: transparent; }
     .pattern-dots { background-size: 14px 14px; }
     .pattern-grid { background-size: 16px 16px; }
@@ -739,6 +791,34 @@
         50%      { opacity: 0.9;  transform: scale(1.05); }
     }
 
+    /* ===== МОДИФІКАЦІЇ КОЛОРУ ===== */
+    /* shimmer — перламутровий перелив */
+    .mod-shimmer {
+        animation: shimmerAnim 4s ease-in-out infinite;
+        background-size: 300% 300% !important;
+    }
+    @keyframes shimmerAnim {
+        0%, 100% { background-position: 0% 50%; }
+        50%      { background-position: 100% 50%; }
+    }
+    /* pulse — пульсація яскравості */
+    .mod-pulse {
+        animation: pulseAnim 2.5s ease-in-out infinite;
+    }
+    @keyframes pulseAnim {
+        0%, 100% { filter: brightness(1); }
+        50%      { filter: brightness(1.4); }
+    }
+    /* wave — хвиля кольору, що пробігає */
+    .mod-wave {
+        animation: waveAnim 3s linear infinite;
+        background-size: 200% 200% !important;
+    }
+    @keyframes waveAnim {
+        0%   { background-position: 0% 0%; }
+        100% { background-position: 200% 200%; }
+    }
+
     /* ===== МОДАЛКИ ===== */
     .modal-overlay {
         position: fixed; inset: 0;
@@ -755,7 +835,7 @@
     .modal-overlay.active { display: flex; }
     .modal {
         padding: 24px;
-        width: 100%; max-width: 420px;
+        width: 100%; max-width: 440px;
         display: flex;
         flex-direction: column;
         gap: 14px;
@@ -874,15 +954,35 @@
     .stone-details {
         display: flex;
         flex-direction: column;
-        gap: 4px;
-        align-items: center;
+        gap: 6px;
+        align-items: stretch;
         font-size: 12px;
         color: #94a3b8;
+        width: 100%;
+        padding: 0 8px;
     }
     .stone-details .row {
         display: flex;
-        gap: 6px;
+        gap: 8px;
         align-items: center;
+        justify-content: space-between;
+    }
+    .stone-details .row span:first-child {
+        color: #64748b;
+    }
+    .stone-details .row .val {
+        color: #cbd5e1;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .stone-details .color-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 1px solid rgba(255,255,255,0.3);
+        flex-shrink: 0;
     }
 
     .profile-header {
@@ -946,6 +1046,8 @@
         width: 55%; height: 55%;
         clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
         box-shadow: 0 0 12px currentColor;
+        position: relative;
+        z-index: 2;
     }
     .active-stone-slot .info { flex: 1; min-width: 0; }
     .active-stone-slot .info .s-name {
@@ -995,7 +1097,7 @@
 
 <div id="toast-container"></div>
 
-<!-- ===== КОНТЕКСТНЕ МЕНЮ ===== -->
+<!-- ===== КОНТЕКСТНЕ МЕНЮ ПОВІДОМЛЕННЯ ===== -->
 <div class="msg-context-menu" id="msg-context-menu">
     <button class="danger" id="ctx-delete-btn" onclick="ctxDeleteMessage()" data-i18n="ctx_delete">🗑 Видалити</button>
 </div>
@@ -1004,7 +1106,7 @@
 <div id="auth-screen">
     <div class="auth-box glass">
         <h2>UniqueStone</h2>
-        <div class="version">v1.0.6</div>
+        <div class="version">v1.0.7</div>
         <div class="field">
             <input type="text" id="username" data-i18n-placeholder="ph_username" placeholder="Логін" autocomplete="username">
         </div>
@@ -1125,7 +1227,13 @@
             </div>
             <div class="stone-title" id="reveal-name">---</div>
             <div class="stone-details">
-                <div class="row"><span data-i18n="stone_rarity">Рідкість:</span><span id="reveal-rarity" class="rarity-badge">---</span></div>
+                <div class="row"><span data-i18n="stone_rarity">Рідкість:</span><span class="val"><span id="reveal-rarity" class="rarity-badge">---</span></span></div>
+                <div class="row"><span data-i18n="stone_base_color">Колір бази:</span><span class="val"><span class="color-dot" id="reveal-base-dot"></span><span id="reveal-base-name">---</span></span></div>
+                <div class="row"><span data-i18n="stone_pattern">Патерн:</span><span class="val" id="reveal-pattern-name">---</span></div>
+                <div class="row"><span data-i18n="stone_pattern_color">Колір патерну:</span><span class="val"><span class="color-dot" id="reveal-pat-dot"></span><span id="reveal-pat-name">---</span></span></div>
+                <div class="row"><span data-i18n="stone_base_mod">Модифікатор бази:</span><span class="val" id="reveal-base-mod">---</span></div>
+                <div class="row"><span data-i18n="stone_pattern_mod">Модифікатор патерну:</span><span class="val" id="reveal-pat-mod">---</span></div>
+                <div class="row" id="reveal-glow-row" style="display:none;"><span data-i18n="stone_glow">Світіння:</span><span class="val"><span class="color-dot" id="reveal-glow-dot"></span><span data-i18n="stone_yes">Так</span></span></div>
             </div>
         </div>
         <div class="modal-actions">
@@ -1151,7 +1259,7 @@
             <button class="btn-primary" onclick="changePasswordFromSettings()" data-i18n="btn_change_pass" style="margin-top:0;">Змінити пароль</button>
         </div>
         <button class="btn-wipe hidden" id="wipe-btn" onclick="wipeAll()" data-i18n="btn_wipe">⚠ Вайп</button>
-        <div class="version-line">v1.0.6</div>
+        <div class="version-line">v1.0.7</div>
     </div>
 </div>
 
@@ -1242,9 +1350,14 @@
             </div>
             <div class="stone-title" id="detail-name">---</div>
             <div class="stone-details">
-                <div class="row"><span data-i18n="stone_rarity">Рідкість:</span><span id="detail-rarity" class="rarity-badge">---</span></div>
-                <div class="row"><span data-i18n="stone_pattern">Патерн:</span><span id="detail-pattern-name">---</span></div>
-                <div class="row"><span data-i18n="stone_obtained">Отримано:</span><span id="detail-obtained">---</span></div>
+                <div class="row"><span data-i18n="stone_rarity">Рідкість:</span><span class="val"><span id="detail-rarity" class="rarity-badge">---</span></span></div>
+                <div class="row"><span data-i18n="stone_base_color">Колір бази:</span><span class="val"><span class="color-dot" id="detail-base-dot"></span><span id="detail-base-name">---</span></span></div>
+                <div class="row"><span data-i18n="stone_pattern">Патерн:</span><span class="val" id="detail-pattern-name">---</span></div>
+                <div class="row"><span data-i18n="stone_pattern_color">Колір патерну:</span><span class="val"><span class="color-dot" id="detail-pat-dot"></span><span id="detail-pat-name">---</span></span></div>
+                <div class="row"><span data-i18n="stone_base_mod">Модифікатор бази:</span><span class="val" id="detail-base-mod">---</span></div>
+                <div class="row"><span data-i18n="stone_pattern_mod">Модифікатор патерну:</span><span class="val" id="detail-pat-mod">---</span></div>
+                <div class="row" id="detail-glow-row" style="display:none;"><span data-i18n="stone_glow">Світіння:</span><span class="val"><span class="color-dot" id="detail-glow-dot"></span><span data-i18n="stone_yes">Так</span></span></div>
+                <div class="row"><span data-i18n="stone_obtained">Отримано:</span><span class="val" id="detail-obtained">---</span></div>
             </div>
         </div>
         <div class="modal-actions">
@@ -1272,7 +1385,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, get, child, update, remove, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    const APP_VERSION = "1.0.6";
+    const APP_VERSION = "1.0.7";
     const DIG_COOLDOWN_MS = 12 * 60 * 60 * 1000;
     const UNLIMITED_DIG_USER = "Fulter";
     const WIPE_USER = "Fulter";
@@ -1321,30 +1434,72 @@
         mythic:    ["mythic-aura"]
     };
 
+    /* Модифікації за рідкістю (база і патерн — незалежно) */
+    const MODS_BY_RARITY = {
+        common:    ["solid"],
+        rare:      ["solid", "gradient"],
+        epic:      ["solid", "gradient", "shimmer"],
+        legendary: ["solid", "gradient", "shimmer", "pulse"],
+        mythic:    ["solid", "gradient", "shimmer", "pulse", "wave"]
+    };
+
     const HUE_NAMES_UK = [
-        { min: 0,   max: 15,  name: "Багряний" },
-        { min: 15,  max: 40,  name: "Помаранчевий" },
-        { min: 40,  max: 65,  name: "Золотий" },
-        { min: 65,  max: 150, name: "Смарагдовий" },
-        { min: 150, max: 190, name: "Бірюзовий" },
-        { min: 190, max: 230, name: "Лазурний" },
-        { min: 230, max: 260, name: "Синій" },
-        { min: 260, max: 290, name: "Фіолетовий" },
-        { min: 290, max: 330, name: "Пурпуровий" },
-        { min: 330, max: 360, name: "Малиновий" }
+        { min: 0,   max: 10,  name: "Багряний" },
+        { min: 10,  max: 20,  name: "Червоний" },
+        { min: 20,  max: 35,  name: "Кораловий" },
+        { min: 35,  max: 45,  name: "Помаранчевий" },
+        { min: 45,  max: 55,  name: "Бурштиновий" },
+        { min: 55,  max: 65,  name: "Золотий" },
+        { min: 65,  max: 80,  name: "Жовтий" },
+        { min: 80,  max: 100, name: "Лимонний" },
+        { min: 100, max: 130, name: "Салатовий" },
+        { min: 130, max: 150, name: "Смарагдовий" },
+        { min: 150, max: 170, name: "М'ятний" },
+        { min: 170, max: 190, name: "Бірюзовий" },
+        { min: 190, max: 210, name: "Блакитний" },
+        { min: 210, max: 230, name: "Небесний" },
+        { min: 230, max: 250, name: "Синій" },
+        { min: 250, max: 270, name: "Індиго" },
+        { min: 270, max: 290, name: "Фіолетовий" },
+        { min: 290, max: 310, name: "Бузковий" },
+        { min: 310, max: 330, name: "Пурпуровий" },
+        { min: 330, max: 345, name: "Малиновий" },
+        { min: 345, max: 360, name: "Рожевий" }
     ];
     const HUE_NAMES_EN = [
-        { min: 0,   max: 15,  name: "Crimson" },
-        { min: 15,  max: 40,  name: "Orange" },
-        { min: 40,  max: 65,  name: "Golden" },
-        { min: 65,  max: 150, name: "Emerald" },
-        { min: 150, max: 190, name: "Turquoise" },
-        { min: 190, max: 230, name: "Azure" },
-        { min: 230, max: 260, name: "Blue" },
-        { min: 260, max: 290, name: "Violet" },
-        { min: 290, max: 330, name: "Purple" },
-        { min: 330, max: 360, name: "Magenta" }
+        { min: 0,   max: 10,  name: "Crimson" },
+        { min: 10,  max: 20,  name: "Red" },
+        { min: 20,  max: 35,  name: "Coral" },
+        { min: 35,  max: 45,  name: "Orange" },
+        { min: 45,  max: 55,  name: "Amber" },
+        { min: 55,  max: 65,  name: "Golden" },
+        { min: 65,  max: 80,  name: "Yellow" },
+        { min: 80,  max: 100, name: "Lemon" },
+        { min: 100, max: 130, name: "Lime" },
+        { min: 130, max: 150, name: "Emerald" },
+        { min: 150, max: 170, name: "Mint" },
+        { min: 170, max: 190, name: "Turquoise" },
+        { min: 190, max: 210, name: "Sky" },
+        { min: 210, max: 230, name: "Azure" },
+        { min: 230, max: 250, name: "Blue" },
+        { min: 250, max: 270, name: "Indigo" },
+        { min: 270, max: 290, name: "Violet" },
+        { min: 290, max: 310, name: "Lilac" },
+        { min: 310, max: 330, name: "Purple" },
+        { min: 330, max: 345, name: "Magenta" },
+        { min: 345, max: 360, name: "Pink" }
     ];
+
+    const LIGHT_MODS_UK = { light: "світлий", dark: "темний", vivid: "насичений", pale: "блідий" };
+    const LIGHT_MODS_EN = { light: "light", dark: "dark", vivid: "vivid", pale: "pale" };
+
+    const MOD_LABELS = {
+        solid:    { uk: "суцільний",  en: "solid" },
+        gradient: { uk: "градієнт",   en: "gradient" },
+        shimmer:  { uk: "перелив",    en: "shimmer" },
+        pulse:    { uk: "пульсація",  en: "pulse" },
+        wave:     { uk: "хвиля",      en: "wave" }
+    };
 
     const I18N = {
         uk: {
@@ -1363,7 +1518,11 @@
             chat_deleted: "{name} видалив повідомлення", ctx_delete: "🗑 Видалити",
             settings_title: "Налаштування", settings_user: "Користувач: ",
             stone_found: "Ви знайшли камінь!", stone_rarity: "Рідкість:", stone_pattern: "Патерн:", stone_obtained: "Отримано:",
+            stone_base_color: "Колір бази:", stone_pattern_color: "Колір патерну:",
+            stone_base_mod: "Модифікатор бази:", stone_pattern_mod: "Модифікатор патерну:",
+            stone_glow: "Світіння:", stone_yes: "Так",
             stone_details_title: "Деталі каменю",
+            label_stone_color: "Камінь:", label_pattern_color: "Патерн:", label_mod: "Модиф.:", label_glow: "Glow:",
             profile_title: "Мій профіль", profile_other_title: "Профіль гравця",
             profile_active_stone: "Активний камінь", profile_no_stone: "Немає активного каменю",
             profile_active_note: "Активний камінь визначає стиль ваших повідомлень у чаті.",
@@ -1398,7 +1557,11 @@
             chat_deleted: "{name} deleted a message", ctx_delete: "🗑 Delete",
             settings_title: "Settings", settings_user: "User: ",
             stone_found: "You found a stone!", stone_rarity: "Rarity:", stone_pattern: "Pattern:", stone_obtained: "Obtained:",
+            stone_base_color: "Base color:", stone_pattern_color: "Pattern color:",
+            stone_base_mod: "Base modifier:", stone_pattern_mod: "Pattern modifier:",
+            stone_glow: "Glow:", stone_yes: "Yes",
             stone_details_title: "Stone details",
+            label_stone_color: "Stone:", label_pattern_color: "Pattern:", label_mod: "Mod:", label_glow: "Glow:",
             profile_title: "My profile", profile_other_title: "Player profile",
             profile_active_stone: "Active stone", profile_no_stone: "No active stone",
             profile_active_note: "Active stone determines the style of your chat messages.",
@@ -1443,80 +1606,112 @@
     }
 
     function hexToRgb(hex) {
-        return {
-            r: parseInt(hex.slice(1,3),16),
-            g: parseInt(hex.slice(3,5),16),
-            b: parseInt(hex.slice(5,7),16)
-        };
+        return { r: parseInt(hex.slice(1,3),16), g: parseInt(hex.slice(3,5),16), b: parseInt(hex.slice(5,7),16) };
     }
 
-    function hexToHue(hex) {
+    function hexToHsl(hex) {
         const { r, g, b } = hexToRgb(hex);
         const rr = r/255, gg = g/255, bb = b/255;
         const max = Math.max(rr,gg,bb), min = Math.min(rr,gg,bb);
-        const d = max - min;
-        if (d === 0) return 0;
-        let h;
-        switch (max) {
-            case rr: h = ((gg-bb)/d) % 6; break;
-            case gg: h = (bb-rr)/d + 2; break;
-            default: h = (rr-gg)/d + 4;
+        let h, s, l = (max+min)/2;
+        if (max === min) { h = s = 0; }
+        else {
+            const d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            switch (max) {
+                case rr: h = (gg-bb)/d + (gg < bb ? 6 : 0); break;
+                case gg: h = (bb-rr)/d + 2; break;
+                default: h = (rr-gg)/d + 4;
+            }
+            h /= 6;
         }
-        h = Math.round(h * 60);
-        if (h < 0) h += 360;
-        return h;
+        return { h: Math.round(h*360), s: Math.round(s*100), l: Math.round(l*100) };
     }
 
-    function hueName(hex) {
-        const hue = hexToHue(hex);
+    function colorName(hex) {
+        const hsl = hexToHsl(hex);
         const list = currentLang === "uk" ? HUE_NAMES_UK : HUE_NAMES_EN;
+        let baseName = list[0].name;
         for (const item of list) {
-            if (hue >= item.min && hue < item.max) return item.name;
+            if (hsl.h >= item.min && hsl.h < item.max) { baseName = item.name; break; }
         }
-        return list[0].name;
+        const mods = currentLang === "uk" ? LIGHT_MODS_UK : LIGHT_MODS_EN;
+        let prefix = "";
+        if (hsl.l >= 65) prefix = mods.light;
+        else if (hsl.l <= 35) prefix = mods.dark;
+        else if (hsl.s >= 75) prefix = mods.vivid;
+        else if (hsl.s <= 30) prefix = mods.pale;
+        return prefix ? (prefix + " " + baseName) : baseName;
     }
 
-    /* ПОВНІСТЮ ВИПАДКОВИЙ колір — без прив'язки до рідкості */
-    function randomStoneColor() {
+    function randomColor() {
         const h = Math.floor(Math.random() * 360);
         const s = Math.floor(Math.random() * 60 + 40);
         const l = Math.floor(Math.random() * 40 + 35);
         return hslToHex(h, s, l);
     }
 
-    function randomStoneColors() {
-        const h1 = Math.floor(Math.random() * 360);
+    function randomSecondary(h1, s, l) {
         const h2 = (h1 + Math.floor(Math.random() * 80 + 40)) % 360;
-        const s = Math.floor(Math.random() * 60 + 40);
-        const l = Math.floor(Math.random() * 40 + 35);
-        return { primary: hslToHex(h1, s, l), secondary: hslToHex(h2, s, l) };
+        return hslToHex(h2, s, l);
     }
 
-    /* ПОВНІСТЮ ВИПАДКОВИЙ колір патерну */
-    function randomPatternColor() {
-        const h = Math.floor(Math.random() * 360);
-        const s = Math.floor(Math.random() * 60 + 40);
-        const l = Math.floor(Math.random() * 50 + 25);
-        return hslToHex(h, s, l);
+    function pickMod(rarity) {
+        const list = MODS_BY_RARITY[rarity] || ["solid"];
+        return list[Math.floor(Math.random() * list.length)];
+    }
+
+    function getModLabel(mod) {
+        const m = MOD_LABELS[mod] || MOD_LABELS.solid;
+        return currentLang === "uk" ? m.uk : m.en;
     }
 
     function generateStone() {
         const rarity = randomRarity();
         const patterns = PATTERNS_BY_RARITY[rarity];
         const pattern = patterns[Math.floor(Math.random() * patterns.length)];
-        const colors = randomStoneColors();
-        const patternColor = randomPatternColor();
+
+        // база
+        const primaryHsl = hexToHsl(randomColor());
+        const primary = hslToHex(primaryHsl.h, primaryHsl.s, primaryHsl.l);
+        const secondary = randomSecondary(primaryHsl.h, primaryHsl.s, primaryHsl.l);
+        const baseMod = pickMod(rarity);
+
+        // патерн
+        const patHsl = hexToHsl(randomColor());
+        const patternColor = hslToHex(patHsl.h, patHsl.s, patHsl.l);
+        const patternColor2 = randomSecondary(patHsl.h, patHsl.s, patHsl.l);
+        const patternMod = pickMod(rarity);
+
+        // glow (тільки Legendary і Mythic, шанс ділиться з іншими)
+        let hasGlow = false;
+        let glowColor = null;
+        if (rarity === "legendary" && Math.random() < 0.5) {
+            hasGlow = true;
+            glowColor = randomColor();
+        } else if (rarity === "mythic") {
+            hasGlow = true;
+            glowColor = randomColor();
+        }
+
         const number = String(Math.floor(Math.random() * 1000000)).padStart(6, "0");
-        const stoneHueName = hueName(colors.primary);
+        const baseName = colorName(primary);
         const patternLabel = getPatternLabel(pattern);
-        const name = stoneHueName + " " + patternLabel + " #" + number;
+        const name = baseName + " " + patternLabel + " #" + number;
+
         const id = "s_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+
         return {
             id, rarity, pattern,
-            primaryColor: colors.primary,
-            secondaryColor: colors.secondary,
-            patternColor: patternColor,
-            name: name,
+            primaryColor: primary,
+            secondaryColor: secondary,
+            patternColor,
+            patternColor2,
+            baseMod,
+            patternMod,
+            hasGlow,
+            glowColor,
+            name,
             obtainedAt: Date.now()
         };
     }
@@ -1763,61 +1958,135 @@
         }
     };
 
-    function applyPatternStyle(el, pattern, color) {
+    /* Застосувати базовий колір з модифікацією */
+    function applyBaseStyle(el, stone) {
+        if (!el) return;
+        el.style.background = "";
+        el.style.backgroundImage = "";
+        el.style.backgroundSize = "";
+        el.style.filter = "";
+        el.classList.remove("mod-shimmer", "mod-pulse", "mod-wave");
+        const c1 = stone.primaryColor, c2 = stone.secondaryColor || c1;
+        switch (stone.baseMod) {
+            case "gradient":
+                el.style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
+                break;
+            case "shimmer":
+                el.style.background = `linear-gradient(110deg, ${c1} 0%, ${c2} 25%, ${c1} 50%, ${c2} 75%, ${c1} 100%)`;
+                el.style.backgroundSize = "300% 300%";
+                el.classList.add("mod-shimmer");
+                break;
+            case "pulse":
+                el.style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
+                el.classList.add("mod-pulse");
+                break;
+            case "wave":
+                el.style.background = `linear-gradient(120deg, ${c1} 0%, ${c2} 50%, ${c1} 100%)`;
+                el.style.backgroundSize = "200% 200%";
+                el.classList.add("mod-wave");
+                break;
+            case "solid":
+            default:
+                el.style.background = c1;
+                break;
+        }
+    }
+
+    /* Застосувати патерн з кольором+модифікацією */
+    function applyPatternStyle(el, pattern, color, color2, mod) {
         if (!el) return;
         el.className = "bubble-pattern pattern-" + pattern;
         el.style.background = "";
         el.style.backgroundImage = "";
         el.style.backgroundSize = "";
         el.style.backgroundPosition = "";
-        const c = color || "rgba(255,255,255,0.5)";
+        el.style.filter = "";
+        el.classList.remove("mod-shimmer", "mod-pulse", "mod-wave");
+        if (pattern === "standard") return;
+
+        const c1 = color || "rgba(255,255,255,0.5)";
+        const c2 = color2 || c1;
+
+        let bgImg = "";
         switch (pattern) {
-            case "standard":
-                el.style.background = "transparent";
+            case "dots":       bgImg = `radial-gradient(circle, ${c1} 1.5px, transparent 2px)`; break;
+            case "grid":       bgImg = `linear-gradient(${c1} 1px, transparent 1px), linear-gradient(90deg, ${c1} 1px, transparent 1px)`; break;
+            case "stripes":    bgImg = `repeating-linear-gradient(45deg, ${c1} 0 6px, transparent 6px 14px)`; break;
+            case "waves":      bgImg = `repeating-radial-gradient(circle at 0 0, transparent 0 10px, ${c1} 10px 12px, transparent 12px 22px)`; break;
+            case "hex":        bgImg = `radial-gradient(circle at 50% 50%, ${c1} 2px, transparent 3px), radial-gradient(circle at 50% 50%, ${c1} 8px, transparent 9px)`; break;
+            case "leopard":    bgImg = `radial-gradient(circle at 20% 30%, ${c1} 4px, transparent 5px), radial-gradient(circle at 70% 60%, ${c1} 5px, transparent 6px), radial-gradient(circle at 45% 85%, ${c1} 3px, transparent 4px)`; break;
+            case "stars":      bgImg = `radial-gradient(circle, ${c1} 1px, transparent 2px), radial-gradient(circle, ${c1} 1.5px, transparent 2px)`; break;
+            case "cracks":     bgImg = `linear-gradient(115deg, transparent 45%, ${c1} 46%, ${c1} 47%, transparent 48%), linear-gradient(65deg, transparent 40%, ${c1} 41%, ${c1} 42%, transparent 43%)`; break;
+            case "nacre":      bgImg = `linear-gradient(110deg, ${c1} 0%, ${c2} 25%, ${c1} 50%, ${c2} 75%, ${c1} 100%)`; break;
+            case "mythic-aura":bgImg = `radial-gradient(circle at 30% 40%, ${c1} 0%, transparent 40%), radial-gradient(circle at 70% 60%, ${c2} 0%, transparent 45%), radial-gradient(circle at 50% 50%, ${c1} 0%, transparent 60%)`; break;
+        }
+        el.style.backgroundImage = bgImg;
+
+        switch (mod) {
+            case "gradient":
+                el.style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
+                el.style.opacity = "0.55";
                 break;
-            case "dots":
-                el.style.backgroundImage = `radial-gradient(circle, ${c} 1.5px, transparent 2px)`;
-                break;
-            case "grid":
-                el.style.backgroundImage = `linear-gradient(${c} 1px, transparent 1px), linear-gradient(90deg, ${c} 1px, transparent 1px)`;
-                break;
-            case "stripes":
-                el.style.backgroundImage = `repeating-linear-gradient(45deg, ${c} 0 6px, transparent 6px 14px)`;
-                break;
-            case "waves":
-                el.style.backgroundImage = `repeating-radial-gradient(circle at 0 0, transparent 0 10px, ${c} 10px 12px, transparent 12px 22px)`;
-                break;
-            case "hex":
-                el.style.backgroundImage = `radial-gradient(circle at 50% 50%, ${c} 2px, transparent 3px), radial-gradient(circle at 50% 50%, ${c} 8px, transparent 9px)`;
-                break;
-            case "leopard":
-                el.style.backgroundImage = `radial-gradient(circle at 20% 30%, ${c} 4px, transparent 5px), radial-gradient(circle at 70% 60%, ${c} 5px, transparent 6px), radial-gradient(circle at 45% 85%, ${c} 3px, transparent 4px)`;
-                break;
-            case "stars":
-                el.style.backgroundImage = `radial-gradient(circle, ${c} 1px, transparent 2px), radial-gradient(circle, ${c} 1.5px, transparent 2px)`;
-                break;
-            case "cracks":
-                el.style.backgroundImage = `linear-gradient(115deg, transparent 45%, ${c} 46%, ${c} 47%, transparent 48%), linear-gradient(65deg, transparent 40%, ${c} 41%, ${c} 42%, transparent 43%)`;
-                break;
-            case "nacre":
-                el.style.background = `linear-gradient(110deg, ${c} 0%, ${c} 25%, ${c} 50%, ${c} 75%, ${c} 100%)`;
+            case "shimmer":
                 el.style.backgroundSize = "300% 300%";
+                el.classList.add("mod-shimmer");
                 break;
-            case "mythic-aura":
-                el.style.background = `radial-gradient(circle at 30% 40%, ${c} 0%, transparent 40%), radial-gradient(circle at 70% 60%, ${c} 0%, transparent 45%), radial-gradient(circle at 50% 50%, ${c} 0%, transparent 60%)`;
+            case "pulse":
+                el.classList.add("mod-pulse");
                 break;
+            case "wave":
+                el.style.backgroundSize = "200% 200%";
+                el.classList.add("mod-wave");
+                break;
+            case "solid":
+            default:
+                break;
+        }
+    }
+
+    function applyGlow(el, stone) {
+        if (!el) return;
+        if (stone.hasGlow && stone.glowColor) {
+            const c = stone.glowColor;
+            el.style.boxShadow = `0 0 20px ${c}, 0 0 35px ${c}aa, inset 0 0 20px ${c}55`;
+        } else {
+            el.style.boxShadow = "";
         }
     }
 
     function showStoneReveal(stone) {
         document.getElementById("reveal-name").textContent = stone.name;
+
         const rarityEl = document.getElementById("reveal-rarity");
         rarityEl.textContent = getRarityLabel(stone.rarity);
         rarityEl.className = "rarity-badge " + RARITIES[stone.rarity].badge;
-        document.getElementById("reveal-preview").style.background = `linear-gradient(135deg, ${stone.primaryColor}, ${stone.secondaryColor})`;
-        applyPatternStyle(document.getElementById("reveal-pattern"), stone.pattern, stone.patternColor);
-        document.getElementById("reveal-gem").style.color = stone.primaryColor;
-        document.getElementById("reveal-gem").style.background = `linear-gradient(135deg, ${stone.primaryColor}, ${stone.secondaryColor})`;
+
+        const preview = document.getElementById("reveal-preview");
+        applyBaseStyle(preview, stone);
+        applyGlow(preview, stone);
+
+        applyPatternStyle(document.getElementById("reveal-pattern"), stone.pattern, stone.patternColor, stone.patternColor2, stone.patternMod);
+
+        const gem = document.getElementById("reveal-gem");
+        gem.style.color = stone.primaryColor;
+        gem.style.background = `linear-gradient(135deg, ${stone.primaryColor}, ${stone.secondaryColor || stone.primaryColor})`;
+
+        document.getElementById("reveal-base-dot").style.background = stone.primaryColor;
+        document.getElementById("reveal-base-name").textContent = colorName(stone.primaryColor);
+        document.getElementById("reveal-pattern-name").textContent = getPatternLabel(stone.pattern);
+        document.getElementById("reveal-pat-dot").style.background = stone.patternColor;
+        document.getElementById("reveal-pat-name").textContent = colorName(stone.patternColor);
+        document.getElementById("reveal-base-mod").textContent = getModLabel(stone.baseMod);
+        document.getElementById("reveal-pat-mod").textContent = getModLabel(stone.patternMod);
+
+        const glowRow = document.getElementById("reveal-glow-row");
+        if (stone.hasGlow && stone.glowColor) {
+            glowRow.style.display = "flex";
+            document.getElementById("reveal-glow-dot").style.background = stone.glowColor;
+        } else {
+            glowRow.style.display = "none";
+        }
+
         document.getElementById("stone-modal").classList.add("active");
     }
     window.closeStoneModal = function() { document.getElementById("stone-modal").classList.remove("active"); pendingRevealStone = null; };
@@ -1854,20 +2123,50 @@
         items.forEach(s => {
             const card = document.createElement("div");
             card.className = "inv-card" + (s.id === activeStoneId ? " is-active" : "");
-            card.onclick = () => openStoneDetail(s.id);
+            card.dataset.stoneId = s.id;
+
+            const baseName = colorName(s.primaryColor);
+            const patName = colorName(s.patternColor);
+            const baseMod = getModLabel(s.baseMod);
+            const patMod = getModLabel(s.patternMod);
+
             card.innerHTML = `
-                <div class="stone-preview" style="background:linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor});">
+                <div class="stone-preview">
                     <div class="bubble-pattern" style="position:absolute;inset:0;"></div>
-                    <div class="gem-shape" style="color:${s.primaryColor};background:linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor});position:relative;z-index:2;"></div>
+                    <div class="gem-shape"></div>
                 </div>
                 <div class="stone-name">${s.name}</div>
-                <div class="stone-meta">
-                    <span class="rarity-badge ${RARITIES[s.rarity].badge}">${getRarityLabel(s.rarity)}</span>
-                    <span>${formatDate(s.obtainedAt)}</span>
+                <div class="stone-rarity"><span class="rarity-badge ${RARITIES[s.rarity].badge}">${getRarityLabel(s.rarity)}</span></div>
+                <div class="stone-meta-list">
+                    <div class="meta-row"><span class="meta-label">${t("label_stone_color")}</span><span class="color-dot" style="background:${s.primaryColor};"></span><span class="meta-value">${baseName}</span></div>
+                    <div class="meta-row"><span class="meta-label">${t("label_pattern_color")}</span><span class="color-dot" style="background:${s.patternColor};"></span><span class="meta-value">${patName}</span></div>
+                    <div class="meta-row"><span class="meta-label">${t("label_mod")}</span><span class="meta-value">${baseMod} / ${patMod}</span></div>
+                    ${s.hasGlow && s.glowColor ? `<div class="meta-row"><span class="meta-label">${t("label_glow")}</span><span class="color-dot" style="background:${s.glowColor};box-shadow:0 0 6px ${s.glowColor};"></span><span class="meta-value">${t("stone_yes")}</span></div>` : ""}
                 </div>
             `;
+
+            const preview = card.querySelector(".stone-preview");
+            applyBaseStyle(preview, s);
+            applyGlow(preview, s);
+            applyPatternStyle(card.querySelector(".bubble-pattern"), s.pattern, s.patternColor, s.patternColor2, s.patternMod);
+
+            const gem = card.querySelector(".gem-shape");
+            gem.style.color = s.primaryColor;
+            gem.style.background = `linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor || s.primaryColor})`;
+
+            // звичайний клік — модалка деталей
+            card.addEventListener("click", () => openStoneDetail(s.id));
+            // права кнопка — теж модалка (як і клік)
+            card.addEventListener("contextmenu", (e) => { e.preventDefault(); openStoneDetail(s.id); });
+            // довге натискання на телефоні — теж модалка
+            let touchTimer = null;
+            card.addEventListener("touchstart", () => {
+                touchTimer = setTimeout(() => { openStoneDetail(s.id); touchTimer = null; }, 500);
+            }, { passive: true });
+            card.addEventListener("touchend", () => { if (touchTimer) { clearTimeout(touchTimer); touchTimer = null; } });
+            card.addEventListener("touchmove", () => { if (touchTimer) { clearTimeout(touchTimer); touchTimer = null; } });
+
             grid.appendChild(card);
-            applyPatternStyle(card.querySelector(".bubble-pattern"), s.pattern, s.patternColor);
         });
     }
 
@@ -1883,16 +2182,38 @@
         document.getElementById("detail-name").textContent = s.name;
         const r = document.getElementById("detail-rarity");
         r.textContent = getRarityLabel(s.rarity); r.className = "rarity-badge " + RARITIES[s.rarity].badge;
+
         document.getElementById("detail-pattern-name").textContent = getPatternLabel(s.pattern);
         document.getElementById("detail-obtained").textContent = formatDate(s.obtainedAt);
-        document.getElementById("detail-preview").style.background = `linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor})`;
-        applyPatternStyle(document.getElementById("detail-pattern"), s.pattern, s.patternColor);
+
+        const preview = document.getElementById("detail-preview");
+        applyBaseStyle(preview, s);
+        applyGlow(preview, s);
+        applyPatternStyle(document.getElementById("detail-pattern"), s.pattern, s.patternColor, s.patternColor2, s.patternMod);
+
         const gem = document.getElementById("detail-gem");
         gem.style.color = s.primaryColor;
-        gem.style.background = `linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor})`;
+        gem.style.background = `linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor || s.primaryColor})`;
+
+        document.getElementById("detail-base-dot").style.background = s.primaryColor;
+        document.getElementById("detail-base-name").textContent = colorName(s.primaryColor);
+        document.getElementById("detail-pat-dot").style.background = s.patternColor;
+        document.getElementById("detail-pat-name").textContent = colorName(s.patternColor);
+        document.getElementById("detail-base-mod").textContent = getModLabel(s.baseMod);
+        document.getElementById("detail-pat-mod").textContent = getModLabel(s.patternMod);
+
+        const glowRow = document.getElementById("detail-glow-row");
+        if (s.hasGlow && s.glowColor) {
+            glowRow.style.display = "flex";
+            document.getElementById("detail-glow-dot").style.background = s.glowColor;
+        } else {
+            glowRow.style.display = "none";
+        }
+
         const btn = document.getElementById("detail-activate-btn");
         btn.disabled = s.id === activeStoneId;
         btn.textContent = s.id === activeStoneId ? "✓" : t("btn_activate");
+
         document.getElementById("stone-detail-modal").classList.add("active");
     };
     window.closeStoneDetail = function() { document.getElementById("stone-detail-modal").classList.remove("active"); pendingDetailStone = null; };
@@ -1982,8 +2303,7 @@
                 const data = snap.val();
                 let style = null;
                 if (data.activeStone && data.inventory && data.inventory[data.activeStone]) {
-                    const s = data.inventory[data.activeStone];
-                    style = { bg1: s.primaryColor, bg2: s.secondaryColor, pattern: s.pattern, patternColor: s.patternColor, rarity: s.rarity };
+                    style = data.inventory[data.activeStone];
                 }
                 otherStyles[username] = style;
                 document.querySelectorAll(`.chat-msg[data-author="${CSS.escape(username)}"] .bubble`).forEach(b => {
@@ -1994,12 +2314,11 @@
         } catch(e) {}
     }
 
-    function applyBubbleStyle(bubbleEl, patEl, style) {
-        if (!style) return;
-        if (style.bg1 && style.bg2) bubbleEl.style.background = `linear-gradient(135deg, ${style.bg1}, ${style.bg2})`;
-        if (style.pattern) applyPatternStyle(patEl, style.pattern, style.patternColor);
-        if (style.rarity === "legendary") bubbleEl.style.boxShadow = `0 0 12px ${style.bg1}aa`;
-        else if (style.rarity === "mythic") bubbleEl.style.boxShadow = `0 0 16px ${style.bg1}, 0 0 24px ${style.bg2}`;
+    function applyBubbleStyle(bubbleEl, patEl, stone) {
+        if (!stone) return;
+        applyBaseStyle(bubbleEl, stone);
+        applyGlow(bubbleEl, stone);
+        applyPatternStyle(patEl, stone.pattern, stone.patternColor, stone.patternColor2, stone.patternMod);
     }
 
     function appendMessage(msg, msgId) {
@@ -2113,28 +2432,23 @@
         if (menu.classList.contains("active")) closeCtxMenu();
     }, true);
 
-    function getMyStyle() {
-        if (activeStoneId && inventory[activeStoneId]) {
-            const s = inventory[activeStoneId];
-            return { bg1: s.primaryColor, bg2: s.secondaryColor, pattern: s.pattern, patternColor: s.patternColor, rarity: s.rarity };
-        }
+    function getMyStone() {
+        if (activeStoneId && inventory[activeStoneId]) return inventory[activeStoneId];
         return null;
     }
 
     function applyMyBubbleStyle(bubbleEl, patEl) {
-        const s = getMyStyle();
+        const s = getMyStone();
         if (!s) return;
-        if (s.bg1 && s.bg2) bubbleEl.style.background = `linear-gradient(135deg, ${s.bg1}, ${s.bg2})`;
-        if (s.pattern) applyPatternStyle(patEl, s.pattern, s.patternColor);
-        if (s.rarity === "legendary") bubbleEl.style.boxShadow = `0 0 12px ${s.bg1}aa`;
-        else if (s.rarity === "mythic") bubbleEl.style.boxShadow = `0 0 16px ${s.bg1}, 0 0 24px ${s.bg2}`;
+        applyBubbleStyle(bubbleEl, patEl, s);
     }
 
     function refreshChatStyles() {
         document.querySelectorAll(".chat-msg.own .bubble").forEach(b => {
-            b.style.background = ""; b.style.boxShadow = "";
+            b.style.background = ""; b.style.backgroundImage = ""; b.style.backgroundSize = ""; b.style.filter = ""; b.style.boxShadow = "";
+            b.classList.remove("mod-shimmer", "mod-pulse", "mod-wave");
             const pat = b.querySelector(".bubble-pattern");
-            if (pat) { pat.className = "bubble-pattern"; pat.style.background = ""; pat.style.backgroundImage = ""; pat.style.backgroundSize = ""; pat.style.backgroundPosition = ""; }
+            if (pat) { pat.className = "bubble-pattern"; pat.style.background = ""; pat.style.backgroundImage = ""; pat.style.backgroundSize = ""; pat.style.backgroundPosition = ""; pat.classList.remove("mod-shimmer", "mod-pulse", "mod-wave"); }
             applyMyBubbleStyle(b, pat);
         });
     }
@@ -2153,7 +2467,7 @@
             if (el) {
                 el.classList.add("deleted");
                 const bubble = el.querySelector(".bubble");
-                if (bubble) { bubble.style.background = ""; bubble.style.boxShadow = ""; }
+                if (bubble) { bubble.style.background = ""; bubble.style.backgroundImage = ""; bubble.style.boxShadow = ""; bubble.classList.remove("mod-shimmer", "mod-pulse", "mod-wave"); }
                 const pat = el.querySelector(".bubble-pattern");
                 if (pat) pat.className = "bubble-pattern";
                 const txt = el.querySelector(".bubble-text");
@@ -2211,17 +2525,22 @@
         if (activeStoneId && inventory[activeStoneId]) {
             const s = inventory[activeStoneId];
             slot.innerHTML = `
-                <div class="mini-preview" style="background:linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor});">
+                <div class="mini-preview">
                     <div class="bubble-pattern" style="position:absolute;inset:0;"></div>
-                    <div class="gem-shape" style="color:${s.primaryColor};background:linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor});position:relative;z-index:2;"></div>
+                    <div class="gem-shape"></div>
                 </div>
                 <div class="info">
                     <div class="s-name">${s.name}</div>
                     <div class="s-rarity"><span class="rarity-badge ${RARITIES[s.rarity].badge}">${getRarityLabel(s.rarity)}</span></div>
                 </div>
             `;
-            const pat = slot.querySelector(".bubble-pattern");
-            applyPatternStyle(pat, s.pattern, s.patternColor);
+            const preview = slot.querySelector(".mini-preview");
+            applyBaseStyle(preview, s);
+            applyGlow(preview, s);
+            applyPatternStyle(slot.querySelector(".bubble-pattern"), s.pattern, s.patternColor, s.patternColor2, s.patternMod);
+            const gem = slot.querySelector(".gem-shape");
+            gem.style.color = s.primaryColor;
+            gem.style.background = `linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor || s.primaryColor})`;
             deactBtn.classList.remove("hidden");
         } else {
             slot.innerHTML = `<div class="empty-msg">${t("profile_no_stone")}</div>`;
@@ -2235,17 +2554,17 @@
         const prev = document.getElementById("profile-preview");
         const pat = document.getElementById("profile-preview-pattern");
         const txt = document.getElementById("profile-preview-text");
-        prev.style.background = ""; prev.style.boxShadow = "";
-        pat.className = "bubble-pattern"; pat.style.background = ""; pat.style.backgroundImage = "";
+        prev.style.background = ""; prev.style.backgroundImage = ""; prev.style.backgroundSize = ""; prev.style.filter = ""; prev.style.boxShadow = "";
+        prev.classList.remove("mod-shimmer", "mod-pulse", "mod-wave");
+        pat.className = "bubble-pattern"; pat.style.background = ""; pat.style.backgroundImage = ""; pat.style.backgroundSize = ""; pat.style.backgroundPosition = ""; pat.classList.remove("mod-shimmer", "mod-pulse", "mod-wave");
         txt.style.background = ""; txt.style.webkitBackgroundClip = ""; txt.style.backgroundClip = "";
         txt.style.webkitTextFillColor = ""; txt.style.color = "";
 
-        const s = getMyStyle();
+        const s = getMyStone();
         if (!s) return;
-        if (s.bg1 && s.bg2) prev.style.background = `linear-gradient(135deg, ${s.bg1}, ${s.bg2})`;
-        if (s.pattern) applyPatternStyle(pat, s.pattern, s.patternColor);
-        if (s.rarity === "legendary") prev.style.boxShadow = `0 0 12px ${s.bg1}aa`;
-        else if (s.rarity === "mythic") prev.style.boxShadow = `0 0 16px ${s.bg1}, 0 0 24px ${s.bg2}`;
+        applyBaseStyle(prev, s);
+        applyGlow(prev, s);
+        applyPatternStyle(pat, s.pattern, s.patternColor, s.patternColor2, s.patternMod);
     }
 
     window.openOtherProfile = async function(username) {
@@ -2262,17 +2581,22 @@
             if (data.activeStone && data.inventory && data.inventory[data.activeStone]) {
                 const s = data.inventory[data.activeStone];
                 slot.innerHTML = `
-                    <div class="mini-preview" style="background:linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor});">
+                    <div class="mini-preview">
                         <div class="bubble-pattern" style="position:absolute;inset:0;"></div>
-                        <div class="gem-shape" style="color:${s.primaryColor};background:linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor});position:relative;z-index:2;"></div>
+                        <div class="gem-shape"></div>
                     </div>
                     <div class="info">
                         <div class="s-name">${s.name}</div>
                         <div class="s-rarity"><span class="rarity-badge ${RARITIES[s.rarity].badge}">${getRarityLabel(s.rarity)}</span></div>
                     </div>
                 `;
-                const pat = slot.querySelector(".bubble-pattern");
-                applyPatternStyle(pat, s.pattern, s.patternColor);
+                const preview = slot.querySelector(".mini-preview");
+                applyBaseStyle(preview, s);
+                applyGlow(preview, s);
+                applyPatternStyle(slot.querySelector(".bubble-pattern"), s.pattern, s.patternColor, s.patternColor2, s.patternMod);
+                const gem = slot.querySelector(".gem-shape");
+                gem.style.color = s.primaryColor;
+                gem.style.background = `linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor || s.primaryColor})`;
             } else {
                 slot.innerHTML = `<div class="empty-msg">${t("profile_no_stone")}</div>`;
             }
