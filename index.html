@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="version" content="1.0.7">
-<meta name="app-version" content="1.0.7">
-<title>UniqueStone — v1.0.7</title>
+<meta name="version" content="1.1.1">
+<meta name="app-version" content="1.1.1">
+<title>UniqueStone — v1.1.1</title>
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     html, body { height: 100%; width: 100%; overflow: hidden; }
@@ -310,6 +310,27 @@
     @keyframes toastIn  { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes toastOut { to   { opacity: 0; transform: translateY(-10px); } }
 
+    /* ===== БІЖУЧИЙ РЯДОК ДЛЯ ДОВГИХ НАЗВ ===== */
+    .marquee-container {
+        overflow: hidden;
+        white-space: nowrap;
+        position: relative;
+        width: 100%;
+    }
+    .marquee-text {
+        display: inline-block;
+        white-space: nowrap;
+        will-change: transform;
+    }
+    .marquee-text.scrolling {
+        animation: marqueeRun 6s linear infinite;
+    }
+    @keyframes marqueeRun {
+        0%, 16.66%   { transform: translateX(0); }
+        83.33%       { transform: translateX(var(--scroll-dist, 0)); }
+        83.34%, 100% { transform: translateX(0); }
+    }
+
     .hidden { display: none !important; }
 
     @media (max-width: 480px) {
@@ -434,7 +455,7 @@
         text-shadow: 0 1px 3px rgba(0,0,0,0.8);
     }
 
-    /* ===== ІНВЕНТАР (виправлений скрол, 2 картки в рядку на телефоні) ===== */
+    /* ===== ІНВЕНТАР (без п'ятикутника) ===== */
     .inventory-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -465,7 +486,7 @@
         cursor: pointer;
         transition: background 0.2s, transform 0.2s;
         position: relative;
-        min-height: 260px;
+        min-height: 240px;
         user-select: none;
         -webkit-user-select: none;
         -webkit-touch-callout: none;
@@ -483,22 +504,15 @@
         overflow: hidden;
         flex-shrink: 0;
     }
-    .inv-card .stone-preview .gem-shape {
-        width: 55%; height: 55%;
-        clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
-        box-shadow: 0 0 15px currentColor;
-        position: relative;
-        z-index: 2;
-    }
     .inv-card .stone-name {
         font-size: 11px;
         font-weight: 600;
         color: #e2e8f0;
         text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
         flex-shrink: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        position: relative;
     }
     .inv-card .stone-rarity {
         display: flex;
@@ -594,7 +608,7 @@
 
     @media (max-width: 480px) {
         .inventory-grid { grid-template-columns: repeat(2, 1fr); }
-        .inv-card { min-height: 240px; }
+        .inv-card { min-height: 220px; }
     }
 
 /* КІНЕЦЬ ЧАСТИНИ 2/6 */
@@ -775,33 +789,36 @@
     .pattern-leopard { background-size: 30px 30px; }
     .pattern-stars { background-size: 25px 25px, 18px 18px; background-position: 0 0, 8px 12px; }
     .pattern-cracks { background-size: 40px 40px, 50px 50px; }
+
+    /* nacre — перламутр, безкінечний рух в ОДИН бік без повернення */
     .pattern-nacre {
         background-size: 300% 300%;
-        animation: nacreShift 6s ease-in-out infinite;
+        animation: nacreShift 6s linear infinite;
     }
     @keyframes nacreShift {
-        0%, 100% { background-position: 0% 50%; }
-        50%      { background-position: 100% 50%; }
+        0%   { background-position: 0% 50%; }
+        100% { background-position: 300% 50%; }
     }
+    /* mythic-aura — плавна зміна яскравості, без повернення-смикання */
     .pattern-mythic-aura {
-        animation: mythicAura 3s ease-in-out infinite;
+        animation: mythicAura 3s linear infinite;
     }
     @keyframes mythicAura {
-        0%, 100% { opacity: 0.55; transform: scale(1); }
-        50%      { opacity: 0.9;  transform: scale(1.05); }
+        0%   { opacity: 0.55; }
+        100% { opacity: 0.9; }
     }
 
     /* ===== МОДИФІКАЦІЇ КОЛОРУ ===== */
-    /* shimmer — перламутровий перелив */
+    /* shimmer — перелив, безкінечний рух в ОДИН бік */
     .mod-shimmer {
-        animation: shimmerAnim 4s ease-in-out infinite;
+        animation: shimmerAnim 4s linear infinite;
         background-size: 300% 300% !important;
     }
     @keyframes shimmerAnim {
-        0%, 100% { background-position: 0% 50%; }
-        50%      { background-position: 100% 50%; }
+        0%   { background-position: 0% 50%; }
+        100% { background-position: 300% 50%; }
     }
-    /* pulse — пульсація яскравості */
+    /* pulse — пульсація яскравості (не рух текстури) */
     .mod-pulse {
         animation: pulseAnim 2.5s ease-in-out infinite;
     }
@@ -809,7 +826,7 @@
         0%, 100% { filter: brightness(1); }
         50%      { filter: brightness(1.4); }
     }
-    /* wave — хвиля кольору, що пробігає */
+    /* wave — хвиля, безкінечний рух в ОДИН бік */
     .mod-wave {
         animation: waveAnim 3s linear infinite;
         background-size: 200% 200% !important;
@@ -933,13 +950,6 @@
         0%   { opacity: 0; transform: scale(0.3) rotate(-15deg); }
         100% { opacity: 1; transform: scale(1) rotate(0); }
     }
-    .stone-big-preview .gem-big {
-        width: 60%; height: 60%;
-        clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
-        position: relative;
-        z-index: 2;
-        box-shadow: 0 0 30px currentColor;
-    }
     .stone-big-preview .bubble-pattern {
         position: absolute;
         inset: 0;
@@ -1034,6 +1044,11 @@
         gap: 12px;
         min-height: 80px;
     }
+    .active-stone-slot.clickable {
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .active-stone-slot.clickable:hover { background: rgba(0,0,0,0.4); }
     .active-stone-slot .mini-preview {
         width: 56px; height: 56px;
         border-radius: 10px;
@@ -1041,13 +1056,6 @@
         display: flex; align-items: center; justify-content: center;
         position: relative;
         overflow: hidden;
-    }
-    .active-stone-slot .mini-preview .gem-shape {
-        width: 55%; height: 55%;
-        clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
-        box-shadow: 0 0 12px currentColor;
-        position: relative;
-        z-index: 2;
     }
     .active-stone-slot .info { flex: 1; min-width: 0; }
     .active-stone-slot .info .s-name {
@@ -1106,7 +1114,7 @@
 <div id="auth-screen">
     <div class="auth-box glass">
         <h2>UniqueStone</h2>
-        <div class="version">v1.0.7</div>
+        <div class="version">v1.1.1</div>
         <div class="field">
             <input type="text" id="username" data-i18n-placeholder="ph_username" placeholder="Логін" autocomplete="username">
         </div>
@@ -1223,7 +1231,6 @@
         <div class="stone-reveal">
             <div class="stone-big-preview" id="reveal-preview">
                 <div class="bubble-pattern" id="reveal-pattern"></div>
-                <div class="gem-big" id="reveal-gem"></div>
             </div>
             <div class="stone-title" id="reveal-name">---</div>
             <div class="stone-details">
@@ -1259,7 +1266,7 @@
             <button class="btn-primary" onclick="changePasswordFromSettings()" data-i18n="btn_change_pass" style="margin-top:0;">Змінити пароль</button>
         </div>
         <button class="btn-wipe hidden" id="wipe-btn" onclick="wipeAll()" data-i18n="btn_wipe">⚠ Вайп</button>
-        <div class="version-line">v1.0.7</div>
+        <div class="version-line">v1.1.1</div>
     </div>
 </div>
 
@@ -1275,7 +1282,7 @@
 
         <div class="profile-section">
             <h4 data-i18n="profile_active_stone">Активний камінь</h4>
-            <div class="active-stone-slot" id="active-stone-slot">
+            <div class="active-stone-slot clickable" id="active-stone-slot" onclick="openMyActiveStoneDetails()">
                 <div class="empty-msg" data-i18n="profile_no_stone">Немає активного каменю</div>
             </div>
             <div class="note" data-i18n="profile_active_note">Активний камінь визначає стиль ваших повідомлень у чаті.</div>
@@ -1307,9 +1314,10 @@
         </div>
         <div class="profile-section">
             <h4 data-i18n="profile_active_stone">Активний камінь</h4>
-            <div class="active-stone-slot" id="other-active-stone">
+            <div class="active-stone-slot clickable" id="other-active-stone" onclick="openOtherActiveStoneDetails()">
                 <div class="empty-msg" data-i18n="profile_no_stone">Немає активного каменю</div>
             </div>
+            <div class="note" data-i18n="profile_active_hint">Натисніть на камінь, щоб побачити деталі.</div>
         </div>
         <div class="modal-actions">
             <button class="btn-secondary" onclick="closeOtherProfile()" data-i18n="btn_close">Закрити</button>
@@ -1346,9 +1354,10 @@
         <div class="stone-reveal">
             <div class="stone-big-preview" id="detail-preview">
                 <div class="bubble-pattern" id="detail-pattern"></div>
-                <div class="gem-big" id="detail-gem"></div>
             </div>
-            <div class="stone-title" id="detail-name">---</div>
+            <div class="stone-title marquee-container" id="detail-name-container">
+                <span class="marquee-text" id="detail-name">---</span>
+            </div>
             <div class="stone-details">
                 <div class="row"><span data-i18n="stone_rarity">Рідкість:</span><span class="val"><span id="detail-rarity" class="rarity-badge">---</span></span></div>
                 <div class="row"><span data-i18n="stone_base_color">Колір бази:</span><span class="val"><span class="color-dot" id="detail-base-dot"></span><span id="detail-base-name">---</span></span></div>
@@ -1360,7 +1369,7 @@
                 <div class="row"><span data-i18n="stone_obtained">Отримано:</span><span class="val" id="detail-obtained">---</span></div>
             </div>
         </div>
-        <div class="modal-actions">
+        <div class="modal-actions" id="stone-detail-actions">
             <button class="btn-secondary" onclick="closeStoneDetail()" data-i18n="btn_close">Закрити</button>
             <button class="btn-primary" id="detail-activate-btn" onclick="activateFromDetail()" data-i18n="btn_activate" style="margin-top:0;">Активувати</button>
         </div>
@@ -1385,7 +1394,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, get, child, update, remove, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    const APP_VERSION = "1.0.7";
+    const APP_VERSION = "1.1.1";
     const DIG_COOLDOWN_MS = 12 * 60 * 60 * 1000;
     const UNLIMITED_DIG_USER = "Fulter";
     const WIPE_USER = "Fulter";
@@ -1415,6 +1424,8 @@
     let inventorySort = "rarity";
     let pendingRevealStone = null;
     let pendingDetailStone = null;
+    let viewingOtherStone = null;
+    let viewingOtherUsername = "";
     let mineTimerInterval = null;
     let ctxTargetMsgId = null;
 
@@ -1434,7 +1445,6 @@
         mythic:    ["mythic-aura"]
     };
 
-    /* Модифікації за рідкістю (база і патерн — незалежно) */
     const MODS_BY_RARITY = {
         common:    ["solid"],
         rare:      ["solid", "gradient"],
@@ -1526,6 +1536,7 @@
             profile_title: "Мій профіль", profile_other_title: "Профіль гравця",
             profile_active_stone: "Активний камінь", profile_no_stone: "Немає активного каменю",
             profile_active_note: "Активний камінь визначає стиль ваших повідомлень у чаті.",
+            profile_active_hint: "Натисніть на камінь, щоб побачити деталі.",
             profile_preview: "Попередній перегляд", profile_preview_text: "Привіт! Це моє повідомлення.",
             chances_title: "Шанси рідкості", chances_rarity: "Рідкість", chances_chance: "Шанс",
             market_title: "Ринок", market_desc: "Тут незабаром з'явиться ринок.",
@@ -1565,6 +1576,7 @@
             profile_title: "My profile", profile_other_title: "Player profile",
             profile_active_stone: "Active stone", profile_no_stone: "No active stone",
             profile_active_note: "Active stone determines the style of your chat messages.",
+            profile_active_hint: "Tap the stone to see details.",
             profile_preview: "Preview", profile_preview_text: "Hi! This is my message.",
             chances_title: "Rarity chances", chances_rarity: "Rarity", chances_chance: "Chance",
             market_title: "Market", market_desc: "The market will appear here soon.",
@@ -1671,19 +1683,16 @@
         const patterns = PATTERNS_BY_RARITY[rarity];
         const pattern = patterns[Math.floor(Math.random() * patterns.length)];
 
-        // база
         const primaryHsl = hexToHsl(randomColor());
         const primary = hslToHex(primaryHsl.h, primaryHsl.s, primaryHsl.l);
         const secondary = randomSecondary(primaryHsl.h, primaryHsl.s, primaryHsl.l);
         const baseMod = pickMod(rarity);
 
-        // патерн
         const patHsl = hexToHsl(randomColor());
         const patternColor = hslToHex(patHsl.h, patHsl.s, patHsl.l);
         const patternColor2 = randomSecondary(patHsl.h, patHsl.s, patHsl.l);
         const patternMod = pickMod(rarity);
 
-        // glow (тільки Legendary і Mythic, шанс ділиться з іншими)
         let hasGlow = false;
         let glowColor = null;
         if (rarity === "legendary" && Math.random() < 0.5) {
@@ -1958,7 +1967,6 @@
         }
     };
 
-    /* Застосувати базовий колір з модифікацією */
     function applyBaseStyle(el, stone) {
         if (!el) return;
         el.style.background = "";
@@ -1992,7 +2000,6 @@
         }
     }
 
-    /* Застосувати патерн з кольором+модифікацією */
     function applyPatternStyle(el, pattern, color, color2, mod) {
         if (!el) return;
         el.className = "bubble-pattern pattern-" + pattern;
@@ -2054,6 +2061,23 @@
         }
     }
 
+    /* ===== БІЖУЧИЙ РЯДОК ===== */
+    function setupMarquee(container, textEl) {
+        if (!container || !textEl) return;
+        textEl.classList.remove("scrolling");
+        textEl.style.removeProperty("--scroll-dist");
+        // перевірка після рендера
+        requestAnimationFrame(() => {
+            const containerW = container.clientWidth;
+            const textW = textEl.scrollWidth;
+            if (textW > containerW) {
+                const dist = -(textW - containerW);
+                textEl.style.setProperty("--scroll-dist", dist + "px");
+                textEl.classList.add("scrolling");
+            }
+        });
+    }
+
     function showStoneReveal(stone) {
         document.getElementById("reveal-name").textContent = stone.name;
 
@@ -2064,12 +2088,7 @@
         const preview = document.getElementById("reveal-preview");
         applyBaseStyle(preview, stone);
         applyGlow(preview, stone);
-
         applyPatternStyle(document.getElementById("reveal-pattern"), stone.pattern, stone.patternColor, stone.patternColor2, stone.patternMod);
-
-        const gem = document.getElementById("reveal-gem");
-        gem.style.color = stone.primaryColor;
-        gem.style.background = `linear-gradient(135deg, ${stone.primaryColor}, ${stone.secondaryColor || stone.primaryColor})`;
 
         document.getElementById("reveal-base-dot").style.background = stone.primaryColor;
         document.getElementById("reveal-base-name").textContent = colorName(stone.primaryColor);
@@ -2133,9 +2152,10 @@
             card.innerHTML = `
                 <div class="stone-preview">
                     <div class="bubble-pattern" style="position:absolute;inset:0;"></div>
-                    <div class="gem-shape"></div>
                 </div>
-                <div class="stone-name">${s.name}</div>
+                <div class="stone-name marquee-container">
+                    <span class="marquee-text">${s.name}</span>
+                </div>
                 <div class="stone-rarity"><span class="rarity-badge ${RARITIES[s.rarity].badge}">${getRarityLabel(s.rarity)}</span></div>
                 <div class="stone-meta-list">
                     <div class="meta-row"><span class="meta-label">${t("label_stone_color")}</span><span class="color-dot" style="background:${s.primaryColor};"></span><span class="meta-value">${baseName}</span></div>
@@ -2150,15 +2170,13 @@
             applyGlow(preview, s);
             applyPatternStyle(card.querySelector(".bubble-pattern"), s.pattern, s.patternColor, s.patternColor2, s.patternMod);
 
-            const gem = card.querySelector(".gem-shape");
-            gem.style.color = s.primaryColor;
-            gem.style.background = `linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor || s.primaryColor})`;
+            // marquee для назви
+            const nameContainer = card.querySelector(".stone-name");
+            const nameText = card.querySelector(".marquee-text");
+            setupMarquee(nameContainer, nameText);
 
-            // звичайний клік — модалка деталей
             card.addEventListener("click", () => openStoneDetail(s.id));
-            // права кнопка — теж модалка (як і клік)
             card.addEventListener("contextmenu", (e) => { e.preventDefault(); openStoneDetail(s.id); });
-            // довге натискання на телефоні — теж модалка
             let touchTimer = null;
             card.addEventListener("touchstart", () => {
                 touchTimer = setTimeout(() => { openStoneDetail(s.id); touchTimer = null; }, 500);
@@ -2176,10 +2194,13 @@
         return String(d.getDate()).padStart(2,"0") + "." + String(d.getMonth()+1).padStart(2,"0") + "." + d.getFullYear();
     }
 
-    window.openStoneDetail = function(id) {
-        const s = inventory[id]; if (!s) return;
-        pendingDetailStone = s;
+    /* Заповнити модалку деталей (для свого або чужого каменю) */
+    function fillStoneDetail(s, options) {
+        const opts = options || {};
         document.getElementById("detail-name").textContent = s.name;
+        const nameContainer = document.getElementById("detail-name-container");
+        setupMarquee(nameContainer, document.getElementById("detail-name"));
+
         const r = document.getElementById("detail-rarity");
         r.textContent = getRarityLabel(s.rarity); r.className = "rarity-badge " + RARITIES[s.rarity].badge;
 
@@ -2190,10 +2211,6 @@
         applyBaseStyle(preview, s);
         applyGlow(preview, s);
         applyPatternStyle(document.getElementById("detail-pattern"), s.pattern, s.patternColor, s.patternColor2, s.patternMod);
-
-        const gem = document.getElementById("detail-gem");
-        gem.style.color = s.primaryColor;
-        gem.style.background = `linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor || s.primaryColor})`;
 
         document.getElementById("detail-base-dot").style.background = s.primaryColor;
         document.getElementById("detail-base-name").textContent = colorName(s.primaryColor);
@@ -2210,13 +2227,31 @@
             glowRow.style.display = "none";
         }
 
-        const btn = document.getElementById("detail-activate-btn");
-        btn.disabled = s.id === activeStoneId;
-        btn.textContent = s.id === activeStoneId ? "✓" : t("btn_activate");
+        const actions = document.getElementById("stone-detail-actions");
+        const activateBtn = document.getElementById("detail-activate-btn");
+        if (opts.hideActivate) {
+            activateBtn.style.display = "none";
+        } else {
+            activateBtn.style.display = "";
+            activateBtn.disabled = s.id === activeStoneId;
+            activateBtn.textContent = s.id === activeStoneId ? "✓" : t("btn_activate");
+        }
 
         document.getElementById("stone-detail-modal").classList.add("active");
+    }
+
+    window.openStoneDetail = function(id) {
+        const s = inventory[id]; if (!s) return;
+        pendingDetailStone = s;
+        viewingOtherStone = null;
+        fillStoneDetail(s, {});
     };
-    window.closeStoneDetail = function() { document.getElementById("stone-detail-modal").classList.remove("active"); pendingDetailStone = null; };
+    window.closeStoneDetail = function() {
+        document.getElementById("stone-detail-modal").classList.remove("active");
+        pendingDetailStone = null;
+        viewingOtherStone = null;
+        document.getElementById("detail-name").classList.remove("scrolling");
+    };
 
     window.activateFromDetail = async function() {
         if (!pendingDetailStone) return;
@@ -2527,7 +2562,6 @@
             slot.innerHTML = `
                 <div class="mini-preview">
                     <div class="bubble-pattern" style="position:absolute;inset:0;"></div>
-                    <div class="gem-shape"></div>
                 </div>
                 <div class="info">
                     <div class="s-name">${s.name}</div>
@@ -2538,9 +2572,6 @@
             applyBaseStyle(preview, s);
             applyGlow(preview, s);
             applyPatternStyle(slot.querySelector(".bubble-pattern"), s.pattern, s.patternColor, s.patternColor2, s.patternMod);
-            const gem = slot.querySelector(".gem-shape");
-            gem.style.color = s.primaryColor;
-            gem.style.background = `linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor || s.primaryColor})`;
             deactBtn.classList.remove("hidden");
         } else {
             slot.innerHTML = `<div class="empty-msg">${t("profile_no_stone")}</div>`;
@@ -2549,6 +2580,11 @@
 
         renderProfilePreview();
     }
+
+    window.openMyActiveStoneDetails = function() {
+        if (!activeStoneId || !inventory[activeStoneId]) return;
+        openStoneDetail(activeStoneId);
+    };
 
     function renderProfilePreview() {
         const prev = document.getElementById("profile-preview");
@@ -2572,6 +2608,7 @@
             const snap = await get(child(ref(db), `users/${username}`));
             if (!snap.exists()) return;
             const data = snap.val();
+            viewingOtherUsername = username;
             document.getElementById("other-avatar").textContent = username.charAt(0).toUpperCase();
             document.getElementById("other-name").textContent = username;
             if (data.createdAt) {
@@ -2580,10 +2617,10 @@
             const slot = document.getElementById("other-active-stone");
             if (data.activeStone && data.inventory && data.inventory[data.activeStone]) {
                 const s = data.inventory[data.activeStone];
+                viewingOtherStone = s;
                 slot.innerHTML = `
                     <div class="mini-preview">
                         <div class="bubble-pattern" style="position:absolute;inset:0;"></div>
-                        <div class="gem-shape"></div>
                     </div>
                     <div class="info">
                         <div class="s-name">${s.name}</div>
@@ -2594,16 +2631,23 @@
                 applyBaseStyle(preview, s);
                 applyGlow(preview, s);
                 applyPatternStyle(slot.querySelector(".bubble-pattern"), s.pattern, s.patternColor, s.patternColor2, s.patternMod);
-                const gem = slot.querySelector(".gem-shape");
-                gem.style.color = s.primaryColor;
-                gem.style.background = `linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor || s.primaryColor})`;
             } else {
+                viewingOtherStone = null;
                 slot.innerHTML = `<div class="empty-msg">${t("profile_no_stone")}</div>`;
             }
             document.getElementById("other-profile-modal").classList.add("active");
         } catch(e) {}
     };
-    window.closeOtherProfile = function() { document.getElementById("other-profile-modal").classList.remove("active"); };
+    window.closeOtherProfile = function() {
+        document.getElementById("other-profile-modal").classList.remove("active");
+        viewingOtherStone = null;
+        viewingOtherUsername = "";
+    };
+
+    window.openOtherActiveStoneDetails = function() {
+        if (!viewingOtherStone) return;
+        fillStoneDetail(viewingOtherStone, { hideActivate: true });
+    };
 
     /* ===== ШАНСИ ===== */
     window.openChances = function() { document.getElementById("chances-modal").classList.add("active"); };
@@ -2652,6 +2696,7 @@
         if (currentUsername) { try { await update(ref(db), { ["users/" + currentUsername + "/lastOnline"]: Date.now() }); } catch(e) {} }
         try { localStorage.removeItem("auth_username"); localStorage.removeItem("auth_hash"); } catch(e) {}
         currentUsername = ""; chatStarted = false; inventory = {}; activeStoneId = null;
+        viewingOtherStone = null; viewingOtherUsername = "";
         if (chatUnsubscribe) { try { chatUnsubscribe(); } catch(e) {} chatUnsubscribe = null; }
         if (mineTimerInterval) { clearInterval(mineTimerInterval); mineTimerInterval = null; }
         closeCtxMenu();
@@ -2719,6 +2764,12 @@
         setInterval(checkVersion, 60000);
         document.addEventListener("visibilitychange", () => {
             if (!document.hidden && currentUsername) updateMineUI();
+        });
+        window.addEventListener("resize", () => {
+            document.querySelectorAll(".stone-name .marquee-text").forEach(el => {
+                const c = el.parentElement;
+                if (c) setupMarquee(c, el);
+            });
         });
         console.log("%cUniqueStone v" + APP_VERSION, "color:#38bdf8;font-weight:bold;font-size:14px;");
     });
