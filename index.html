@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UniqueStone v0.1.0</title>
+  <title>UniqueStone v0.2.0</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -126,9 +126,10 @@
       background: #16213e;
       border-bottom: 1px solid #2a3a5e;
     }
-    .top-bar .user-email {
-      font-size: 13px;
-      color: #aaa;
+    .top-bar .user-nick {
+      font-size: 14px;
+      color: #eee;
+      font-weight: 600;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -167,7 +168,7 @@
       border: 1px dashed #2a3a5e;
     }
 
-    /* ===== НИЖНЯ НАВІГАЦІЯ (стиль Clash Royale) ===== */
+    /* ===== НИЖНЯ НАВІГАЦІЯ ===== */
     .bottom-nav {
       display: flex;
       background: #16213e;
@@ -213,7 +214,7 @@
   <!-- ЕКРАН ЗАВАНТАЖЕННЯ -->
   <div id="loader">
     <div class="spinner"></div>
-    <h2 id="loader-status">UniqueStone v0.1.0</h2>
+    <h2 id="loader-status">UniqueStone v0.2.0</h2>
   </div>
 
   <!-- ЕКРАН ВХОДУ / РЕЄСТРАЦІЇ -->
@@ -223,7 +224,7 @@
         <button class="auth-tab active" id="tab-login" data-mode="login">Вхід</button>
         <button class="auth-tab" id="tab-register" data-mode="register">Реєстрація</button>
       </div>
-      <input type="email" class="auth-input" id="auth-email" placeholder="Email" autocomplete="email">
+      <input type="text" class="auth-input" id="auth-nick" placeholder="Нік" autocomplete="username">
       <input type="password" class="auth-input" id="auth-password" placeholder="Пароль (мін. 6 символів)" autocomplete="current-password">
       <button class="auth-btn" id="auth-submit">Увійти</button>
       <div id="auth-error"></div>
@@ -233,7 +234,7 @@
   <!-- ГОЛОВНИЙ ЕКРАН -->
   <div id="main-screen">
     <div class="top-bar">
-      <span class="user-email" id="user-email">—</span>
+      <span class="user-nick" id="user-nick">—</span>
       <button class="logout-btn" id="logout-btn">Вийти</button>
     </div>
 
@@ -269,17 +270,16 @@
   </div>
 
   <script type="module">
-    // ===== ІМПОРТ FIREBASE =====
+    // ===== ІМПОРТ FIREBASE (тільки Firestore) =====
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import {
-      getAuth,
-      signInWithEmailAndPassword,
-      createUserWithEmailAndPassword,
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    // ===== КОНФІГ FIREBASE (без analytics) =====
+    // ===== КОНФІГ FIREBASE =====
     const firebaseConfig = {
       apiKey: "AIzaSyDGltUohufVAc-FMIbO1sIvpd6xWSiaKdU",
       authDomain: "uniquestone.firebaseapp.com",
@@ -290,28 +290,29 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    const CURRENT_VERSION = "0.1.0";
+    const CURRENT_VERSION = "0.2.0";
     document.getElementById('loader-status').innerText = "UniqueStone v" + CURRENT_VERSION;
 
     // ===== ЕЛЕМЕНТИ =====
     const loader = document.getElementById('loader');
     const authScreen = document.getElementById('auth-screen');
     const mainScreen = document.getElementById('main-screen');
-    const authEmail = document.getElementById('auth-email');
+    const authNick = document.getElementById('auth-nick');
     const authPassword = document.getElementById('auth-password');
     const authSubmit = document.getElementById('auth-submit');
     const authError = document.getElementById('auth-error');
     const tabLogin = document.getElementById('tab-login');
     const tabRegister = document.getElementById('tab-register');
-    const userEmailSpan = document.getElementById('user-email');
+    const userNickSpan = document.getElementById('user-nick');
     const logoutBtn = document.getElementById('logout-btn');
 
     // ===== СТАН =====
     let authMode = 'login'; // 'login' | 'register'
+    const SESSION_KEY = 'uniquestone_nick';
 
-    // ===== ПЕРЕМИКАННЯ ВКЛАДОК ВХОДУ =====
+    // ===== ПЕРЕМИКАННЯ ВКЛАДОК =====
     function setAuthMode(mode) {
       authMode = mode;
       authError.textContent = '';
@@ -328,15 +329,19 @@
     tabLogin.addEventListener('click', () => setAuthMode('login'));
     tabRegister.addEventListener('click', () => setAuthMode('register'));
 
+    // ===== ДОПОМІЖНЕ: нормалізація ніка для ID документа =====
+    function nickToId(nick) {
+      return nick.trim().toLowerCase();
+    }
+
     // ===== ОБРОБКА ВХОДУ / РЕЄСТРАЦІЇ =====
     authSubmit.addEventListener('click', async () => {
-      const email = authEmail.value.trim();
+      const nick = authNick.value.trim();
       const password = authPassword.value;
-
       authError.textContent = '';
 
-      if (!email || !password) {
-        authError.textContent = 'Заповни email і пароль.';
+      if (!nick) {
+        authError.textContent = 'Введи нік.';
         return;
       }
       if (password.length < 6) {
@@ -346,34 +351,60 @@
 
       authSubmit.disabled = true;
       try {
-        if (authMode === 'login') {
-          await signInWithEmailAndPassword(auth, email, password);
+        const userId = nickToId(nick);
+        const userRef = doc(db, 'users', userId);
+        const userSnap = await getDoc(userRef);
+
+        if (authMode === 'register') {
+          // Реєстрація
+          if (userSnap.exists()) {
+            authError.textContent = 'Цей нік вже зайнятий.';
+            return;
+          }
+          await setDoc(userRef, {
+            nick: nick,
+            password: password,
+            createdAt: Date.now()
+          });
+          loginSuccess(nick);
         } else {
-          await createUserWithEmailAndPassword(auth, email, password);
+          // Вхід
+          if (!userSnap.exists()) {
+            authError.textContent = 'Користувача з таким ніком не знайдено.';
+            return;
+          }
+          const data = userSnap.data();
+          if (data.password !== password) {
+            authError.textContent = 'Невірний пароль.';
+            return;
+          }
+          loginSuccess(data.nick);
         }
-        // Успіх — onAuthStateChanged сам перемкне екран
-        authEmail.value = '';
-        authPassword.value = '';
       } catch (err) {
-        authError.textContent = translateError(err.code);
+        authError.textContent = 'Помилка: ' + err.message;
       } finally {
         authSubmit.disabled = false;
       }
     });
 
-    // ===== ПЕРЕКЛАД ПОМИЛОК FIREBASE =====
-    function translateError(code) {
-      switch (code) {
-        case 'auth/invalid-email': return 'Неправильний формат email.';
-        case 'auth/user-not-found': return 'Користувача з таким email не знайдено.';
-        case 'auth/wrong-password': return 'Невірний пароль.';
-        case 'auth/invalid-credential': return 'Невірний email або пароль.';
-        case 'auth/email-already-in-use': return 'Цей email вже зареєстрований.';
-        case 'auth/weak-password': return 'Пароль занадто слабкий (мін. 6 символів).';
-        case 'auth/too-many-requests': return 'Забагато спроб. Спробуй пізніше.';
-        case 'auth/network-request-failed': return 'Немає з\'єднання з інтернетом.';
-        default: return 'Помилка: ' + code;
-      }
+    // ===== УСПІШНИЙ ВХІД =====
+    function loginSuccess(nick) {
+      localStorage.setItem(SESSION_KEY, nick);
+      authNick.value = '';
+      authPassword.value = '';
+      showMain(nick);
+    }
+
+    // ===== ПОКАЗ ЕКРАНІВ =====
+    function showMain(nick) {
+      userNickSpan.textContent = nick;
+      authScreen.style.display = 'none';
+      mainScreen.style.display = 'flex';
+    }
+    function showAuth() {
+      authScreen.style.display = 'flex';
+      mainScreen.style.display = 'none';
+      setAuthMode('login');
     }
 
     // ===== ПЕРЕМИКАННЯ НИЖНЬОЇ НАВІГАЦІЇ =====
@@ -395,22 +426,19 @@
 
     // ===== ВИХІД =====
     logoutBtn.addEventListener('click', () => {
-      signOut(auth);
+      localStorage.removeItem(SESSION_KEY);
+      showAuth();
     });
 
-    // ===== СТАН КОРИСТУВАЧА =====
-    onAuthStateChanged(auth, (user) => {
-      loader.style.display = 'none';
-      if (user) {
-        userEmailSpan.textContent = user.email;
-        authScreen.style.display = 'none';
-        mainScreen.style.display = 'flex';
-      } else {
-        authScreen.style.display = 'flex';
-        mainScreen.style.display = 'none';
-        setAuthMode('login');
-      }
-    });
+    // ===== ПЕРЕВІРКА СЕСІЇ ПРИ ЗАВАНТАЖЕННІ =====
+    const savedNick = localStorage.getItem(SESSION_KEY);
+    if (savedNick) {
+      showMain(savedNick);
+    } else {
+      showAuth();
+    }
+    loader.style.display = 'none';
+
   </script>
 
 </body>
