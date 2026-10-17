@@ -1,425 +1,649 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UniqueStone v0.3.0</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #1a1a2e;
-      color: #eee;
-      height: 100vh;
-      overflow: hidden;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kovel Game — Auth</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    html, body { height: 100%; width: 100%; overflow: hidden; }
 
-    #loader {
-      position: fixed;
-      inset: 0;
-      background: #1a1a2e;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      flex-direction: column;
-      gap: 16px;
+    body {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+        color: #fff;
+        position: relative;
     }
-    #loader-status { font-size: 18px; color: #aaa; }
-    .spinner {
-      width: 40px; height: 40px;
-      border: 4px solid #333;
-      border-top-color: #e94560;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+    body::before, body::after {
+        content: '';
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.5;
+        z-index: 0;
+        pointer-events: none;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    body::before { width: 500px; height: 500px; background: #7c3aed; top: -150px; left: -150px; }
+    body::after  { width: 600px; height: 600px; background: #0ea5e9; bottom: -200px; right: -200px; }
 
     #auth-screen {
-      display: none;
-      height: 100vh;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+        position: fixed; inset: 0; z-index: 1000;
+        display: flex; justify-content: center; align-items: center;
+        padding: 20px;
     }
-    .auth-card {
-      background: #16213e;
-      border-radius: 16px;
-      padding: 32px 28px;
-      width: 100%;
-      max-width: 380px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    .glass {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     }
-    .auth-tabs {
-      display: flex;
-      margin-bottom: 24px;
-      background: #0f1a2e;
-      border-radius: 10px;
-      padding: 4px;
+    .auth-box {
+        padding: 32px 28px;
+        width: 100%; max-width: 360px;
+        display: flex; flex-direction: column; gap: 14px;
+        animation: fadeIn 0.4s ease;
     }
-    .auth-tab {
-      flex: 1;
-      padding: 10px;
-      text-align: center;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      color: #888;
-      transition: 0.2s;
-      border: none;
-      background: transparent;
-      font-size: 15px;
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
-    .auth-tab.active {
-      background: #e94560;
-      color: #fff;
+    .auth-box h2 {
+        text-align: center;
+        font-size: 24px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        background: linear-gradient(90deg, #a78bfa, #38bdf8);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 6px;
     }
-    .auth-input {
-      width: 100%;
-      padding: 12px 14px;
-      margin-bottom: 12px;
-      border-radius: 10px;
-      border: 1px solid #2a3a5e;
-      background: #0f1a2e;
-      color: #eee;
-      font-size: 15px;
-      outline: none;
-      transition: 0.2s;
+    .lang-switch {
+        position: absolute;
+        top: 20px; right: 20px;
+        display: flex; gap: 6px;
+        z-index: 1001;
     }
-    .auth-input:focus { border-color: #e94560; }
-    .auth-btn {
-      width: 100%;
-      padding: 13px;
-      border-radius: 10px;
-      border: none;
-      background: #e94560;
-      color: #fff;
-      font-weight: 700;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.2s;
-      margin-top: 8px;
+    .lang-switch button {
+        padding: 6px 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.08);
+        color: #cbd5e1;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+        transition: all 0.2s;
     }
-    .auth-btn:hover { background: #d63a54; }
-    .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-    #auth-error {
-      color: #ff6b6b;
-      font-size: 14px;
-      margin-top: 12px;
-      min-height: 18px;
-      text-align: center;
+    .lang-switch button:hover { background: rgba(255,255,255,0.15); color: #fff; }
+    .lang-switch button.active {
+        background: linear-gradient(90deg, #7c3aed, #0ea5e9);
+        color: #fff; border-color: transparent;
     }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field input {
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.15);
+        background: rgba(0,0,0,0.25);
+        color: #fff;
+        outline: none;
+        font-size: 14px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        width: 100%;
+    }
+    .field input::placeholder { color: #94a3b8; }
+    .field input:focus {
+        border-color: #38bdf8;
+        box-shadow: 0 0 0 3px rgba(56,189,248,0.15);
+    }
+
+    .btn-primary {
+        padding: 12px;
+        border-radius: 10px;
+        border: none;
+        background: linear-gradient(90deg, #7c3aed, #0ea5e9);
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 14px;
+        transition: opacity 0.2s, transform 0.1s;
+        margin-top: 4px;
+    }
+    .btn-primary:hover:not(:disabled) { opacity: 0.9; }
+    .btn-primary:active:not(:disabled) { transform: scale(0.98); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .auth-toggle {
+        text-align: center;
+        font-size: 12px;
+        color: #94a3b8;
+        cursor: pointer;
+        margin-top: 2px;
+        transition: color 0.2s;
+    }
+    .auth-toggle:hover { color: #38bdf8; }
 
     #main-screen {
-      display: none;
-      height: 100vh;
-      flex-direction: column;
+        display: none;
+        position: fixed; inset: 0;
+        z-index: 500;
+        padding: 20px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
     }
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 16px;
-      background: #16213e;
-      border-bottom: 1px solid #2a3a5e;
+    #main-screen.active { display: flex; }
+    .user-card {
+        padding: 28px 24px;
+        width: 100%; max-width: 420px;
+        display: flex; flex-direction: column;
+        gap: 16px;
+        animation: fadeIn 0.4s ease;
     }
-    .top-bar .user-nick {
-      font-size: 14px;
-      color: #eee;
-      font-weight: 600;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: 60%;
+    .user-card h1 {
+        text-align: center;
+        font-size: 22px;
+        font-weight: 600;
+        background: linear-gradient(90deg, #a78bfa, #38bdf8);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
-    .logout-btn {
-      padding: 6px 14px;
-      border-radius: 8px;
-      border: 1px solid #e94560;
-      background: transparent;
-      color: #e94560;
-      font-size: 13px;
-      cursor: pointer;
-      transition: 0.2s;
+    .stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
     }
-    .logout-btn:hover { background: #e94560; color: #fff; }
+    .stat {
+        background: rgba(0,0,0,0.25);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 12px;
+        padding: 14px;
+        text-align: center;
+    }
+    .stat .label { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat .value { font-size: 20px; font-weight: 700; color: #fbbf24; margin-top: 4px; }
+    .stat .value.town { color: #38bdf8; }
 
-    .content-area {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px;
+    .main-actions { display: flex; flex-direction: column; gap: 10px; }
+    .btn-secondary {
+        padding: 11px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.06);
+        color: #e2e8f0;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.2s;
     }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-    .tab-content h2 {
-      font-size: 22px;
-      margin-bottom: 16px;
-      color: #e94560;
-    }
-    .placeholder-box {
-      background: #16213e;
-      border-radius: 12px;
-      padding: 24px;
-      color: #666;
-      text-align: center;
-      border: 1px dashed #2a3a5e;
-    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.12); }
 
-    .bottom-nav {
-      display: flex;
-      background: #16213e;
-      border-top: 2px solid #2a3a5e;
-      padding: 6px 0;
+    .btn-danger {
+        padding: 11px;
+        border-radius: 10px;
+        border: none;
+        background: rgba(239,68,68,0.85);
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.2s;
     }
-    .nav-btn {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      padding: 8px 0;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      color: #666;
-      transition: 0.2s;
-      position: relative;
+    .btn-danger:hover { background: #dc2626; }
+
+    .settings-panel {
+        display: none;
+        padding: 24px;
+        width: 100%; max-width: 420px;
+        flex-direction: column;
+        gap: 14px;
+        animation: fadeIn 0.3s ease;
     }
-    .nav-btn .nav-icon { font-size: 24px; }
-    .nav-btn .nav-label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
+    .settings-panel.active { display: flex; }
+    .settings-panel h3 { font-size: 18px; font-weight: 600; color: #e2e8f0; margin-bottom: 4px; }
+    .settings-panel .hint { font-size: 12px; color: #94a3b8; }
+
+    #toast-container {
+        position: fixed;
+        top: 20px; left: 50%;
+        transform: translateX(-50%);
+        z-index: 2000;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        pointer-events: none;
+        width: calc(100% - 40px);
+        max-width: 380px;
     }
-    .nav-btn.active { color: #e94560; }
-    .nav-btn.active::before {
-      content: '';
-      position: absolute;
-      top: -6px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 40px;
-      height: 3px;
-      background: #e94560;
-      border-radius: 3px;
+    .toast {
+        padding: 12px 18px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #fff;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        animation: toastIn 0.3s ease;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.15);
     }
-  </style>
+    .toast.success { background: rgba(34,197,94,0.85); }
+    .toast.error   { background: rgba(239,68,68,0.85); }
+    .toast.info    { background: rgba(56,189,248,0.85); }
+    .toast.hide    { animation: toastOut 0.3s ease forwards; }
+    @keyframes toastIn  { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes toastOut { to   { opacity: 0; transform: translateY(-10px); } }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 480px) {
+        .auth-box { padding: 26px 20px; }
+        .user-card { padding: 22px 18px; }
+        .settings-panel { padding: 20px 18px; }
+        .stat .value { font-size: 18px; }
+        .lang-switch { top: 12px; right: 12px; }
+        .lang-switch button { padding: 5px 10px; font-size: 11px; }
+    }
+</style>
 </head>
 <body>
 
-  <div id="loader">
-    <div class="spinner"></div>
-    <h2 id="loader-status">UniqueStone v0.3.0</h2>
-  </div>
+<div class="lang-switch">
+    <button id="lang-ua" class="active" onclick="setLang('uk')">UA</button>
+    <button id="lang-en" onclick="setLang('en')">EN</button>
+</div>
 
-  <div id="auth-screen">
-    <div class="auth-card">
-      <div class="auth-tabs">
-        <button class="auth-tab active" id="tab-login" data-mode="login">Вхід</button>
-        <button class="auth-tab" id="tab-register" data-mode="register">Реєстрація</button>
-      </div>
-      <input type="text" class="auth-input" id="auth-nick" placeholder="Нік" autocomplete="username">
-      <input type="password" class="auth-input" id="auth-password" placeholder="Пароль (мін. 6 символів)" autocomplete="current-password">
-      <button class="auth-btn" id="auth-submit">Увійти</button>
-      <div id="auth-error"></div>
+<div id="toast-container"></div>
+
+<div id="auth-screen">
+    <div class="auth-box glass">
+        <h2>Kovel Game</h2>
+
+        <div class="field">
+            <input type="text" id="username" data-i18n-placeholder="ph_username" placeholder="Логін" autocomplete="username">
+        </div>
+        <div class="field">
+            <input type="password" id="password" data-i18n-placeholder="ph_password" placeholder="Пароль" autocomplete="current-password">
+        </div>
+        <div class="field hidden" id="new-password-container">
+            <input type="password" id="new-password" data-i18n-placeholder="ph_new_password" placeholder="Новий пароль" autocomplete="new-password">
+        </div>
+
+        <button id="auth-btn" class="btn-primary" onclick="handleAuth()">Увійти</button>
+
+        <div class="auth-toggle" id="auth-toggle-mode" onclick="switchAuthMode('register')">Ще немає акаунта? Зареєструватись</div>
+        <div class="auth-toggle" id="auth-toggle-pass" onclick="switchAuthMode('change-pass')" style="opacity:0.7;">Змінити пароль</div>
     </div>
-  </div>
+</div>
 
-  <div id="main-screen">
-    <div class="top-bar">
-      <span class="user-nick" id="user-nick">—</span>
-      <button class="logout-btn" id="logout-btn">Вийти</button>
+<div id="main-screen">
+    <div class="user-card glass" id="main-card">
+        <h1 data-i18n="welcome">Ви ввійшли!</h1>
+        <div class="stats">
+            <div class="stat">
+                <div class="label" data-i18n="label_gold">Золото</div>
+                <div class="value" id="stat-gold">0</div>
+            </div>
+            <div class="stat">
+                <div class="label" data-i18n="label_town">Ратуша</div>
+                <div class="value town" id="stat-town">1</div>
+            </div>
+        </div>
+        <div class="main-actions">
+            <button class="btn-primary" data-i18n="btn_play" onclick="toast('info', t('toast_game_soon'))">Грати</button>
+            <button class="btn-secondary" data-i18n="btn_settings" onclick="showSettings()">Налаштування</button>
+            <button class="btn-danger" data-i18n="btn_logout" onclick="logout()">Вийти</button>
+        </div>
     </div>
 
-    <div class="content-area">
-      <div class="tab-content active" id="tab-content-mine">
-        <h2>⛏️ Шахта</h2>
-        <div class="placeholder-box">Тут буде контент шахти (заглушка)</div>
-      </div>
-      <div class="tab-content" id="tab-content-chat">
-        <h2>💬 Чат</h2>
-        <div class="placeholder-box">Тут буде чат (заглушка)</div>
-      </div>
-      <div class="tab-content" id="tab-content-market">
-        <h2>📈 Біржа</h2>
-        <div class="placeholder-box">Тут буде біржа (заглушка)</div>
-      </div>
-    </div>
+    <div class="settings-panel glass" id="settings-panel">
+        <h3 data-i18n="settings_title">Налаштування</h3>
+        <div class="hint"><span data-i18n="settings_user">Користувач: </span><span id="settings-username">---</span></div>
 
-    <div class="bottom-nav">
-      <button class="nav-btn active" data-tab="mine">
-        <span class="nav-icon">⛏️</span>
-        <span class="nav-label">Шахта</span>
-      </button>
-      <button class="nav-btn" data-tab="chat">
-        <span class="nav-icon">💬</span>
-        <span class="nav-label">Чат</span>
-      </button>
-      <button class="nav-btn" data-tab="market">
-        <span class="nav-icon">📈</span>
-        <span class="nav-label">Біржа</span>
-      </button>
-    </div>
-  </div>
+        <div class="field">
+            <input type="password" id="settings-old-pass" data-i18n-placeholder="ph_old_password" placeholder="Старий пароль">
+        </div>
+        <div class="field">
+            <input type="password" id="settings-new-pass" data-i18n-placeholder="ph_new_password" placeholder="Новий пароль">
+        </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import {
-      getDatabase,
-      ref,
-      get,
-      set
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        <button class="btn-primary" data-i18n="btn_change_pass" onclick="changePasswordFromSettings()">Змінити пароль</button>
+        <button class="btn-secondary" data-i18n="btn_back" onclick="hideSettings()">Назад</button>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, get, child, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyDGltUohufVAc-FMIbO1sIvpd6xWSiaKdU",
-      authDomain: "uniquestone.firebaseapp.com",
-      databaseURL: "https://uniquestone-default-rtdb.firebaseio.com",
-      projectId: "uniquestone",
-      storageBucket: "uniquestone.firebasestorage.app",
-      messagingSenderId: "114557024409",
-      appId: "1:114557024409:web:23f1e0ad213e9cf7d2e008"
+        apiKey: "AIzaSyDrQeerlWPJ0d_gZ3acvW54FQmihdAQqK4",
+        authDomain: "kovel-game.firebaseapp.com",
+        databaseURL: "https://kovel-game-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "kovel-game",
+        storageBucket: "kovel-game.firebasestorage.app",
+        messagingSenderId: "1028978690479",
+        appId: "1:1028978690479:web:c37e96a9b07175d325c75a"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    const CURRENT_VERSION = "0.3.0";
-    document.getElementById('loader-status').innerText = "UniqueStone v" + CURRENT_VERSION;
+    let mode = "login";
+    let currentUsername = "";
+    let currentLang = "uk";
 
-    const loader = document.getElementById('loader');
-    const authScreen = document.getElementById('auth-screen');
-    const mainScreen = document.getElementById('main-screen');
-    const authNick = document.getElementById('auth-nick');
-    const authPassword = document.getElementById('auth-password');
-    const authSubmit = document.getElementById('auth-submit');
-    const authError = document.getElementById('auth-error');
-    const tabLogin = document.getElementById('tab-login');
-    const tabRegister = document.getElementById('tab-register');
-    const userNickSpan = document.getElementById('user-nick');
-    const logoutBtn = document.getElementById('logout-btn');
-
-    let authMode = 'login';
-    const SESSION_KEY = 'uniquestone_nick';
-
-    function setAuthMode(mode) {
-      authMode = mode;
-      authError.textContent = '';
-      if (mode === 'login') {
-        tabLogin.classList.add('active');
-        tabRegister.classList.remove('active');
-        authSubmit.textContent = 'Увійти';
-      } else {
-        tabRegister.classList.add('active');
-        tabLogin.classList.remove('active');
-        authSubmit.textContent = 'Зареєструватися';
-      }
-    }
-    tabLogin.addEventListener('click', () => setAuthMode('login'));
-    tabRegister.addEventListener('click', () => setAuthMode('register'));
-
-    function nickToId(nick) {
-      return nick.trim().toLowerCase();
-    }
-
-    authSubmit.addEventListener('click', async () => {
-      const nick = authNick.value.trim();
-      const password = authPassword.value;
-      authError.textContent = '';
-
-      if (!nick) {
-        authError.textContent = 'Введи нік.';
-        return;
-      }
-      if (password.length < 6) {
-        authError.textContent = 'Пароль має бути мінімум 6 символів.';
-        return;
-      }
-
-      authSubmit.disabled = true;
-      try {
-        const userId = nickToId(nick);
-        const userRef = ref(db, 'users/' + userId);
-        const snapshot = await get(userRef);
-
-        if (authMode === 'register') {
-          if (snapshot.exists()) {
-            authError.textContent = 'Цей нік вже зайнятий.';
-            return;
-          }
-          await set(userRef, {
-            nick: nick,
-            password: password,
-            createdAt: Date.now()
-          });
-          loginSuccess(nick);
-        } else {
-          if (!snapshot.exists()) {
-            authError.textContent = 'Користувача з таким ніком не знайдено.';
-            return;
-          }
-          const data = snapshot.val();
-          if (data.password !== password) {
-            authError.textContent = 'Невірний пароль.';
-            return;
-          }
-          loginSuccess(data.nick);
+    const I18N = {
+        uk: {
+            ph_username: "Логін",
+            ph_password: "Пароль",
+            ph_new_password: "Новий пароль",
+            ph_old_password: "Старий пароль",
+            btn_login: "Увійти",
+            btn_register: "Створити акаунт",
+            btn_change_pass: "Змінити пароль",
+            toggle_to_register: "Ще немає акаунта? Зареєструватись",
+            toggle_to_login: "Вже є акаунт? Увійти",
+            toggle_back_to_login: "Повернутися до входу",
+            toggle_change_pass: "Змінити пароль",
+            welcome: "Ви ввійшли!",
+            label_gold: "Золото",
+            label_town: "Ратуша",
+            btn_play: "Грати",
+            btn_settings: "Налаштування",
+            btn_logout: "Вийти",
+            btn_back: "Назад",
+            settings_title: "Налаштування",
+            settings_user: "Користувач: ",
+            toast_fill_all: "Заповніть усі поля!",
+            toast_login_short: "Логін має бути мінімум 3 символи!",
+            toast_pass_short: "Пароль має бути мінімум 4 символи!",
+            toast_user_exists: "Такий користувач вже існує!",
+            toast_wrong_creds: "Невірний логін або пароль!",
+            toast_wrong_old_pass: "Невірний старий пароль!",
+            toast_enter_new_pass: "Введіть новий пароль!",
+            toast_new_pass_short: "Новий пароль має бути мінімум 4 символи!",
+            toast_register_ok: "Акаунт створено! Вітаємо!",
+            toast_pass_changed: "Пароль успішно змінено!",
+            toast_wait: "Зачекайте...",
+            toast_error: "Помилка: ",
+            toast_game_soon: "Гра скоро з'явиться!",
+            toast_logged_out: "Ви вийшли з акаунта"
+        },
+        en: {
+            ph_username: "Username",
+            ph_password: "Password",
+            ph_new_password: "New password",
+            ph_old_password: "Old password",
+            btn_login: "Log in",
+            btn_register: "Create account",
+            btn_change_pass: "Change password",
+            toggle_to_register: "No account yet? Sign up",
+            toggle_to_login: "Already have an account? Log in",
+            toggle_back_to_login: "Back to login",
+            toggle_change_pass: "Change password",
+            welcome: "You are logged in!",
+            label_gold: "Gold",
+            label_town: "Town Hall",
+            btn_play: "Play",
+            btn_settings: "Settings",
+            btn_logout: "Log out",
+            btn_back: "Back",
+            settings_title: "Settings",
+            settings_user: "User: ",
+            toast_fill_all: "Fill in all fields!",
+            toast_login_short: "Username must be at least 3 characters!",
+            toast_pass_short: "Password must be at least 4 characters!",
+            toast_user_exists: "This user already exists!",
+            toast_wrong_creds: "Wrong username or password!",
+            toast_wrong_old_pass: "Wrong old password!",
+            toast_enter_new_pass: "Enter a new password!",
+            toast_new_pass_short: "New password must be at least 4 characters!",
+            toast_register_ok: "Account created! Welcome!",
+            toast_pass_changed: "Password changed successfully!",
+            toast_wait: "Please wait...",
+            toast_error: "Error: ",
+            toast_game_soon: "The game is coming soon!",
+            toast_logged_out: "You have logged out"
         }
-      } catch (err) {
-        authError.textContent = 'Помилка: ' + err.message;
-      } finally {
-        authSubmit.disabled = false;
-      }
-    });
-
-    function loginSuccess(nick) {
-      localStorage.setItem(SESSION_KEY, nick);
-      authNick.value = '';
-      authPassword.value = '';
-      showMain(nick);
-    }
-
-    function showMain(nick) {
-      userNickSpan.textContent = nick;
-      authScreen.style.display = 'none';
-      mainScreen.style.display = 'flex';
-    }
-    function showAuth() {
-      authScreen.style.display = 'flex';
-      mainScreen.style.display = 'none';
-      setAuthMode('login');
-    }
-
-    const navBtns = document.querySelectorAll('.nav-btn');
-    const tabContents = {
-      mine: document.getElementById('tab-content-mine'),
-      chat: document.getElementById('tab-content-chat'),
-      market: document.getElementById('tab-content-market')
     };
-    navBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const tab = btn.dataset.tab;
-        navBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        Object.values(tabContents).forEach(el => el.classList.remove('active'));
-        tabContents[tab].classList.add('active');
-      });
-    });
 
-    logoutBtn.addEventListener('click', () => {
-      localStorage.removeItem(SESSION_KEY);
-      showAuth();
-    });
+    function t(key) { return I18N[currentLang][key] || key; }
 
-    const savedNick = localStorage.getItem(SESSION_KEY);
-    if (savedNick) {
-      showMain(savedNick);
-    } else {
-      showAuth();
+    window.setLang = function(lang) {
+        currentLang = lang;
+        document.documentElement.lang = lang;
+        document.getElementById('lang-ua').classList.toggle('active', lang === 'uk');
+        document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+        applyI18n();
+    };
+
+    function applyI18n() {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            el.textContent = t(el.getAttribute('data-i18n'));
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+        });
+        refreshAuthUI();
     }
-    loader.style.display = 'none';
 
-  </script>
+    window.toast = function(type, msg) {
+        const container = document.getElementById('toast-container');
+        const el = document.createElement('div');
+        el.className = 'toast ' + type;
+        el.textContent = msg;
+        container.appendChild(el);
+        setTimeout(() => {
+            el.classList.add('hide');
+            setTimeout(() => el.remove(), 300);
+        }, 2800);
+    };
 
+    async function sha256(text) {
+        const buf = new TextEncoder().encode(text);
+        const hash = await crypto.subtle.digest('SHA-256', buf);
+        return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    window.switchAuthMode = function(targetMode) {
+        mode = targetMode;
+        refreshAuthUI();
+    };
+
+    function refreshAuthUI() {
+        const btn = document.getElementById('auth-btn');
+        const toggleMode = document.getElementById('auth-toggle-mode');
+        const togglePass = document.getElementById('auth-toggle-pass');
+        const newPassContainer = document.getElementById('new-password-container');
+
+        if (mode === 'login') {
+            btn.innerText = t('btn_login');
+            toggleMode.innerText = t('toggle_to_register');
+            toggleMode.onclick = () => switchAuthMode('register');
+            togglePass.style.display = 'block';
+            togglePass.innerText = t('toggle_change_pass');
+            togglePass.onclick = () => switchAuthMode('change-pass');
+            newPassContainer.classList.add('hidden');
+        } else if (mode === 'register') {
+            btn.innerText = t('btn_register');
+            toggleMode.innerText = t('toggle_to_login');
+            toggleMode.onclick = () => switchAuthMode('login');
+            togglePass.style.display = 'none';
+            newPassContainer.classList.add('hidden');
+        } else if (mode === 'change-pass') {
+            btn.innerText = t('btn_change_pass');
+            toggleMode.innerText = t('toggle_back_to_login');
+            toggleMode.onclick = () => switchAuthMode('login');
+            togglePass.style.display = 'none';
+            newPassContainer.classList.remove('hidden');
+        }
+    }
+
+    window.handleAuth = async function() {
+        const user = document.getElementById('username').value.trim();
+        const pass = document.getElementById('password').value;
+        const btn = document.getElementById('auth-btn');
+
+        if (!user || !pass) { toast('error', t('toast_fill_all')); return; }
+        if (user.length < 3) { toast('error', t('toast_login_short')); return; }
+        if (pass.length < 4) { toast('error', t('toast_pass_short')); return; }
+
+        btn.disabled = true;
+        const btnText = btn.innerText;
+        btn.innerText = t('toast_wait');
+
+        try {
+            const dbRef = ref(db);
+            const passHash = await sha256(pass);
+
+            if (mode === 'register') {
+                const snapshot = await get(child(dbRef, `users/${user}`));
+                if (snapshot.exists()) { toast('error', t('toast_user_exists')); return; }
+                await set(ref(db, 'users/' + user), {
+                    password: passHash,
+                    gold: 0,
+                    townHallLevel: 1,
+                    lastOnline: Date.now()
+                });
+                toast('success', t('toast_register_ok'));
+                currentUsername = user;
+                try { localStorage.setItem('auth_username', user); localStorage.setItem('auth_hash', passHash); } catch (e) {}
+                showMainScreen(user, 0, 1);
+            }
+            else if (mode === 'login') {
+                const snapshot = await get(child(dbRef, `users/${user}`));
+                if (!snapshot.exists() || snapshot.val().password !== passHash) {
+                    toast('error', t('toast_wrong_creds')); return;
+                }
+                const data = snapshot.val();
+                currentUsername = user;
+                try { localStorage.setItem('auth_username', user); localStorage.setItem('auth_hash', passHash); } catch (e) {}
+                try { await update(ref(db, `users/${user}`), { lastOnline: Date.now() }); } catch (e) {}
+                showMainScreen(user, data.gold || 0, data.townHallLevel || 1);
+            }
+            else if (mode === 'change-pass') {
+                const newPass = document.getElementById('new-password').value;
+                if (!newPass) { toast('error', t('toast_enter_new_pass')); return; }
+                if (newPass.length < 4) { toast('error', t('toast_new_pass_short')); return; }
+
+                const snapshot = await get(child(dbRef, `users/${user}`));
+                if (!snapshot.exists() || snapshot.val().password !== passHash) {
+                    toast('error', t('toast_wrong_old_pass')); return;
+                }
+                const newHash = await sha256(newPass);
+                await set(ref(db, `users/${user}/password`), newHash);
+                toast('success', t('toast_pass_changed'));
+                switchAuthMode('login');
+            }
+        } catch (error) {
+            console.error('Помилка:', error);
+            toast('error', t('toast_error') + error.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerText = btnText;
+        }
+    };
+
+    function showMainScreen(user, gold, town) {
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('main-screen').classList.add('active');
+        document.getElementById('settings-username').textContent = user;
+        document.getElementById('stat-gold').textContent = gold;
+        document.getElementById('stat-town').textContent = town;
+        hideSettings();
+    }
+
+    window.showSettings = function() {
+        document.getElementById('main-card').style.display = 'none';
+        document.getElementById('settings-panel').classList.add('active');
+        document.getElementById('settings-username').textContent = currentUsername || '---';
+    };
+
+    window.hideSettings = function() {
+        document.getElementById('settings-panel').classList.remove('active');
+        document.getElementById('main-card').style.display = 'flex';
+    };
+
+    window.changePasswordFromSettings = async function() {
+        const oldPass = document.getElementById('settings-old-pass').value;
+        const newPass = document.getElementById('settings-new-pass').value;
+
+        if (!oldPass || !newPass) { toast('error', t('toast_fill_all')); return; }
+        if (newPass.length < 4) { toast('error', t('toast_new_pass_short')); return; }
+
+        try {
+            const dbRef = ref(db);
+            const oldHash = await sha256(oldPass);
+            const snapshot = await get(child(dbRef, `users/${currentUsername}`));
+            if (!snapshot.exists() || snapshot.val().password !== oldHash) {
+                toast('error', t('toast_wrong_old_pass')); return;
+            }
+            const newHash = await sha256(newPass);
+            await set(ref(db, `users/${currentUsername}/password`), newHash);
+            try { localStorage.setItem('auth_hash', newHash); } catch (e) {}
+            toast('success', t('toast_pass_changed'));
+            document.getElementById('settings-old-pass').value = '';
+            document.getElementById('settings-new-pass').value = '';
+        } catch (error) {
+            console.error('Помилка:', error);
+            toast('error', t('toast_error') + error.message);
+        }
+    };
+
+    window.logout = async function() {
+        if (currentUsername) {
+            try { await update(ref(db, `users/${currentUsername}`), { lastOnline: Date.now() }); } catch (e) {}
+        }
+        try { localStorage.removeItem('auth_username'); localStorage.removeItem('auth_hash'); } catch (e) {}
+        currentUsername = "";
+        document.getElementById('main-screen').classList.remove('active');
+        document.getElementById('auth-screen').style.display = 'flex';
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('new-password').value = '';
+        document.getElementById('settings-old-pass').value = '';
+        document.getElementById('settings-new-pass').value = '';
+        hideSettings();
+        switchAuthMode('login');
+        toast('info', t('toast_logged_out'));
+    };
+
+    (async function autoLogin() {
+        try {
+            const savedUser = localStorage.getItem('auth_username');
+            const savedHash = localStorage.getItem('auth_hash');
+            if (!savedUser || !savedHash) return;
+
+            const snapshot = await get(child(ref(db), `users/${savedUser}`));
+            if (snapshot.exists() && snapshot.val().password === savedHash) {
+                const data = snapshot.val();
+                currentUsername = savedUser;
+                try { await update(ref(db, `users/${savedUser}`), { lastOnline: Date.now() }); } catch (e) {}
+                showMainScreen(savedUser, data.gold || 0, data.townHallLevel || 1);
+            } else {
+                try { localStorage.removeItem('auth_username'); localStorage.removeItem('auth_hash'); } catch (e) {}
+            }
+        } catch (e) {
+            console.error('Помилка автовходу:', e);
+        }
+    })();
+
+    document.addEventListener('DOMContentLoaded', () => {
+        ['username', 'password', 'new-password'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleAuth(); });
+        });
+        ['settings-old-pass', 'settings-new-pass'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('keydown', (e) => { if (e.key === 'Enter') changePasswordFromSettings(); });
+        });
+        applyI18n();
+    });
+</script>
 </body>
 </html>
