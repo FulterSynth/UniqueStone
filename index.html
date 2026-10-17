@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kovel Game — Auth</title>
+<title>UniqueStone — Auth</title>
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     html, body { height: 100%; width: 100%; overflow: hidden; }
@@ -261,7 +261,7 @@
 
 <div id="auth-screen">
     <div class="auth-box glass">
-        <h2>Kovel Game</h2>
+        <h2>UniqueStone</h2>
 
         <div class="field">
             <input type="text" id="username" data-i18n-placeholder="ph_username" placeholder="Логін" autocomplete="username">
@@ -321,13 +321,14 @@
     import { getDatabase, ref, set, get, child, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
-        apiKey: "AIzaSyDrQeerlWPJ0d_gZ3acvW54FQmihdAQqK4",
-        authDomain: "kovel-game.firebaseapp.com",
-        databaseURL: "https://kovel-game-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "kovel-game",
-        storageBucket: "kovel-game.firebasestorage.app",
-        messagingSenderId: "1028978690479",
-        appId: "1:1028978690479:web:c37e96a9b07175d325c75a"
+        apiKey: "AIzaSyDGltUohufVAc-FMIbO1sIvpd6xWSiaKdU",
+        authDomain: "uniquestone.firebaseapp.com",
+        databaseURL: "https://uniquestone-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "uniquestone",
+        storageBucket: "uniquestone.firebasestorage.app",
+        messagingSenderId: "114557024409",
+        appId: "1:114557024409:web:23f1e0ad213e9cf7d2e008",
+        measurementId: "G-TZ6SZXTJTF"
     };
 
     const app = initializeApp(firebaseConfig);
