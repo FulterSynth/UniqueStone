@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="version" content="1.1.1">
-<meta name="app-version" content="1.1.1">
-<title>UniqueStone — v1.1.1</title>
+<meta name="version" content="1.1.2">
+<meta name="app-version" content="1.1.2">
+<title>UniqueStone — v1.1.2</title>
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     html, body { height: 100%; width: 100%; overflow: hidden; }
@@ -316,6 +316,8 @@
         white-space: nowrap;
         position: relative;
         width: 100%;
+        display: block;
+        line-height: 1.3;
     }
     .marquee-text {
         display: inline-block;
@@ -455,10 +457,10 @@
         text-shadow: 0 1px 3px rgba(0,0,0,0.8);
     }
 
-    /* ===== ІНВЕНТАР (без п'ятикутника) ===== */
+    /* ===== ІНВЕНТАР (спрощені картки) ===== */
     .inventory-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 10px;
         overflow-y: auto;
         overflow-x: hidden;
@@ -482,11 +484,10 @@
         padding: 10px;
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 8px;
         cursor: pointer;
         transition: background 0.2s, transform 0.2s;
         position: relative;
-        min-height: 240px;
         user-select: none;
         -webkit-user-select: none;
         -webkit-touch-callout: none;
@@ -513,44 +514,21 @@
         overflow: hidden;
         white-space: nowrap;
         position: relative;
+        line-height: 1.3;
+        min-height: 15px;
+    }
+    .inv-card .stone-name .marquee-text {
+        color: #e2e8f0;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+        filter: none;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
     }
     .inv-card .stone-rarity {
         display: flex;
         justify-content: center;
         flex-shrink: 0;
-    }
-    .inv-card .stone-meta-list {
-        display: flex;
-        flex-direction: column;
-        gap: 3px;
-        font-size: 9px;
-        color: #94a3b8;
-        flex: 1;
-    }
-    .meta-row {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        line-height: 1.2;
-    }
-    .meta-row .meta-label {
-        color: #64748b;
-        white-space: nowrap;
-    }
-    .meta-row .meta-value {
-        color: #cbd5e1;
-        font-weight: 600;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        flex: 1;
-    }
-    .meta-row .color-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        flex-shrink: 0;
-        border: 1px solid rgba(255,255,255,0.3);
     }
 
     .rarity-badge {
@@ -608,7 +586,6 @@
 
     @media (max-width: 480px) {
         .inventory-grid { grid-template-columns: repeat(2, 1fr); }
-        .inv-card { min-height: 220px; }
     }
 
 /* КІНЕЦЬ ЧАСТИНИ 2/6 */
@@ -799,7 +776,6 @@
         0%   { background-position: 0% 50%; }
         100% { background-position: 300% 50%; }
     }
-    /* mythic-aura — плавна зміна яскравості, без повернення-смикання */
     .pattern-mythic-aura {
         animation: mythicAura 3s linear infinite;
     }
@@ -809,7 +785,6 @@
     }
 
     /* ===== МОДИФІКАЦІЇ КОЛОРУ ===== */
-    /* shimmer — перелив, безкінечний рух в ОДИН бік */
     .mod-shimmer {
         animation: shimmerAnim 4s linear infinite;
         background-size: 300% 300% !important;
@@ -818,7 +793,6 @@
         0%   { background-position: 0% 50%; }
         100% { background-position: 300% 50%; }
     }
-    /* pulse — пульсація яскравості (не рух текстури) */
     .mod-pulse {
         animation: pulseAnim 2.5s ease-in-out infinite;
     }
@@ -826,7 +800,6 @@
         0%, 100% { filter: brightness(1); }
         50%      { filter: brightness(1.4); }
     }
-    /* wave — хвиля, безкінечний рух в ОДИН бік */
     .mod-wave {
         animation: waveAnim 3s linear infinite;
         background-size: 200% 200% !important;
@@ -1114,7 +1087,7 @@
 <div id="auth-screen">
     <div class="auth-box glass">
         <h2>UniqueStone</h2>
-        <div class="version">v1.1.1</div>
+        <div class="version">v1.1.2</div>
         <div class="field">
             <input type="text" id="username" data-i18n-placeholder="ph_username" placeholder="Логін" autocomplete="username">
         </div>
@@ -1266,7 +1239,7 @@
             <button class="btn-primary" onclick="changePasswordFromSettings()" data-i18n="btn_change_pass" style="margin-top:0;">Змінити пароль</button>
         </div>
         <button class="btn-wipe hidden" id="wipe-btn" onclick="wipeAll()" data-i18n="btn_wipe">⚠ Вайп</button>
-        <div class="version-line">v1.1.1</div>
+        <div class="version-line">v1.1.2</div>
     </div>
 </div>
 
@@ -1394,7 +1367,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, get, child, update, remove, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    const APP_VERSION = "1.1.1";
+    const APP_VERSION = "1.1.2";
     const DIG_COOLDOWN_MS = 12 * 60 * 60 * 1000;
     const UNLIMITED_DIG_USER = "Fulter";
     const WIPE_USER = "Fulter";
@@ -1532,7 +1505,6 @@
             stone_base_mod: "Модифікатор бази:", stone_pattern_mod: "Модифікатор патерну:",
             stone_glow: "Світіння:", stone_yes: "Так",
             stone_details_title: "Деталі каменю",
-            label_stone_color: "Камінь:", label_pattern_color: "Патерн:", label_mod: "Модиф.:", label_glow: "Glow:",
             profile_title: "Мій профіль", profile_other_title: "Профіль гравця",
             profile_active_stone: "Активний камінь", profile_no_stone: "Немає активного каменю",
             profile_active_note: "Активний камінь визначає стиль ваших повідомлень у чаті.",
@@ -1572,7 +1544,6 @@
             stone_base_mod: "Base modifier:", stone_pattern_mod: "Pattern modifier:",
             stone_glow: "Glow:", stone_yes: "Yes",
             stone_details_title: "Stone details",
-            label_stone_color: "Stone:", label_pattern_color: "Pattern:", label_mod: "Mod:", label_glow: "Glow:",
             profile_title: "My profile", profile_other_title: "Player profile",
             profile_active_stone: "Active stone", profile_no_stone: "No active stone",
             profile_active_note: "Active stone determines the style of your chat messages.",
@@ -1703,10 +1674,10 @@
             glowColor = randomColor();
         }
 
-        const number = String(Math.floor(Math.random() * 1000000)).padStart(6, "0");
+        // НАЗВА БЕЗ НОМЕРА: [Колір] [Патерн]
         const baseName = colorName(primary);
         const patternLabel = getPatternLabel(pattern);
-        const name = baseName + " " + patternLabel + " #" + number;
+        const name = baseName + " " + patternLabel;
 
         const id = "s_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
 
@@ -2000,6 +1971,7 @@
         }
     }
 
+    /* Патерн + модифікатор патерну (модифікатор впливає на патерн, не заміняє його) */
     function applyPatternStyle(el, pattern, color, color2, mod) {
         if (!el) return;
         el.className = "bubble-pattern pattern-" + pattern;
@@ -2008,32 +1980,84 @@
         el.style.backgroundSize = "";
         el.style.backgroundPosition = "";
         el.style.filter = "";
+        el.style.opacity = "";
         el.classList.remove("mod-shimmer", "mod-pulse", "mod-wave");
-        if (pattern === "standard") return;
 
         const c1 = color || "rgba(255,255,255,0.5)";
         const c2 = color2 || c1;
 
+        if (pattern === "standard") {
+            if (mod === "gradient") {
+                el.style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
+                el.style.opacity = "0.55";
+            } else if (mod === "shimmer") {
+                el.style.background = `linear-gradient(110deg, ${c1} 0%, ${c2} 25%, ${c1} 50%, ${c2} 75%, ${c1} 100%)`;
+                el.style.backgroundSize = "300% 300%";
+                el.classList.add("mod-shimmer");
+            } else if (mod === "pulse") {
+                el.style.background = c1;
+                el.classList.add("mod-pulse");
+            } else if (mod === "wave") {
+                el.style.background = `linear-gradient(120deg, ${c1} 0%, ${c2} 50%, ${c1} 100%)`;
+                el.style.backgroundSize = "200% 200%";
+                el.classList.add("mod-wave");
+            } else {
+                el.style.background = c1;
+            }
+            return;
+        }
+
+        const useGradient = (mod === "gradient");
         let bgImg = "";
         switch (pattern) {
-            case "dots":       bgImg = `radial-gradient(circle, ${c1} 1.5px, transparent 2px)`; break;
-            case "grid":       bgImg = `linear-gradient(${c1} 1px, transparent 1px), linear-gradient(90deg, ${c1} 1px, transparent 1px)`; break;
-            case "stripes":    bgImg = `repeating-linear-gradient(45deg, ${c1} 0 6px, transparent 6px 14px)`; break;
-            case "waves":      bgImg = `repeating-radial-gradient(circle at 0 0, transparent 0 10px, ${c1} 10px 12px, transparent 12px 22px)`; break;
-            case "hex":        bgImg = `radial-gradient(circle at 50% 50%, ${c1} 2px, transparent 3px), radial-gradient(circle at 50% 50%, ${c1} 8px, transparent 9px)`; break;
-            case "leopard":    bgImg = `radial-gradient(circle at 20% 30%, ${c1} 4px, transparent 5px), radial-gradient(circle at 70% 60%, ${c1} 5px, transparent 6px), radial-gradient(circle at 45% 85%, ${c1} 3px, transparent 4px)`; break;
-            case "stars":      bgImg = `radial-gradient(circle, ${c1} 1px, transparent 2px), radial-gradient(circle, ${c1} 1.5px, transparent 2px)`; break;
-            case "cracks":     bgImg = `linear-gradient(115deg, transparent 45%, ${c1} 46%, ${c1} 47%, transparent 48%), linear-gradient(65deg, transparent 40%, ${c1} 41%, ${c1} 42%, transparent 43%)`; break;
-            case "nacre":      bgImg = `linear-gradient(110deg, ${c1} 0%, ${c2} 25%, ${c1} 50%, ${c2} 75%, ${c1} 100%)`; break;
-            case "mythic-aura":bgImg = `radial-gradient(circle at 30% 40%, ${c1} 0%, transparent 40%), radial-gradient(circle at 70% 60%, ${c2} 0%, transparent 45%), radial-gradient(circle at 50% 50%, ${c1} 0%, transparent 60%)`; break;
+            case "dots":
+                bgImg = `radial-gradient(circle, ${c1} 1.5px, transparent 2px)`;
+                break;
+            case "grid":
+                bgImg = useGradient
+                    ? `linear-gradient(${c1} 1px, transparent 1px), linear-gradient(90deg, ${c2} 1px, transparent 1px)`
+                    : `linear-gradient(${c1} 1px, transparent 1px), linear-gradient(90deg, ${c1} 1px, transparent 1px)`;
+                break;
+            case "stripes":
+                bgImg = useGradient
+                    ? `repeating-linear-gradient(45deg, ${c1} 0 6px, ${c2} 6px 14px)`
+                    : `repeating-linear-gradient(45deg, ${c1} 0 6px, transparent 6px 14px)`;
+                break;
+            case "waves":
+                bgImg = useGradient
+                    ? `repeating-radial-gradient(circle at 0 0, transparent 0 10px, ${c1} 10px 12px, transparent 12px 16px, ${c2} 16px 18px, transparent 18px 22px)`
+                    : `repeating-radial-gradient(circle at 0 0, transparent 0 10px, ${c1} 10px 12px, transparent 12px 22px)`;
+                break;
+            case "hex":
+                bgImg = useGradient
+                    ? `radial-gradient(circle at 50% 50%, ${c1} 2px, transparent 3px), radial-gradient(circle at 50% 50%, ${c2} 8px, transparent 9px)`
+                    : `radial-gradient(circle at 50% 50%, ${c1} 2px, transparent 3px), radial-gradient(circle at 50% 50%, ${c1} 8px, transparent 9px)`;
+                break;
+            case "leopard":
+                bgImg = useGradient
+                    ? `radial-gradient(circle at 20% 30%, ${c1} 4px, transparent 5px), radial-gradient(circle at 70% 60%, ${c2} 5px, transparent 6px), radial-gradient(circle at 45% 85%, ${c1} 3px, transparent 4px)`
+                    : `radial-gradient(circle at 20% 30%, ${c1} 4px, transparent 5px), radial-gradient(circle at 70% 60%, ${c1} 5px, transparent 6px), radial-gradient(circle at 45% 85%, ${c1} 3px, transparent 4px)`;
+                break;
+            case "stars":
+                bgImg = useGradient
+                    ? `radial-gradient(circle, ${c1} 1px, transparent 2px), radial-gradient(circle, ${c2} 1.5px, transparent 2px)`
+                    : `radial-gradient(circle, ${c1} 1px, transparent 2px), radial-gradient(circle, ${c1} 1.5px, transparent 2px)`;
+                break;
+            case "cracks":
+                bgImg = useGradient
+                    ? `linear-gradient(115deg, transparent 45%, ${c1} 46%, ${c2} 47%, transparent 48%), linear-gradient(65deg, transparent 40%, ${c1} 41%, ${c2} 42%, transparent 43%)`
+                    : `linear-gradient(115deg, transparent 45%, ${c1} 46%, ${c1} 47%, transparent 48%), linear-gradient(65deg, transparent 40%, ${c1} 41%, ${c1} 42%, transparent 43%)`;
+                break;
+            case "nacre":
+                bgImg = `linear-gradient(110deg, ${c1} 0%, ${c2} 25%, ${c1} 50%, ${c2} 75%, ${c1} 100%)`;
+                break;
+            case "mythic-aura":
+                bgImg = `radial-gradient(circle at 30% 40%, ${c1} 0%, transparent 40%), radial-gradient(circle at 70% 60%, ${c2} 0%, transparent 45%), radial-gradient(circle at 50% 50%, ${c1} 0%, transparent 60%)`;
+                break;
         }
         el.style.backgroundImage = bgImg;
 
         switch (mod) {
-            case "gradient":
-                el.style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
-                el.style.opacity = "0.55";
-                break;
             case "shimmer":
                 el.style.backgroundSize = "300% 300%";
                 el.classList.add("mod-shimmer");
@@ -2046,6 +2070,7 @@
                 el.classList.add("mod-wave");
                 break;
             case "solid":
+            case "gradient":
             default:
                 break;
         }
@@ -2061,12 +2086,10 @@
         }
     }
 
-    /* ===== БІЖУЧИЙ РЯДОК ===== */
     function setupMarquee(container, textEl) {
         if (!container || !textEl) return;
         textEl.classList.remove("scrolling");
         textEl.style.removeProperty("--scroll-dist");
-        // перевірка після рендера
         requestAnimationFrame(() => {
             const containerW = container.clientWidth;
             const textW = textEl.scrollWidth;
@@ -2144,11 +2167,6 @@
             card.className = "inv-card" + (s.id === activeStoneId ? " is-active" : "");
             card.dataset.stoneId = s.id;
 
-            const baseName = colorName(s.primaryColor);
-            const patName = colorName(s.patternColor);
-            const baseMod = getModLabel(s.baseMod);
-            const patMod = getModLabel(s.patternMod);
-
             card.innerHTML = `
                 <div class="stone-preview">
                     <div class="bubble-pattern" style="position:absolute;inset:0;"></div>
@@ -2157,12 +2175,6 @@
                     <span class="marquee-text">${s.name}</span>
                 </div>
                 <div class="stone-rarity"><span class="rarity-badge ${RARITIES[s.rarity].badge}">${getRarityLabel(s.rarity)}</span></div>
-                <div class="stone-meta-list">
-                    <div class="meta-row"><span class="meta-label">${t("label_stone_color")}</span><span class="color-dot" style="background:${s.primaryColor};"></span><span class="meta-value">${baseName}</span></div>
-                    <div class="meta-row"><span class="meta-label">${t("label_pattern_color")}</span><span class="color-dot" style="background:${s.patternColor};"></span><span class="meta-value">${patName}</span></div>
-                    <div class="meta-row"><span class="meta-label">${t("label_mod")}</span><span class="meta-value">${baseMod} / ${patMod}</span></div>
-                    ${s.hasGlow && s.glowColor ? `<div class="meta-row"><span class="meta-label">${t("label_glow")}</span><span class="color-dot" style="background:${s.glowColor};box-shadow:0 0 6px ${s.glowColor};"></span><span class="meta-value">${t("stone_yes")}</span></div>` : ""}
-                </div>
             `;
 
             const preview = card.querySelector(".stone-preview");
@@ -2170,7 +2182,6 @@
             applyGlow(preview, s);
             applyPatternStyle(card.querySelector(".bubble-pattern"), s.pattern, s.patternColor, s.patternColor2, s.patternMod);
 
-            // marquee для назви
             const nameContainer = card.querySelector(".stone-name");
             const nameText = card.querySelector(".marquee-text");
             setupMarquee(nameContainer, nameText);
@@ -2194,7 +2205,6 @@
         return String(d.getDate()).padStart(2,"0") + "." + String(d.getMonth()+1).padStart(2,"0") + "." + d.getFullYear();
     }
 
-    /* Заповнити модалку деталей (для свого або чужого каменю) */
     function fillStoneDetail(s, options) {
         const opts = options || {};
         document.getElementById("detail-name").textContent = s.name;
@@ -2227,7 +2237,6 @@
             glowRow.style.display = "none";
         }
 
-        const actions = document.getElementById("stone-detail-actions");
         const activateBtn = document.getElementById("detail-activate-btn");
         if (opts.hideActivate) {
             activateBtn.style.display = "none";
@@ -2280,7 +2289,6 @@
         } catch(e) { toast("error", t("toast_error") + e.message); }
     };
 
-    /* ===== ВАЙП ===== */
     window.wipeAll = function() {
         if (!canWipe()) return;
         document.getElementById("wipe-confirm-modal").classList.add("active");
@@ -2766,8 +2774,8 @@
             if (!document.hidden && currentUsername) updateMineUI();
         });
         window.addEventListener("resize", () => {
-            document.querySelectorAll(".stone-name .marquee-text").forEach(el => {
-                const c = el.parentElement;
+            document.querySelectorAll(".marquee-text").forEach(el => {
+                const c = el.closest(".marquee-container");
                 if (c) setupMarquee(c, el);
             });
         });
