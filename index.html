@@ -2,8 +2,10 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UniqueStone — Auth</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="version" content="1.0.0">
+<meta name="app-version" content="1.0.0">
+<title>UniqueStone — v1.0.0</title>
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     html, body { height: 100%; width: 100%; overflow: hidden; }
@@ -25,6 +27,7 @@
     body::before { width: 500px; height: 500px; background: #7c3aed; top: -150px; left: -150px; }
     body::after  { width: 600px; height: 600px; background: #0ea5e9; bottom: -200px; right: -200px; }
 
+    /* ===== АВТОРИЗАЦІЯ ===== */
     #auth-screen {
         position: fixed; inset: 0; z-index: 1000;
         display: flex; justify-content: center; align-items: center;
@@ -58,6 +61,13 @@
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 6px;
+    }
+    .auth-box .version {
+        text-align: center;
+        font-size: 11px;
+        color: #64748b;
+        margin-top: -6px;
+        margin-bottom: 4px;
     }
     .lang-switch {
         position: absolute;
@@ -126,52 +136,295 @@
     }
     .auth-toggle:hover { color: #38bdf8; }
 
-    #main-screen {
+    /* ===== ГОЛОВНИЙ ЕКРАН ===== */
+    #app-screen {
         display: none;
         position: fixed; inset: 0;
         z-index: 500;
-        padding: 20px;
         flex-direction: column;
+    }
+    #app-screen.active { display: flex; }
+
+    /* Верхня панель */
+    .top-bar {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 12px 16px;
+        background: rgba(255,255,255,0.05);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        z-index: 10;
+    }
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+        flex: 1;
+    }
+    .avatar {
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #7c3aed, #0ea5e9);
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 700;
+        font-size: 15px;
+        flex-shrink: 0;
+    }
+    .user-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #e2e8f0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .top-actions {
+        display: flex;
+        gap: 6px;
+        flex-shrink: 0;
+    }
+    .icon-btn {
+        width: 36px; height: 36px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.06);
+        color: #cbd5e1;
+        cursor: pointer;
+        font-size: 16px;
+        display: flex;
         align-items: center;
         justify-content: center;
-        gap: 20px;
+        transition: all 0.2s;
     }
-    #main-screen.active { display: flex; }
-    .user-card {
-        padding: 28px 24px;
-        width: 100%; max-width: 420px;
-        display: flex; flex-direction: column;
+    .icon-btn:hover { background: rgba(255,255,255,0.14); color: #fff; }
+    .icon-btn.danger:hover { background: rgba(239,68,68,0.3); border-color: rgba(239,68,68,0.5); color: #fff; }
+
+    /* Контент */
+    .content {
+        flex: 1;
+        overflow: hidden;
+        padding: 16px 16px 90px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+    }
+    .page {
+        display: none;
+        flex-direction: column;
         gap: 16px;
-        animation: fadeIn 0.4s ease;
+        animation: fadeIn 0.3s ease;
+        max-width: 600px;
+        margin: 0 auto;
+        width: 100%;
+        flex: 1;
+        min-height: 0;
     }
-    .user-card h1 {
-        text-align: center;
+    .page.active { display: flex; }
+    .page.scrollable { overflow-y: auto; overflow-x: hidden; }
+
+    .page-title {
         font-size: 22px;
-        font-weight: 600;
+        font-weight: 700;
         background: linear-gradient(90deg, #a78bfa, #38bdf8);
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
+        flex-shrink: 0;
     }
-    .stats {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+
+    /* Заглушки */
+    .placeholder-card {
+        padding: 40px 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        text-align: center;
+        flex: 1;
+        justify-content: center;
+    }
+    .placeholder-card .big-icon { font-size: 48px; opacity: 0.7; }
+    .placeholder-card h3 { font-size: 18px; color: #e2e8f0; }
+    .placeholder-card p { font-size: 13px; color: #94a3b8; line-height: 1.5; max-width: 320px; }
+
+    /* ===== ЧАТ ===== */
+    .chat-layout {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
         gap: 10px;
     }
-    .stat {
-        background: rgba(0,0,0,0.25);
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 12px;
+        border-radius: 16px;
+        background: rgba(255,255,255,0.05);
         border: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-height: 0;
+    }
+    .chat-empty {
+        color: #64748b;
+        font-size: 13px;
+        text-align: center;
+        margin: auto;
+        padding: 20px;
+    }
+    .chat-msg {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        max-width: 85%;
+        animation: fadeIn 0.2s ease;
+    }
+    .chat-msg.own { align-self: flex-end; align-items: flex-end; }
+    .chat-msg .author {
+        font-size: 11px;
+        color: #94a3b8;
+        font-weight: 600;
+        padding: 0 4px;
+    }
+    .chat-msg.own .author { color: #a78bfa; }
+    .chat-msg .bubble {
+        padding: 9px 13px;
+        border-radius: 14px;
+        font-size: 14px;
+        line-height: 1.4;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    .chat-msg.own .bubble {
+        background: linear-gradient(135deg, rgba(124,58,237,0.6), rgba(14,165,233,0.6));
+        border-color: rgba(255,255,255,0.2);
+    }
+    .chat-msg .time {
+        font-size: 10px;
+        color: #64748b;
+        padding: 0 4px;
+    }
+    .chat-input-row {
+        display: flex;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+    .chat-input-row input {
+        flex: 1;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.15);
+        background: rgba(0,0,0,0.25);
+        color: #fff;
+        outline: none;
+        font-size: 14px;
+    }
+    .chat-input-row input::placeholder { color: #64748b; }
+    .chat-input-row input:focus { border-color: #38bdf8; }
+    .chat-input-row button {
+        padding: 12px 18px;
+        border-radius: 10px;
+        border: none;
+        background: linear-gradient(90deg, #7c3aed, #0ea5e9);
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 14px;
+        transition: opacity 0.2s;
+    }
+    .chat-input-row button:hover:not(:disabled) { opacity: 0.9; }
+    .chat-input-row button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ===== НИЖНЯ НАВІГАЦІЯ ===== */
+    .bottom-nav {
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(255,255,255,0.12);
+        z-index: 100;
+        gap: 6px;
+    }
+    .nav-btn {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        padding: 8px 4px;
         border-radius: 12px;
-        padding: 14px;
+        border: none;
+        background: transparent;
+        color: #64748b;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 600;
+        transition: all 0.2s;
+        max-width: 120px;
+    }
+    .nav-btn .nav-icon { font-size: 20px; transition: transform 0.2s; }
+    .nav-btn:hover { color: #cbd5e1; }
+    .nav-btn.active {
+        color: #fff;
+        background: linear-gradient(135deg, rgba(124,58,237,0.35), rgba(14,165,233,0.35));
+        border: 1px solid rgba(255,255,255,0.15);
+    }
+    .nav-btn.active .nav-icon { transform: translateY(-1px) scale(1.1); }
+
+    /* ===== НАЛАШТУВАННЯ (модалка) ===== */
+    .modal-overlay {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(5px);
+        z-index: 1500;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+        padding: 26px 24px;
+        width: 100%; max-width: 380px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        animation: fadeIn 0.3s ease;
+    }
+    .modal h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #e2e8f0;
         text-align: center;
     }
-    .stat .label { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
-    .stat .value { font-size: 20px; font-weight: 700; color: #fbbf24; margin-top: 4px; }
-    .stat .value.town { color: #38bdf8; }
-
-    .main-actions { display: flex; flex-direction: column; gap: 10px; }
+    .modal .hint {
+        font-size: 12px;
+        color: #94a3b8;
+        text-align: center;
+    }
+    .modal-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 4px;
+    }
+    .modal-actions button { flex: 1; }
     .btn-secondary {
-        padding: 11px;
+        padding: 12px;
         border-radius: 10px;
         border: 1px solid rgba(255,255,255,0.2);
         background: rgba(255,255,255,0.06);
@@ -183,31 +436,7 @@
     }
     .btn-secondary:hover { background: rgba(255,255,255,0.12); }
 
-    .btn-danger {
-        padding: 11px;
-        border-radius: 10px;
-        border: none;
-        background: rgba(239,68,68,0.85);
-        color: #fff;
-        font-weight: 600;
-        cursor: pointer;
-        font-size: 14px;
-        transition: background 0.2s;
-    }
-    .btn-danger:hover { background: #dc2626; }
-
-    .settings-panel {
-        display: none;
-        padding: 24px;
-        width: 100%; max-width: 420px;
-        flex-direction: column;
-        gap: 14px;
-        animation: fadeIn 0.3s ease;
-    }
-    .settings-panel.active { display: flex; }
-    .settings-panel h3 { font-size: 18px; font-weight: 600; color: #e2e8f0; margin-bottom: 4px; }
-    .settings-panel .hint { font-size: 12px; color: #94a3b8; }
-
+    /* ===== TOAST ===== */
     #toast-container {
         position: fixed;
         top: 20px; left: 50%;
@@ -242,11 +471,12 @@
 
     @media (max-width: 480px) {
         .auth-box { padding: 26px 20px; }
-        .user-card { padding: 22px 18px; }
-        .settings-panel { padding: 20px 18px; }
-        .stat .value { font-size: 18px; }
         .lang-switch { top: 12px; right: 12px; }
         .lang-switch button { padding: 5px 10px; font-size: 11px; }
+        .content { padding: 12px 12px 90px; }
+        .page-title { font-size: 20px; }
+        .nav-btn { font-size: 10px; }
+        .nav-btn .nav-icon { font-size: 18px; }
     }
 </style>
 </head>
@@ -259,10 +489,11 @@
 
 <div id="toast-container"></div>
 
+<!-- ===== АВТОРИЗАЦІЯ ===== -->
 <div id="auth-screen">
     <div class="auth-box glass">
         <h2>UniqueStone</h2>
-
+        <div class="version">v1.0.0</div>
         <div class="field">
             <input type="text" id="username" data-i18n-placeholder="ph_username" placeholder="Логін" autocomplete="username">
         </div>
@@ -272,35 +503,84 @@
         <div class="field hidden" id="new-password-container">
             <input type="password" id="new-password" data-i18n-placeholder="ph_new_password" placeholder="Новий пароль" autocomplete="new-password">
         </div>
-
         <button id="auth-btn" class="btn-primary" onclick="handleAuth()">Увійти</button>
-
         <div class="auth-toggle" id="auth-toggle-mode" onclick="switchAuthMode('register')">Ще немає акаунта? Зареєструватись</div>
         <div class="auth-toggle" id="auth-toggle-pass" onclick="switchAuthMode('change-pass')" style="opacity:0.7;">Змінити пароль</div>
     </div>
 </div>
 
-<div id="main-screen">
-    <div class="user-card glass" id="main-card">
-        <h1 data-i18n="welcome">Ви ввійшли!</h1>
-        <div class="stats">
-            <div class="stat">
-                <div class="label" data-i18n="label_gold">Золото</div>
-                <div class="value" id="stat-gold">0</div>
-            </div>
-            <div class="stat">
-                <div class="label" data-i18n="label_town">Ратуша</div>
-                <div class="value town" id="stat-town">1</div>
-            </div>
+<!-- ===== ГОЛОВНИЙ ЕКРАН ===== -->
+<div id="app-screen">
+
+    <div class="top-bar">
+        <div class="user-info">
+            <div class="avatar" id="top-avatar">?</div>
+            <div class="user-name" id="top-username">---</div>
         </div>
-        <div class="main-actions">
-            <button class="btn-primary" data-i18n="btn_play" onclick="toast('info', t('toast_game_soon'))">Грати</button>
-            <button class="btn-secondary" data-i18n="btn_settings" onclick="showSettings()">Налаштування</button>
-            <button class="btn-danger" data-i18n="btn_logout" onclick="logout()">Вийти</button>
+        <div class="top-actions">
+            <button class="icon-btn" id="btn-settings" onclick="openSettings()" title="Налаштування">⚙️</button>
+            <button class="icon-btn danger" id="btn-logout" onclick="logout()" title="Вийти">⎋</button>
         </div>
     </div>
 
-    <div class="settings-panel glass" id="settings-panel">
+    <div class="content">
+
+        <!-- ШАХТА -->
+        <div class="page active" id="page-mine">
+            <div class="page-title" data-i18n="tab_mine">Шахта</div>
+            <div class="placeholder-card glass">
+                <div class="big-icon">⛏️</div>
+                <h3 data-i18n="mine_title">Шахта</h3>
+                <p data-i18n="mine_desc">Тут незабаром з'явиться вміст шахти.</p>
+            </div>
+        </div>
+
+        <!-- ЧАТ -->
+        <div class="page" id="page-chat">
+            <div class="page-title" data-i18n="tab_chat">Чат</div>
+            <div class="chat-layout">
+                <div class="chat-messages" id="chat-messages">
+                    <div class="chat-empty" id="chat-empty" data-i18n="chat_empty">Повідомлень ще немає. Напишіть першим!</div>
+                </div>
+                <div class="chat-input-row">
+                    <input type="text" id="chat-input" data-i18n-placeholder="chat_placeholder" placeholder="Напишіть повідомлення..." maxlength="500">
+                    <button id="chat-send" onclick="sendMessage()" data-i18n="chat_send">Надіслати</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- РИНОК -->
+        <div class="page" id="page-market">
+            <div class="page-title" data-i18n="tab_market">Ринок</div>
+            <div class="placeholder-card glass">
+                <div class="big-icon">📈</div>
+                <h3 data-i18n="market_title">Ринок</h3>
+                <p data-i18n="market_desc">Тут незабаром з'явиться ринок.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-btn active" id="nav-mine" onclick="switchTab('mine')">
+            <span class="nav-icon">⛏️</span>
+            <span data-i18n="tab_mine">Шахта</span>
+        </button>
+        <button class="nav-btn" id="nav-chat" onclick="switchTab('chat')">
+            <span class="nav-icon">💬</span>
+            <span data-i18n="tab_chat">Чат</span>
+        </button>
+        <button class="nav-btn" id="nav-market" onclick="switchTab('market')">
+            <span class="nav-icon">📈</span>
+            <span data-i18n="tab_market">Ринок</span>
+        </button>
+    </div>
+
+</div>
+
+<!-- ===== МОДАЛКА НАЛАШТУВАНЬ ===== -->
+<div class="modal-overlay" id="settings-modal">
+    <div class="modal glass">
         <h3 data-i18n="settings_title">Налаштування</h3>
         <div class="hint"><span data-i18n="settings_user">Користувач: </span><span id="settings-username">---</span></div>
 
@@ -311,14 +591,18 @@
             <input type="password" id="settings-new-pass" data-i18n-placeholder="ph_new_password" placeholder="Новий пароль">
         </div>
 
-        <button class="btn-primary" data-i18n="btn_change_pass" onclick="changePasswordFromSettings()">Змінити пароль</button>
-        <button class="btn-secondary" data-i18n="btn_back" onclick="hideSettings()">Назад</button>
+        <div class="modal-actions">
+            <button class="btn-secondary" onclick="closeSettings()" data-i18n="btn_cancel">Скасувати</button>
+            <button class="btn-primary" onclick="changePasswordFromSettings()" data-i18n="btn_change_pass" style="margin-top:0;">Змінити пароль</button>
+        </div>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, get, child, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, get, child, update, push, onChildAdded, query, limitToLast, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const APP_VERSION = "1.0.0";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDGltUohufVAc-FMIbO1sIvpd6xWSiaKdU",
@@ -337,7 +621,10 @@
     let mode = "login";
     let currentUsername = "";
     let currentLang = "uk";
+    let currentTab = "mine";
+    let chatStarted = false;
 
+    /* ===== i18n ===== */
     const I18N = {
         uk: {
             ph_username: "Логін",
@@ -347,17 +634,21 @@
             btn_login: "Увійти",
             btn_register: "Створити акаунт",
             btn_change_pass: "Змінити пароль",
+            btn_cancel: "Скасувати",
             toggle_to_register: "Ще немає акаунта? Зареєструватись",
             toggle_to_login: "Вже є акаунт? Увійти",
             toggle_back_to_login: "Повернутися до входу",
             toggle_change_pass: "Змінити пароль",
-            welcome: "Ви ввійшли!",
-            label_gold: "Золото",
-            label_town: "Ратуша",
-            btn_play: "Грати",
-            btn_settings: "Налаштування",
-            btn_logout: "Вийти",
-            btn_back: "Назад",
+            tab_mine: "Шахта",
+            tab_chat: "Чат",
+            tab_market: "Ринок",
+            mine_title: "Шахта",
+            mine_desc: "Тут незабаром з'явиться вміст шахти.",
+            market_title: "Ринок",
+            market_desc: "Тут незабаром з'явиться ринок.",
+            chat_empty: "Повідомлень ще немає. Напишіть першим!",
+            chat_placeholder: "Напишіть повідомлення...",
+            chat_send: "Надіслати",
             settings_title: "Налаштування",
             settings_user: "Користувач: ",
             toast_fill_all: "Заповніть усі поля!",
@@ -372,8 +663,9 @@
             toast_pass_changed: "Пароль успішно змінено!",
             toast_wait: "Зачекайте...",
             toast_error: "Помилка: ",
-            toast_game_soon: "Гра скоро з'явиться!",
-            toast_logged_out: "Ви вийшли з акаунта"
+            toast_logged_out: "Ви вийшли з акаунта",
+            toast_chat_empty: "Повідомлення не може бути порожнім",
+            toast_chat_sent: "Повідомлення надіслано"
         },
         en: {
             ph_username: "Username",
@@ -383,17 +675,21 @@
             btn_login: "Log in",
             btn_register: "Create account",
             btn_change_pass: "Change password",
+            btn_cancel: "Cancel",
             toggle_to_register: "No account yet? Sign up",
             toggle_to_login: "Already have an account? Log in",
             toggle_back_to_login: "Back to login",
             toggle_change_pass: "Change password",
-            welcome: "You are logged in!",
-            label_gold: "Gold",
-            label_town: "Town Hall",
-            btn_play: "Play",
-            btn_settings: "Settings",
-            btn_logout: "Log out",
-            btn_back: "Back",
+            tab_mine: "Mine",
+            tab_chat: "Chat",
+            tab_market: "Market",
+            mine_title: "Mine",
+            mine_desc: "The mine content will appear here soon.",
+            market_title: "Market",
+            market_desc: "The market will appear here soon.",
+            chat_empty: "No messages yet. Be the first to write!",
+            chat_placeholder: "Type a message...",
+            chat_send: "Send",
             settings_title: "Settings",
             settings_user: "User: ",
             toast_fill_all: "Fill in all fields!",
@@ -408,8 +704,9 @@
             toast_pass_changed: "Password changed successfully!",
             toast_wait: "Please wait...",
             toast_error: "Error: ",
-            toast_game_soon: "The game is coming soon!",
-            toast_logged_out: "You have logged out"
+            toast_logged_out: "You have logged out",
+            toast_chat_empty: "Message cannot be empty",
+            toast_chat_sent: "Message sent"
         }
     };
 
@@ -451,6 +748,7 @@
         return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
+    /* ===== Авторизація ===== */
     window.switchAuthMode = function(targetMode) {
         mode = targetMode;
         refreshAuthUI();
@@ -507,25 +805,23 @@
                 if (snapshot.exists()) { toast('error', t('toast_user_exists')); return; }
                 await set(ref(db, 'users/' + user), {
                     password: passHash,
-                    gold: 0,
-                    townHallLevel: 1,
+                    createdAt: Date.now(),
                     lastOnline: Date.now()
                 });
                 toast('success', t('toast_register_ok'));
                 currentUsername = user;
                 try { localStorage.setItem('auth_username', user); localStorage.setItem('auth_hash', passHash); } catch (e) {}
-                showMainScreen(user, 0, 1);
+                showApp();
             }
             else if (mode === 'login') {
                 const snapshot = await get(child(dbRef, `users/${user}`));
                 if (!snapshot.exists() || snapshot.val().password !== passHash) {
                     toast('error', t('toast_wrong_creds')); return;
                 }
-                const data = snapshot.val();
                 currentUsername = user;
                 try { localStorage.setItem('auth_username', user); localStorage.setItem('auth_hash', passHash); } catch (e) {}
                 try { await update(ref(db, `users/${user}`), { lastOnline: Date.now() }); } catch (e) {}
-                showMainScreen(user, data.gold || 0, data.townHallLevel || 1);
+                showApp();
             }
             else if (mode === 'change-pass') {
                 const newPass = document.getElementById('new-password').value;
@@ -550,25 +846,43 @@
         }
     };
 
-    function showMainScreen(user, gold, town) {
+    /* ===== Показ застосунку ===== */
+    function showApp() {
         document.getElementById('auth-screen').style.display = 'none';
-        document.getElementById('main-screen').classList.add('active');
-        document.getElementById('settings-username').textContent = user;
-        document.getElementById('stat-gold').textContent = gold;
-        document.getElementById('stat-town').textContent = town;
-        hideSettings();
+        document.getElementById('app-screen').classList.add('active');
+        document.getElementById('top-username').textContent = currentUsername || '---';
+        document.getElementById('top-avatar').textContent = (currentUsername || '?').charAt(0).toUpperCase();
+        document.getElementById('settings-username').textContent = currentUsername || '---';
+        switchTab('mine');
+        startChatListener();
     }
 
-    window.showSettings = function() {
-        document.getElementById('main-card').style.display = 'none';
-        document.getElementById('settings-panel').classList.add('active');
-        document.getElementById('settings-username').textContent = currentUsername || '---';
+    /* ===== Вкладки ===== */
+    window.switchTab = function(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('page-' + tab).classList.add('active');
+        document.getElementById('nav-' + tab).classList.add('active');
+        if (tab === 'chat') {
+            const msgs = document.getElementById('chat-messages');
+            msgs.scrollTop = msgs.scrollHeight;
+        }
     };
 
-    window.hideSettings = function() {
-        document.getElementById('settings-panel').classList.remove('active');
-        document.getElementById('main-card').style.display = 'flex';
+    /* ===== Налаштування (модалка) ===== */
+    window.openSettings = function() {
+        document.getElementById('settings-username').textContent = currentUsername || '---';
+        document.getElementById('settings-modal').classList.add('active');
     };
+    window.closeSettings = function() {
+        document.getElementById('settings-modal').classList.remove('active');
+        document.getElementById('settings-old-pass').value = '';
+        document.getElementById('settings-new-pass').value = '';
+    };
+    document.getElementById('settings-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'settings-modal') closeSettings();
+    });
 
     window.changePasswordFromSettings = async function() {
         const oldPass = document.getElementById('settings-old-pass').value;
@@ -588,32 +902,111 @@
             await set(ref(db, `users/${currentUsername}/password`), newHash);
             try { localStorage.setItem('auth_hash', newHash); } catch (e) {}
             toast('success', t('toast_pass_changed'));
-            document.getElementById('settings-old-pass').value = '';
-            document.getElementById('settings-new-pass').value = '';
+            closeSettings();
         } catch (error) {
             console.error('Помилка:', error);
             toast('error', t('toast_error') + error.message);
         }
     };
 
+    /* ===== ЧАТ ===== */
+    function startChatListener() {
+        if (chatStarted) return;
+        chatStarted = true;
+
+        const messagesRef = query(ref(db, 'chat/messages'), limitToLast(100));
+        onChildAdded(messagesRef, (snapshot) => {
+            const msg = snapshot.val();
+            if (!msg) return;
+            appendMessage(msg);
+        });
+    }
+
+    function appendMessage(msg) {
+        const empty = document.getElementById('chat-empty');
+        if (empty) empty.remove();
+
+        const container = document.getElementById('chat-messages');
+        const el = document.createElement('div');
+        el.className = 'chat-msg' + (msg.author === currentUsername ? ' own' : '');
+
+        const author = document.createElement('div');
+        author.className = 'author';
+        author.textContent = msg.author || '?';
+
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.textContent = msg.text || '';
+
+        const time = document.createElement('div');
+        time.className = 'time';
+        time.textContent = formatTime(msg.time);
+
+        el.appendChild(author);
+        el.appendChild(bubble);
+        el.appendChild(time);
+        container.appendChild(el);
+
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function formatTime(ts) {
+        if (!ts) return '';
+        const d = new Date(ts);
+        const hh = String(d.getHours()).padStart(2, '0');
+        const mm = String(d.getMinutes()).padStart(2, '0');
+        return `${hh}:${mm}`;
+    }
+
+    window.sendMessage = async function() {
+        const input = document.getElementById('chat-input');
+        const text = input.value.trim();
+        if (!text) { toast('error', t('toast_chat_empty')); return; }
+        if (!currentUsername) return;
+
+        const btn = document.getElementById('chat-send');
+        btn.disabled = true;
+        try {
+            const newRef = push(ref(db, 'chat/messages'));
+            await set(newRef, {
+                author: currentUsername,
+                text: text,
+                time: Date.now()
+            });
+            input.value = '';
+        } catch (e) {
+            console.error(e);
+            toast('error', t('toast_error') + e.message);
+        } finally {
+            btn.disabled = false;
+            input.focus();
+        }
+    };
+
+    document.getElementById('chat-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+    /* ===== Вихід ===== */
     window.logout = async function() {
         if (currentUsername) {
             try { await update(ref(db, `users/${currentUsername}`), { lastOnline: Date.now() }); } catch (e) {}
         }
         try { localStorage.removeItem('auth_username'); localStorage.removeItem('auth_hash'); } catch (e) {}
         currentUsername = "";
-        document.getElementById('main-screen').classList.remove('active');
+        chatStarted = false;
+        document.getElementById('app-screen').classList.remove('active');
         document.getElementById('auth-screen').style.display = 'flex';
         document.getElementById('username').value = '';
         document.getElementById('password').value = '';
         document.getElementById('new-password').value = '';
-        document.getElementById('settings-old-pass').value = '';
-        document.getElementById('settings-new-pass').value = '';
-        hideSettings();
+        document.getElementById('chat-messages').innerHTML = '<div class="chat-empty" id="chat-empty">' + t('chat_empty') + '</div>';
+        closeSettings();
         switchAuthMode('login');
         toast('info', t('toast_logged_out'));
     };
 
+    /* ===== Автовхід ===== */
     (async function autoLogin() {
         try {
             const savedUser = localStorage.getItem('auth_username');
@@ -622,10 +1015,9 @@
 
             const snapshot = await get(child(ref(db), `users/${savedUser}`));
             if (snapshot.exists() && snapshot.val().password === savedHash) {
-                const data = snapshot.val();
                 currentUsername = savedUser;
                 try { await update(ref(db, `users/${savedUser}`), { lastOnline: Date.now() }); } catch (e) {}
-                showMainScreen(savedUser, data.gold || 0, data.townHallLevel || 1);
+                showApp();
             } else {
                 try { localStorage.removeItem('auth_username'); localStorage.removeItem('auth_hash'); } catch (e) {}
             }
@@ -644,6 +1036,7 @@
             if (el) el.addEventListener('keydown', (e) => { if (e.key === 'Enter') changePasswordFromSettings(); });
         });
         applyI18n();
+        console.log('%cUniqueStone v' + APP_VERSION, 'color:#38bdf8;font-weight:bold;font-size:14px;');
     });
 </script>
 </body>
