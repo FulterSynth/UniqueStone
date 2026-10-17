@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="version" content="1.0.3">
-<meta name="app-version" content="1.0.3">
-<title>UniqueStone — v1.0.3</title>
+<meta name="version" content="1.0.4">
+<meta name="app-version" content="1.0.4">
+<title>UniqueStone — v1.0.4</title>
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     html, body { height: 100%; width: 100%; overflow: hidden; }
@@ -984,59 +984,6 @@
     .active-stone-slot .info .s-rarity { font-size: 11px; margin-top: 3px; }
     .active-stone-slot .empty-msg { color: #64748b; font-size: 12px; font-style: italic; }
 
-    .pattern-picker {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-        gap: 6px;
-    }
-    .pattern-option {
-        aspect-ratio: 1;
-        border-radius: 10px;
-        border: 2px solid rgba(255,255,255,0.15);
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 9px;
-        color: #fff;
-        font-weight: 600;
-        text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-        background-color: rgba(30,30,50,0.6);
-    }
-    .pattern-option:hover { border-color: rgba(255,255,255,0.4); }
-    .pattern-option.selected { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56,189,248,0.4); }
-    .pattern-option.locked { opacity: 0.3; cursor: not-allowed; }
-    .pattern-option.locked::after {
-        content: '🔒';
-        position: absolute;
-        font-size: 20px;
-    }
-
-    .color-swatches {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
-        gap: 6px;
-    }
-    .color-swatch {
-        aspect-ratio: 1;
-        border-radius: 8px;
-        border: 2px solid rgba(255,255,255,0.2);
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-    .color-swatch:hover { transform: scale(1.08); border-color: rgba(255,255,255,0.5); }
-    .color-swatch.selected { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56,189,248,0.5); }
-
-    .gradient-row {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-    .gradient-row .color-swatches { flex: 1; }
-
     .profile-preview-bubble {
         padding: 10px 14px;
         border-radius: 14px;
@@ -1082,7 +1029,7 @@
 <div id="auth-screen">
     <div class="auth-box glass">
         <h2>UniqueStone</h2>
-        <div class="version">v1.0.3</div>
+        <div class="version">v1.0.4</div>
         <div class="field">
             <input type="text" id="username" data-i18n-placeholder="ph_username" placeholder="Логін" autocomplete="username">
         </div>
@@ -1228,7 +1175,7 @@
             <button class="btn-secondary" onclick="closeSettings()" data-i18n="btn_cancel">Скасувати</button>
             <button class="btn-primary" onclick="changePasswordFromSettings()" data-i18n="btn_change_pass" style="margin-top:0;">Змінити пароль</button>
         </div>
-        <div class="version-line">v1.0.3</div>
+        <div class="version-line">v1.0.4</div>
     </div>
 </div>
 
@@ -1249,26 +1196,6 @@
             </div>
             <div class="note" data-i18n="profile_active_note">Активний камінь визначає стиль ваших повідомлень у чаті.</div>
             <button class="btn-danger-outline hidden" id="deactivate-stone-btn" onclick="deactivateStone()" data-i18n="btn_deactivate_stone">Зняти активний камінь</button>
-        </div>
-
-        <div class="profile-section">
-            <h4 data-i18n="profile_pattern">Патерн</h4>
-            <div class="note" data-i18n="profile_pattern_note">Доступні лише патерни з ваших каменів.</div>
-            <div class="pattern-picker" id="pattern-picker"></div>
-        </div>
-
-        <div class="profile-section">
-            <h4 data-i18n="profile_text_gradient">Градієнт тексту</h4>
-            <div class="note" data-i18n="profile_gradient_note">Доступні лише кольори з ваших каменів.</div>
-            <div class="gradient-row">
-                <div class="color-swatches" id="gradient-color-1"></div>
-            </div>
-            <div class="gradient-row">
-                <div class="color-swatches" id="gradient-color-2"></div>
-            </div>
-            <div class="modal-actions">
-                <button class="btn-secondary" onclick="resetTextGradient()" data-i18n="btn_reset_gradient">Скинути градієнт</button>
-            </div>
         </div>
 
         <div class="profile-section">
@@ -1357,7 +1284,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, get, child, update, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    const APP_VERSION = "1.0.3";
+    const APP_VERSION = "1.0.4";
     const DIG_COOLDOWN_MS = 12 * 60 * 60 * 1000;
     const UNLIMITED_DIG_USER = "Fulter";
 
@@ -1383,7 +1310,6 @@
     let chatUnsubscribe = null;
     let inventory = {};
     let activeStoneId = null;
-    let bubbleStyle = { pattern: null, grad1: null, grad2: null };
     let inventorySort = "rarity";
     let pendingRevealStone = null;
     let pendingDetailStone = null;
@@ -1407,14 +1333,12 @@
     };
 
     const ALL_PATTERNS = ["standard", "dots", "grid", "stripes", "waves", "hex", "leopard", "stars", "cracks", "nacre", "mythic-aura"];
-    const GEM_NAMES_UK = ["Кристал", "Камінь", "Самоцвіт", "Мінерал", "Аметист", "Смарагд", "Рубін", "Сапфір", "Топаз", "Опал"];
-    const GEM_NAMES_EN = ["Crystal", "Stone", "Gem", "Mineral", "Amethyst", "Emerald", "Ruby", "Sapphire", "Topaz", "Opal"];
 
     const I18N = {
         uk: {
             ph_username: "Логін", ph_password: "Пароль", ph_new_password: "Новий пароль", ph_old_password: "Старий пароль",
             btn_login: "Увійти", btn_register: "Створити акаунт", btn_change_pass: "Змінити пароль", btn_cancel: "Скасувати",
-            btn_close: "Закрити", btn_activate: "Активувати", btn_reset_gradient: "Скинути градієнт",
+            btn_close: "Закрити", btn_activate: "Активувати",
             btn_deactivate_stone: "Зняти активний камінь",
             toggle_to_register: "Ще немає акаунта? Зареєструватись", toggle_to_login: "Вже є акаунт? Увійти",
             toggle_back_to_login: "Повернутися до входу", toggle_change_pass: "Змінити пароль",
@@ -1425,7 +1349,6 @@
             chat_empty: "Повідомлень ще немає. Напишіть першим!",
             chat_placeholder: "Напишіть повідомлення...", chat_send: "Надіслати",
             chat_deleted: "{name} видалив повідомлення",
-            chat_delete_title: "Видалити повідомлення",
             ctx_delete: "🗑 Видалити",
             settings_title: "Налаштування", settings_user: "Користувач: ",
             stone_found: "Ви знайшли камінь!", stone_rarity: "Рідкість:", stone_pattern: "Патерн:", stone_obtained: "Отримано:",
@@ -1433,8 +1356,6 @@
             profile_title: "Мій профіль", profile_other_title: "Профіль гравця",
             profile_active_stone: "Активний камінь", profile_no_stone: "Немає активного каменю",
             profile_active_note: "Активний камінь визначає стиль ваших повідомлень у чаті.",
-            profile_pattern: "Патерн", profile_pattern_note: "Доступні лише патерни з ваших каменів.",
-            profile_text_gradient: "Градієнт тексту", profile_gradient_note: "Доступні лише кольори з ваших каменів.",
             profile_preview: "Попередній перегляд", profile_preview_text: "Привіт! Це моє повідомлення.",
             chances_title: "Шанси рідкості", chances_rarity: "Рідкість", chances_chance: "Шанс",
             market_title: "Ринок", market_desc: "Тут незабаром з'явиться ринок.",
@@ -1446,13 +1367,12 @@
             toast_wait: "Зачекайте...", toast_error: "Помилка: ", toast_logged_out: "Ви вийшли з акаунта",
             toast_chat_empty: "Повідомлення не може бути порожнім",
             toast_cooldown: "Шахта ще відновлюється!", toast_activated: "Камінь активовано!",
-            toast_deactivated: "Активний камінь знято!",
-            toast_no_stones: "У вас ще немає каменів!"
+            toast_deactivated: "Активний камінь знято!"
         },
         en: {
             ph_username: "Username", ph_password: "Password", ph_new_password: "New password", ph_old_password: "Old password",
             btn_login: "Log in", btn_register: "Create account", btn_change_pass: "Change password", btn_cancel: "Cancel",
-            btn_close: "Close", btn_activate: "Activate", btn_reset_gradient: "Reset gradient",
+            btn_close: "Close", btn_activate: "Activate",
             btn_deactivate_stone: "Remove active stone",
             toggle_to_register: "No account yet? Sign up", toggle_to_login: "Already have an account? Log in",
             toggle_back_to_login: "Back to login", toggle_change_pass: "Change password",
@@ -1463,7 +1383,6 @@
             chat_empty: "No messages yet. Be the first to write!",
             chat_placeholder: "Type a message...", chat_send: "Send",
             chat_deleted: "{name} deleted a message",
-            chat_delete_title: "Delete message",
             ctx_delete: "🗑 Delete",
             settings_title: "Settings", settings_user: "User: ",
             stone_found: "You found a stone!", stone_rarity: "Rarity:", stone_pattern: "Pattern:", stone_obtained: "Obtained:",
@@ -1471,8 +1390,6 @@
             profile_title: "My profile", profile_other_title: "Player profile",
             profile_active_stone: "Active stone", profile_no_stone: "No active stone",
             profile_active_note: "Active stone determines the style of your chat messages.",
-            profile_pattern: "Pattern", profile_pattern_note: "Only patterns from your stones are available.",
-            profile_text_gradient: "Text gradient", profile_gradient_note: "Only colors from your stones are available.",
             profile_preview: "Preview", profile_preview_text: "Hi! This is my message.",
             chances_title: "Rarity chances", chances_rarity: "Rarity", chances_chance: "Chance",
             market_title: "Market", market_desc: "The market will appear here soon.",
@@ -1484,8 +1401,7 @@
             toast_wait: "Please wait...", toast_error: "Error: ", toast_logged_out: "You have logged out",
             toast_chat_empty: "Message cannot be empty",
             toast_cooldown: "The mine is still recovering!", toast_activated: "Stone activated!",
-            toast_deactivated: "Active stone removed!",
-            toast_no_stones: "You don't have any stones yet!"
+            toast_deactivated: "Active stone removed!"
         }
     };
 
@@ -1533,15 +1449,13 @@
         const patterns = PATTERNS_BY_RARITY[rarity];
         const pattern = patterns[Math.floor(Math.random() * patterns.length)];
         const colors = rarityColors(rarity);
-        const names = currentLang === "uk" ? GEM_NAMES_UK : GEM_NAMES_EN;
-        const baseName = names[Math.floor(Math.random() * names.length)];
-        const number = Math.floor(Math.random() * 9000 + 1000);
+        const number = String(Math.floor(Math.random() * 1000000)).padStart(6, "0");
         const id = "s_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
         return {
             id, rarity, pattern,
             primaryColor: colors.primary,
             secondaryColor: colors.secondary,
-            name: baseName + " #" + number,
+            name: getPatternLabel(pattern) + " #" + number,
             obtainedAt: Date.now()
         };
     }
@@ -1690,7 +1604,6 @@
                 const data = snap.val();
                 inventory = data.inventory || {};
                 activeStoneId = data.activeStone || null;
-                bubbleStyle = data.bubbleStyle || { pattern: null, grad1: null, grad2: null };
             }
         } catch(e) { console.error("loadUserData:", e); }
         updateMineUI();
@@ -1933,13 +1846,7 @@
                 let style = null;
                 if (data.activeStone && data.inventory && data.inventory[data.activeStone]) {
                     const s = data.inventory[data.activeStone];
-                    style = { bg1: s.primaryColor, bg2: s.secondaryColor, pattern: s.pattern, rarity: s.rarity, textGrad1: null, textGrad2: null };
-                }
-                if (data.bubbleStyle) {
-                    if (!style) style = {};
-                    if (data.bubbleStyle.pattern) style.pattern = data.bubbleStyle.pattern;
-                    if (data.bubbleStyle.grad1) style.textGrad1 = data.bubbleStyle.grad1;
-                    if (data.bubbleStyle.grad2) style.textGrad2 = data.bubbleStyle.grad2;
+                    style = { bg1: s.primaryColor, bg2: s.secondaryColor, pattern: s.pattern, rarity: s.rarity };
                 }
                 otherStyles[username] = style;
                 document.querySelectorAll(`.chat-msg[data-author="${CSS.escape(username)}"] .bubble`).forEach(b => applyBubbleStyle(b, style));
@@ -1956,14 +1863,6 @@
         }
         if (style.rarity === "legendary") bubbleEl.style.boxShadow = `0 0 12px ${style.bg1}aa`;
         else if (style.rarity === "mythic") bubbleEl.style.boxShadow = `0 0 16px ${style.bg1}, 0 0 24px ${style.bg2}`;
-        const txt = bubbleEl.querySelector(".bubble-text");
-        if (txt && style.textGrad1 && style.textGrad2) {
-            txt.style.background = `linear-gradient(90deg, ${style.textGrad1}, ${style.textGrad2})`;
-            txt.style.webkitBackgroundClip = "text";
-            txt.style.backgroundClip = "text";
-            txt.style.webkitTextFillColor = "transparent";
-            txt.style.color = "transparent";
-        }
     }
 
     function appendMessage(msg, msgId) {
@@ -2002,7 +1901,6 @@
         bubble.appendChild(patEl);
         bubble.appendChild(text);
 
-        // контекстне меню: правою кнопкою на ПК, довге натискання на телефоні
         if (msg.author === currentUsername && !msg.deleted) {
             bubble.addEventListener("contextmenu", (e) => {
                 e.preventDefault();
@@ -2042,12 +1940,10 @@
         container.scrollTop = container.scrollHeight;
     }
 
-    /* ===== КОНТЕКСТНЕ МЕНЮ ===== */
     window.openCtxMenu = function(x, y, msgId) {
         ctxTargetMsgId = msgId;
         const menu = document.getElementById("msg-context-menu");
         menu.classList.add("active");
-        // позиціонування з урахуванням розмірів екрана
         const mw = 180, mh = 60;
         let left = x, top = y;
         if (left + mw > window.innerWidth - 10) left = window.innerWidth - mw - 10;
@@ -2083,13 +1979,14 @@
     function getMyStyle() {
         if (activeStoneId && inventory[activeStoneId]) {
             const s = inventory[activeStoneId];
-            return { bg1: s.primaryColor, bg2: s.secondaryColor, pattern: s.pattern, rarity: s.rarity, textGrad1: bubbleStyle.grad1, textGrad2: bubbleStyle.grad2 };
+            return { bg1: s.primaryColor, bg2: s.secondaryColor, pattern: s.pattern, rarity: s.rarity };
         }
-        return { pattern: bubbleStyle.pattern, textGrad1: bubbleStyle.grad1, textGrad2: bubbleStyle.grad2 };
+        return null;
     }
 
     function applyMyBubbleStyle(bubbleEl) {
         const s = getMyStyle();
+        if (!s) return;
         if (s.bg1 && s.bg2) bubbleEl.style.background = `linear-gradient(135deg, ${s.bg1}, ${s.bg2})`;
         if (s.pattern) {
             const pat = bubbleEl.querySelector(".bubble-pattern");
@@ -2097,22 +1994,12 @@
         }
         if (s.rarity === "legendary") bubbleEl.style.boxShadow = `0 0 12px ${s.bg1}aa`;
         else if (s.rarity === "mythic") bubbleEl.style.boxShadow = `0 0 16px ${s.bg1}, 0 0 24px ${s.bg2}`;
-        const txt = bubbleEl.querySelector(".bubble-text");
-        if (txt && s.textGrad1 && s.textGrad2) {
-            txt.style.background = `linear-gradient(90deg, ${s.textGrad1}, ${s.textGrad2})`;
-            txt.style.webkitBackgroundClip = "text";
-            txt.style.backgroundClip = "text";
-            txt.style.webkitTextFillColor = "transparent";
-            txt.style.color = "transparent";
-        }
     }
 
     function refreshChatStyles() {
         document.querySelectorAll(".chat-msg.own .bubble").forEach(b => {
             b.style.background = ""; b.style.boxShadow = "";
             const pat = b.querySelector(".bubble-pattern"); if (pat) pat.className = "bubble-pattern";
-            const txt = b.querySelector(".bubble-text");
-            if (txt) { txt.style.background = ""; txt.style.webkitBackgroundClip = ""; txt.style.backgroundClip = ""; txt.style.webkitTextFillColor = ""; txt.style.color = ""; }
             applyMyBubbleStyle(b);
         });
     }
@@ -2166,7 +2053,7 @@
 
     document.getElementById("chat-input").addEventListener("keydown", (e) => { if (e.key === "Enter") sendMessage(); });
 
-    /* ===== ПРОФІЛЬ ===== */
+    /* ===== ПРОФІЛЬ (без ручних налаштувань) ===== */
     window.openMyProfile = function() {
         if (!currentUsername) return;
         renderMyProfile();
@@ -2204,44 +2091,6 @@
             deactBtn.classList.add("hidden");
         }
 
-        const availablePatterns = new Set();
-        Object.values(inventory).forEach(s => availablePatterns.add(s.pattern));
-
-        const picker = document.getElementById("pattern-picker");
-        picker.innerHTML = "";
-        ALL_PATTERNS.forEach(p => {
-            const owned = availablePatterns.has(p);
-            const div = document.createElement("div");
-            div.className = "pattern-option pattern-" + p + (bubbleStyle.pattern === p ? " selected" : "") + (owned ? "" : " locked");
-            div.textContent = getPatternLabel(p);
-            div.style.backgroundColor = "rgba(30,30,50,0.6)";
-            div.onclick = () => { if (!owned) return; bubbleStyle.pattern = (bubbleStyle.pattern === p ? null : p); saveBubbleStyle(); renderMyProfile(); };
-            picker.appendChild(div);
-        });
-
-        const allColors = new Set();
-        Object.values(inventory).forEach(s => { allColors.add(s.primaryColor); allColors.add(s.secondaryColor); });
-
-        const c1 = document.getElementById("gradient-color-1");
-        const c2 = document.getElementById("gradient-color-2");
-        c1.innerHTML = ""; c2.innerHTML = "";
-        if (allColors.size === 0) {
-            c1.innerHTML = `<div style="font-size:11px;color:#64748b;">${t("toast_no_stones")}</div>`;
-        } else {
-            allColors.forEach(c => {
-                const sw1 = document.createElement("div");
-                sw1.className = "color-swatch" + (bubbleStyle.grad1 === c ? " selected" : "");
-                sw1.style.background = c;
-                sw1.onclick = () => { bubbleStyle.grad1 = (bubbleStyle.grad1 === c ? null : c); saveBubbleStyle(); renderMyProfile(); };
-                c1.appendChild(sw1);
-                const sw2 = document.createElement("div");
-                sw2.className = "color-swatch" + (bubbleStyle.grad2 === c ? " selected" : "");
-                sw2.style.background = c;
-                sw2.onclick = () => { bubbleStyle.grad2 = (bubbleStyle.grad2 === c ? null : c); saveBubbleStyle(); renderMyProfile(); };
-                c2.appendChild(sw2);
-            });
-        }
-
         renderProfilePreview();
     }
 
@@ -2255,27 +2104,11 @@
         txt.style.webkitTextFillColor = ""; txt.style.color = "";
 
         const s = getMyStyle();
+        if (!s) return;
         if (s.bg1 && s.bg2) prev.style.background = `linear-gradient(135deg, ${s.bg1}, ${s.bg2})`;
         if (s.pattern) pat.className = "bubble-pattern pattern-" + s.pattern;
         if (s.rarity === "legendary") prev.style.boxShadow = `0 0 12px ${s.bg1}aa`;
         else if (s.rarity === "mythic") prev.style.boxShadow = `0 0 16px ${s.bg1}, 0 0 24px ${s.bg2}`;
-        if (s.textGrad1 && s.textGrad2) {
-            txt.style.background = `linear-gradient(90deg, ${s.textGrad1}, ${s.textGrad2})`;
-            txt.style.webkitBackgroundClip = "text"; txt.style.backgroundClip = "text";
-            txt.style.webkitTextFillColor = "transparent"; txt.style.color = "transparent";
-        }
-    }
-
-    window.resetTextGradient = function() {
-        bubbleStyle.grad1 = null; bubbleStyle.grad2 = null;
-        saveBubbleStyle(); renderMyProfile();
-    };
-
-    async function saveBubbleStyle() {
-        try {
-            await update(ref(db, `users/${currentUsername}`), { bubbleStyle });
-            refreshChatStyles();
-        } catch(e) { toast("error", t("toast_error") + e.message); }
     }
 
     window.openOtherProfile = async function(username) {
@@ -2350,10 +2183,9 @@
 
     /* ===== ВИХІД ===== */
     window.logout = async function() {
-        if (currentUsername) { try { await update(ref(db, `users/${currentUsername}`), { lastOnline: Date.now() }); } catch(e) {} }
+        if (currentUsername) { try { await update(ref(db), { ["users/" + currentUsername + "/lastOnline"]: Date.now() }); } catch(e) {} }
         try { localStorage.removeItem("auth_username"); localStorage.removeItem("auth_hash"); } catch(e) {}
         currentUsername = ""; chatStarted = false; inventory = {}; activeStoneId = null;
-        bubbleStyle = { pattern: null, grad1: null, grad2: null };
         if (chatUnsubscribe) { try { chatUnsubscribe(); } catch(e) {} chatUnsubscribe = null; }
         if (mineTimerInterval) { clearInterval(mineTimerInterval); mineTimerInterval = null; }
         closeCtxMenu();
@@ -2398,7 +2230,7 @@
             const snapshot = await get(child(ref(db), `users/${savedUser}`));
             if (snapshot.exists() && snapshot.val().password === savedHash) {
                 currentUsername = savedUser;
-                try { await update(ref(db, `users/${savedUser}`), { lastOnline: Date.now() }); } catch(e) {}
+                try { await update(ref(db), { ["users/" + savedUser + "/lastOnline"]: Date.now() }); } catch(e) {}
                 showApp();
             } else {
                 try { localStorage.removeItem("auth_username"); localStorage.removeItem("auth_hash"); } catch(e) {}
