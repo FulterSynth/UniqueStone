@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="version" content="0.1.1">
-<meta name="app-version" content="0.1.1">
-<title>UniqueStone — v0.1.1</title>
+<meta name="version" content="0.1.2">
+<meta name="app-version" content="0.1.2">
+<title>UniqueStone — v0.1.2</title>
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     html, body { height: 100%; width: 100%; overflow: hidden; }
@@ -69,28 +69,29 @@
         margin-top: -6px;
         margin-bottom: 4px;
     }
-    .lang-switch {
+
+    /* Одна маленька кнопка мови на екрані входу */
+    .lang-btn-corner {
         position: absolute;
         top: 16px; right: 16px;
-        display: flex; gap: 6px;
-        z-index: 1001;
-    }
-    .lang-switch button {
-        padding: 5px 10px;
-        border-radius: 8px;
-        border: 1px solid rgba(255,255,255,0.2);
-        background: rgba(255,255,255,0.08);
+        height: 32px;
+        min-width: 32px;
+        padding: 0 9px;
+        border-radius: 9px;
+        border: 1px solid rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.06);
         color: #cbd5e1;
         cursor: pointer;
-        font-size: 11px;
-        font-weight: 600;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         transition: all 0.2s;
+        z-index: 1001;
     }
-    .lang-switch button:hover { background: rgba(255,255,255,0.15); color: #fff; }
-    .lang-switch button.active {
-        background: linear-gradient(90deg, #7c3aed, #0ea5e9);
-        color: #fff; border-color: transparent;
-    }
+    .lang-btn-corner:hover { background: rgba(255,255,255,0.14); color: #fff; }
 
     .field { display: flex; flex-direction: column; gap: 6px; }
     .field input {
@@ -477,8 +478,7 @@
 
     @media (max-width: 480px) {
         .auth-box { padding: 26px 20px; }
-        .lang-switch { top: 12px; right: 12px; }
-        .lang-switch button { padding: 4px 8px; font-size: 10px; }
+        .lang-btn-corner { top: 12px; right: 12px; height: 30px; font-size: 11px; }
         .content { padding: 12px 12px 90px; }
         .page-title { font-size: 20px; }
         .nav-btn { font-size: 10px; }
@@ -488,10 +488,8 @@
 </head>
 <body>
 
-<div class="lang-switch">
-    <button id="lang-ua" class="active" onclick="setLang('uk')">UA</button>
-    <button id="lang-en" onclick="setLang('en')">EN</button>
-</div>
+<!-- Одна маленька кнопка мови на екрані входу -->
+<button class="lang-btn-corner" id="auth-lang-btn" onclick="toggleLang()" title="Мова">UA</button>
 
 <div id="toast-container"></div>
 
@@ -499,7 +497,7 @@
 <div id="auth-screen">
     <div class="auth-box glass">
         <h2>UniqueStone</h2>
-        <div class="version">v0.1.1</div>
+        <div class="version">v0.1.2</div>
         <div class="field">
             <input type="text" id="username" data-i18n-placeholder="ph_username" placeholder="Логін" autocomplete="username">
         </div>
@@ -602,7 +600,7 @@
             <button class="btn-secondary" onclick="closeSettings()" data-i18n="btn_cancel">Скасувати</button>
             <button class="btn-primary" onclick="changePasswordFromSettings()" data-i18n="btn_change_pass" style="margin-top:0;">Змінити пароль</button>
         </div>
-        <div class="version-line">v0.1.1</div>
+        <div class="version-line">v0.1.2</div>
     </div>
 </div>
 
@@ -610,7 +608,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, get, child, update, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    const APP_VERSION = "0.1.1";
+    const APP_VERSION = "0.1.2";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDGltUohufVAc-FMIbO1sIvpd6xWSiaKdU",
@@ -632,7 +630,6 @@
     let currentTab = "mine";
     let chatStarted = false;
 
-    /* ===== i18n ===== */
     const I18N = {
         uk: {
             ph_username: "Логін",
@@ -721,8 +718,8 @@
     window.setLang = function(lang) {
         currentLang = lang;
         document.documentElement.lang = lang;
-        document.getElementById('lang-ua').classList.toggle('active', lang === 'uk');
-        document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+        const authLangBtn = document.getElementById('auth-lang-btn');
+        if (authLangBtn) authLangBtn.textContent = lang === 'uk' ? 'UA' : 'EN';
         const btnLang = document.getElementById('btn-lang');
         if (btnLang) btnLang.textContent = lang === 'uk' ? 'UA' : 'EN';
         applyI18n();
@@ -760,7 +757,6 @@
         return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    /* ===== Авторизація ===== */
     window.switchAuthMode = function(targetMode) {
         mode = targetMode;
         refreshAuthUI();
@@ -859,9 +855,9 @@
         }
     };
 
-    /* ===== Показ застосунку ===== */
     function showApp() {
         document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('auth-lang-btn').style.display = 'none';
         document.getElementById('app-screen').classList.add('active');
         document.getElementById('top-username').textContent = currentUsername || '---';
         document.getElementById('top-avatar').textContent = (currentUsername || '?').charAt(0).toUpperCase();
@@ -870,7 +866,6 @@
         startChatListener();
     }
 
-    /* ===== Вкладки ===== */
     window.switchTab = function(tab) {
         currentTab = tab;
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -883,7 +878,6 @@
         }
     };
 
-    /* ===== Налаштування ===== */
     window.openSettings = function() {
         document.getElementById('settings-username').textContent = currentUsername || '---';
         document.getElementById('settings-modal').classList.add('active');
@@ -922,7 +916,6 @@
         }
     };
 
-    /* ===== ЧАТ ===== */
     function startChatListener() {
         if (chatStarted) return;
         chatStarted = true;
@@ -1000,7 +993,6 @@
         if (e.key === 'Enter') sendMessage();
     });
 
-    /* ===== Вихід ===== */
     window.logout = async function() {
         if (currentUsername) {
             try { await update(ref(db, `users/${currentUsername}`), { lastOnline: Date.now() }); } catch (e) {}
@@ -1010,6 +1002,7 @@
         chatStarted = false;
         document.getElementById('app-screen').classList.remove('active');
         document.getElementById('auth-screen').style.display = 'flex';
+        document.getElementById('auth-lang-btn').style.display = 'flex';
         document.getElementById('username').value = '';
         document.getElementById('password').value = '';
         document.getElementById('new-password').value = '';
