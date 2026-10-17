@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="version" content="1.0.5">
-<meta name="app-version" content="1.0.5">
-<title>UniqueStone — v1.0.5</title>
+<meta name="version" content="1.0.6">
+<meta name="app-version" content="1.0.6">
+<title>UniqueStone — v1.0.6</title>
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     html, body { height: 100%; width: 100%; overflow: hidden; }
@@ -713,7 +713,7 @@
     .msg-context-menu button.danger { color: #fca5a5; }
     .msg-context-menu button.danger:hover { background: rgba(239,68,68,0.25); }
 
-    /* ===== ПАТЕРНИ (колір задається inline через patternColor) ===== */
+    /* ===== ПАТЕРНИ ===== */
     .pattern-standard { background: transparent; }
     .pattern-dots { background-size: 14px 14px; }
     .pattern-grid { background-size: 16px 16px; }
@@ -1004,7 +1004,7 @@
 <div id="auth-screen">
     <div class="auth-box glass">
         <h2>UniqueStone</h2>
-        <div class="version">v1.0.5</div>
+        <div class="version">v1.0.6</div>
         <div class="field">
             <input type="text" id="username" data-i18n-placeholder="ph_username" placeholder="Логін" autocomplete="username">
         </div>
@@ -1151,7 +1151,7 @@
             <button class="btn-primary" onclick="changePasswordFromSettings()" data-i18n="btn_change_pass" style="margin-top:0;">Змінити пароль</button>
         </div>
         <button class="btn-wipe hidden" id="wipe-btn" onclick="wipeAll()" data-i18n="btn_wipe">⚠ Вайп</button>
-        <div class="version-line">v1.0.5</div>
+        <div class="version-line">v1.0.6</div>
     </div>
 </div>
 
@@ -1272,7 +1272,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, get, child, update, remove, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    const APP_VERSION = "1.0.5";
+    const APP_VERSION = "1.0.6";
     const DIG_COOLDOWN_MS = 12 * 60 * 60 * 1000;
     const UNLIMITED_DIG_USER = "Fulter";
     const WIPE_USER = "Fulter";
@@ -1321,9 +1321,6 @@
         mythic:    ["mythic-aura"]
     };
 
-    const ALL_PATTERNS = ["standard", "dots", "grid", "stripes", "waves", "hex", "leopard", "stars", "cracks", "nacre", "mythic-aura"];
-
-    /* Українські назви кольорів за діапазоном відтінку */
     const HUE_NAMES_UK = [
         { min: 0,   max: 15,  name: "Багряний" },
         { min: 15,  max: 40,  name: "Помаранчевий" },
@@ -1354,8 +1351,7 @@
             ph_username: "Логін", ph_password: "Пароль", ph_new_password: "Новий пароль", ph_old_password: "Старий пароль",
             btn_login: "Увійти", btn_register: "Створити акаунт", btn_change_pass: "Змінити пароль", btn_cancel: "Скасувати",
             btn_close: "Закрити", btn_activate: "Активувати",
-            btn_deactivate_stone: "Зняти активний камінь",
-            btn_wipe: "⚠ Вайп",
+            btn_deactivate_stone: "Зняти активний камінь", btn_wipe: "⚠ Вайп",
             toggle_to_register: "Ще немає акаунта? Зареєструватись", toggle_to_login: "Вже є акаунт? Увійти",
             toggle_back_to_login: "Повернутися до входу", toggle_change_pass: "Змінити пароль",
             tab_mine: "Шахта", tab_inventory: "Інвентар", tab_chat: "Чат", tab_market: "Ринок",
@@ -1364,8 +1360,7 @@
             sort_rarity: "↓ Рідкість", sort_date: "↓ Дата",
             chat_empty: "Повідомлень ще немає. Напишіть першим!",
             chat_placeholder: "Напишіть повідомлення...", chat_send: "Надіслати",
-            chat_deleted: "{name} видалив повідомлення",
-            ctx_delete: "🗑 Видалити",
+            chat_deleted: "{name} видалив повідомлення", ctx_delete: "🗑 Видалити",
             settings_title: "Налаштування", settings_user: "Користувач: ",
             stone_found: "Ви знайшли камінь!", stone_rarity: "Рідкість:", stone_pattern: "Патерн:", stone_obtained: "Отримано:",
             stone_details_title: "Деталі каменю",
@@ -1391,8 +1386,7 @@
             ph_username: "Username", ph_password: "Password", ph_new_password: "New password", ph_old_password: "Old password",
             btn_login: "Log in", btn_register: "Create account", btn_change_pass: "Change password", btn_cancel: "Cancel",
             btn_close: "Close", btn_activate: "Activate",
-            btn_deactivate_stone: "Remove active stone",
-            btn_wipe: "⚠ Wipe",
+            btn_deactivate_stone: "Remove active stone", btn_wipe: "⚠ Wipe",
             toggle_to_register: "No account yet? Sign up", toggle_to_login: "Already have an account? Log in",
             toggle_back_to_login: "Back to login", toggle_change_pass: "Change password",
             tab_mine: "Mine", tab_inventory: "Inventory", tab_chat: "Chat", tab_market: "Market",
@@ -1401,8 +1395,7 @@
             sort_rarity: "↓ Rarity", sort_date: "↓ Date",
             chat_empty: "No messages yet. Be the first to write!",
             chat_placeholder: "Type a message...", chat_send: "Send",
-            chat_deleted: "{name} deleted a message",
-            ctx_delete: "🗑 Delete",
+            chat_deleted: "{name} deleted a message", ctx_delete: "🗑 Delete",
             settings_title: "Settings", settings_user: "User: ",
             stone_found: "You found a stone!", stone_rarity: "Rarity:", stone_pattern: "Pattern:", stone_obtained: "Obtained:",
             stone_details_title: "Stone details",
@@ -1483,27 +1476,27 @@
         return list[0].name;
     }
 
-    function rarityColors(rarity) {
-        const ranges = {
-            common:    { h: [200, 220], s: [10, 30], l: [55, 70] },
-            rare:      { h: [180, 230], s: [50, 80], l: [50, 65] },
-            epic:      { h: [260, 300], s: [60, 85], l: [55, 70] },
-            legendary: { h: [35, 55],   s: [80, 100], l: [50, 65] },
-            mythic:    { h: [0, 20],    s: [80, 100], l: [50, 60] }
-        };
-        const r = ranges[rarity];
-        const h = Math.floor(Math.random() * (r.h[1] - r.h[0]) + r.h[0]);
-        const s = Math.floor(Math.random() * (r.s[1] - r.s[0]) + r.s[0]);
-        const l = Math.floor(Math.random() * (r.l[1] - r.l[0]) + r.l[0]);
-        const h2 = (h + Math.floor(Math.random() * 40 + 20)) % 360;
-        return { primary: hslToHex(h, s, l), secondary: hslToHex(h2, s, l) };
+    /* ПОВНІСТЮ ВИПАДКОВИЙ колір — без прив'язки до рідкості */
+    function randomStoneColor() {
+        const h = Math.floor(Math.random() * 360);
+        const s = Math.floor(Math.random() * 60 + 40);
+        const l = Math.floor(Math.random() * 40 + 35);
+        return hslToHex(h, s, l);
     }
 
-    /* Колір патерну — окремий випадковий, не прив'язаний до кольору каменю */
+    function randomStoneColors() {
+        const h1 = Math.floor(Math.random() * 360);
+        const h2 = (h1 + Math.floor(Math.random() * 80 + 40)) % 360;
+        const s = Math.floor(Math.random() * 60 + 40);
+        const l = Math.floor(Math.random() * 40 + 35);
+        return { primary: hslToHex(h1, s, l), secondary: hslToHex(h2, s, l) };
+    }
+
+    /* ПОВНІСТЮ ВИПАДКОВИЙ колір патерну */
     function randomPatternColor() {
         const h = Math.floor(Math.random() * 360);
-        const s = Math.floor(Math.random() * 50 + 50);
-        const l = Math.floor(Math.random() * 40 + 30);
+        const s = Math.floor(Math.random() * 60 + 40);
+        const l = Math.floor(Math.random() * 50 + 25);
         return hslToHex(h, s, l);
     }
 
@@ -1511,15 +1504,12 @@
         const rarity = randomRarity();
         const patterns = PATTERNS_BY_RARITY[rarity];
         const pattern = patterns[Math.floor(Math.random() * patterns.length)];
-        const colors = rarityColors(rarity);
+        const colors = randomStoneColors();
         const patternColor = randomPatternColor();
         const number = String(Math.floor(Math.random() * 1000000)).padStart(6, "0");
-
-        // Назва: [Колір каменю] [Патерн] #NNNNNN
         const stoneHueName = hueName(colors.primary);
         const patternLabel = getPatternLabel(pattern);
         const name = stoneHueName + " " + patternLabel + " #" + number;
-
         const id = "s_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
         return {
             id, rarity, pattern,
@@ -1776,6 +1766,10 @@
     function applyPatternStyle(el, pattern, color) {
         if (!el) return;
         el.className = "bubble-pattern pattern-" + pattern;
+        el.style.background = "";
+        el.style.backgroundImage = "";
+        el.style.backgroundSize = "";
+        el.style.backgroundPosition = "";
         const c = color || "rgba(255,255,255,0.5)";
         switch (pattern) {
             case "standard":
@@ -1863,7 +1857,7 @@
             card.onclick = () => openStoneDetail(s.id);
             card.innerHTML = `
                 <div class="stone-preview" style="background:linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor});">
-                    <div class="bubble-pattern" data-pattern="${s.pattern}" data-pcolor="${s.patternColor || ''}" style="position:absolute;inset:0;"></div>
+                    <div class="bubble-pattern" style="position:absolute;inset:0;"></div>
                     <div class="gem-shape" style="color:${s.primaryColor};background:linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor});position:relative;z-index:2;"></div>
                 </div>
                 <div class="stone-name">${s.name}</div>
@@ -1873,8 +1867,7 @@
                 </div>
             `;
             grid.appendChild(card);
-            const patEl = card.querySelector(".bubble-pattern");
-            applyPatternStyle(patEl, s.pattern, s.patternColor);
+            applyPatternStyle(card.querySelector(".bubble-pattern"), s.pattern, s.patternColor);
         });
     }
 
