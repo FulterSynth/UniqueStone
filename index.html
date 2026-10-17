@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UniqueStone v0.2.0</title>
+  <title>UniqueStone v0.2.1</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -214,7 +214,7 @@
   <!-- ЕКРАН ЗАВАНТАЖЕННЯ -->
   <div id="loader">
     <div class="spinner"></div>
-    <h2 id="loader-status">UniqueStone v0.2.0</h2>
+    <h2 id="loader-status">UniqueStone v0.2.1</h2>
   </div>
 
   <!-- ЕКРАН ВХОДУ / РЕЄСТРАЦІЇ -->
@@ -270,10 +270,10 @@
   </div>
 
   <script type="module">
-    // ===== ІМПОРТ FIREBASE (тільки Firestore) =====
+    // ===== ІМПОРТ FIREBASE =====
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import {
-      getFirestore,
+      initializeFirestore,
       doc,
       getDoc,
       setDoc
@@ -290,9 +290,13 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
 
-    const CURRENT_VERSION = "0.2.0";
+    // ===== FIX: примусове довге опитування =====
+    const db = initializeFirestore(app, {
+      experimentalForceLongPolling: true
+    });
+
+    const CURRENT_VERSION = "0.2.1";
     document.getElementById('loader-status').innerText = "UniqueStone v" + CURRENT_VERSION;
 
     // ===== ЕЛЕМЕНТИ =====
@@ -309,7 +313,7 @@
     const logoutBtn = document.getElementById('logout-btn');
 
     // ===== СТАН =====
-    let authMode = 'login'; // 'login' | 'register'
+    let authMode = 'login';
     const SESSION_KEY = 'uniquestone_nick';
 
     // ===== ПЕРЕМИКАННЯ ВКЛАДОК =====
@@ -329,7 +333,7 @@
     tabLogin.addEventListener('click', () => setAuthMode('login'));
     tabRegister.addEventListener('click', () => setAuthMode('register'));
 
-    // ===== ДОПОМІЖНЕ: нормалізація ніка для ID документа =====
+    // ===== ДОПОМІЖНЕ =====
     function nickToId(nick) {
       return nick.trim().toLowerCase();
     }
@@ -356,7 +360,6 @@
         const userSnap = await getDoc(userRef);
 
         if (authMode === 'register') {
-          // Реєстрація
           if (userSnap.exists()) {
             authError.textContent = 'Цей нік вже зайнятий.';
             return;
@@ -368,7 +371,6 @@
           });
           loginSuccess(nick);
         } else {
-          // Вхід
           if (!userSnap.exists()) {
             authError.textContent = 'Користувача з таким ніком не знайдено.';
             return;
@@ -430,7 +432,7 @@
       showAuth();
     });
 
-    // ===== ПЕРЕВІРКА СЕСІЇ ПРИ ЗАВАНТАЖЕННІ =====
+    // ===== ПЕРЕВІРКА СЕСІЇ =====
     const savedNick = localStorage.getItem(SESSION_KEY);
     if (savedNick) {
       showMain(savedNick);
