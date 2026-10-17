@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="version" content="1.0.0">
-<meta name="app-version" content="1.0.0">
-<title>UniqueStone — v1.0.0</title>
+<meta name="version" content="1.0.1">
+<meta name="app-version" content="1.0.1">
+<title>UniqueStone — v1.0.1</title>
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     html, body { height: 100%; width: 100%; overflow: hidden; }
@@ -27,7 +27,6 @@
     body::before { width: 500px; height: 500px; background: #7c3aed; top: -150px; left: -150px; }
     body::after  { width: 600px; height: 600px; background: #0ea5e9; bottom: -200px; right: -200px; }
 
-    /* ===== АВТОРИЗАЦІЯ ===== */
     #auth-screen {
         position: fixed; inset: 0; z-index: 1000;
         display: flex; justify-content: center; align-items: center;
@@ -129,7 +128,6 @@
     }
     .auth-toggle:hover { color: #38bdf8; }
 
-    /* ===== ГОЛОВНИЙ ЕКРАН ===== */
     #app-screen {
         display: none;
         position: fixed; inset: 0;
@@ -243,7 +241,6 @@
     .placeholder-card h3 { font-size: 18px; color: #e2e8f0; }
     .placeholder-card p { font-size: 13px; color: #94a3b8; line-height: 1.5; max-width: 320px; }
 
-    /* ===== НИЖНЯ НАВІГАЦІЯ ===== */
     .bottom-nav {
         position: fixed;
         bottom: 0; left: 0; right: 0;
@@ -283,7 +280,6 @@
     }
     .nav-btn.active .nav-icon { transform: translateY(-1px) scale(1.1); }
 
-    /* ===== TOAST ===== */
     #toast-container {
         position: fixed;
         top: 20px; left: 50%;
@@ -325,9 +321,8 @@
         .nav-btn .nav-icon { font-size: 17px; }
     }
 
-<!-- Місце для 2/6 -->
-
-       /* ===== ШАХТА ===== */
+/* КІНЕЦЬ ЧАСТИНИ 1/6 */
+    /* ===== ШАХТА ===== */
     .mine-visual {
         position: relative;
         width: 100%;
@@ -562,7 +557,7 @@
     }
     .inv-empty .big { font-size: 40px; opacity: 0.6; }
 
-<!-- Місце для 3/6 -->
+/* КІНЕЦЬ ЧАСТИНИ 2/6 */
 
        /* ===== ЧАТ ===== */
     .chat-layout {
@@ -627,10 +622,7 @@
         background: linear-gradient(135deg, rgba(124,58,237,0.55), rgba(14,165,233,0.55));
         border-color: rgba(255,255,255,0.2);
     }
-    .chat-msg .bubble .bubble-text {
-        position: relative;
-        z-index: 2;
-    }
+    .chat-msg .bubble .bubble-text { position: relative; z-index: 2; }
     .chat-msg .bubble .bubble-pattern {
         position: absolute;
         inset: 0;
@@ -740,7 +732,7 @@
         50%      { opacity: 0.7; transform: scale(1.05); }
     }
 
-    /* ===== МОДАЛКИ (загальні) ===== */
+    /* ===== МОДАЛКИ ===== */
     .modal-overlay {
         position: fixed; inset: 0;
         background: rgba(0,0,0,0.65);
@@ -804,7 +796,7 @@
     }
     .btn-secondary:hover { background: rgba(255,255,255,0.12); }
 
-    /* ===== МОДАЛКА КАМЕНЮ (викопування) ===== */
+    /* ===== МОДАЛКА КАМЕНЮ ===== */
     .stone-reveal {
         display: flex;
         flex-direction: column;
@@ -1001,34 +993,6 @@
     .profile-preview-bubble .bubble-text { position: relative; z-index: 2; }
     .profile-preview-bubble .bubble-pattern { position: absolute; inset: 0; z-index: 1; opacity: 0.35; pointer-events: none; }
 
-    .owned-items-list {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        max-height: 200px;
-        overflow-y: auto;
-        padding-right: 4px;
-    }
-    .owned-item-row {
-        padding: 8px 10px;
-        border-radius: 8px;
-        background: rgba(0,0,0,0.2);
-        border: 1px solid rgba(255,255,255,0.1);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        cursor: pointer;
-        transition: background 0.2s;
-    }
-    .owned-item-row:hover { background: rgba(255,255,255,0.08); }
-    .owned-item-row.selected { border-color: #38bdf8; background: rgba(56,189,248,0.1); }
-    .owned-item-row .mini-color {
-        width: 24px; height: 24px;
-        border-radius: 6px;
-        flex-shrink: 0;
-    }
-    .owned-item-row .label { font-size: 12px; color: #e2e8f0; }
-
     .chances-table {
         width: 100%;
         border-collapse: collapse;
@@ -1041,14 +1005,13 @@
     }
     .chances-table th { color: #94a3b8; font-weight: 600; }
     .chances-table td:last-child { text-align: right; color: #cbd5e1; }
-
-<!-- Місце для 4/6 -->
-
-   </style>
+</style>
 </head>
 <body>
 
-<button class="lang-btn-corner" id="auth-lang-btn" onclick="toggleLang()" title="Мова">UA</button>
+/* КІНЕЦЬ ЧАСТИНИ 3/6 */
+
+   <button class="lang-btn-corner" id="auth-lang-btn" onclick="toggleLang()" title="Мова">UA</button>
 
 <div id="toast-container"></div>
 
@@ -1056,7 +1019,7 @@
 <div id="auth-screen">
     <div class="auth-box glass">
         <h2>UniqueStone</h2>
-        <div class="version">v1.0.0</div>
+        <div class="version">v1.0.1</div>
         <div class="field">
             <input type="text" id="username" data-i18n-placeholder="ph_username" placeholder="Логін" autocomplete="username">
         </div>
@@ -1202,7 +1165,7 @@
             <button class="btn-secondary" onclick="closeSettings()" data-i18n="btn_cancel">Скасувати</button>
             <button class="btn-primary" onclick="changePasswordFromSettings()" data-i18n="btn_change_pass" style="margin-top:0;">Змінити пароль</button>
         </div>
-        <div class="version-line">v1.0.0</div>
+        <div class="version-line">v1.0.1</div>
     </div>
 </div>
 
@@ -1301,7 +1264,7 @@
     </div>
 </div>
 
-<!-- ===== МОДАЛКА: ДЕТАЛІ КАМЕНЮ З ІНВЕНТАРЮ ===== -->
+<!-- ===== МОДАЛКА: ДЕТАЛІ КАМЕНЮ ===== -->
 <div class="modal-overlay" id="stone-detail-modal">
     <div class="modal glass">
         <h3 data-i18n="stone_details_title">Деталі каменю</h3>
@@ -1324,14 +1287,14 @@
     </div>
 </div>
 
-<!-- Місце для 5/6 -->
+<!-- КІНЕЦЬ ЧАСТИНИ 4/6 -->
 
    <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, get, child, update, push, onChildAdded, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, get, child, update, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    const APP_VERSION = "1.0.0";
-    const DIG_COOLDOWN_MS = 12 * 60 * 60 * 1000; // 12 годин
+    const APP_VERSION = "1.0.1";
+    const DIG_COOLDOWN_MS = 12 * 60 * 60 * 1000;
 
     const firebaseConfig = {
         apiKey: "AIzaSyDGltUohufVAc-FMIbO1sIvpd6xWSiaKdU",
@@ -1360,13 +1323,12 @@
     let pendingDetailStone = null;
     let mineTimerInterval = null;
 
-    /* ===== КОНСТАНТИ КАМЕНІВ ===== */
     const RARITIES = {
-        common:    { weight: 60,   label_uk: "Звичайний",  label_en: "Common",    badge: "rarity-common" },
-        rare:      { weight: 25,   label_uk: "Рідкісний",  label_en: "Rare",      badge: "rarity-rare" },
-        epic:      { weight: 11,   label_uk: "Епічний",    label_en: "Epic",      badge: "rarity-epic" },
+        common:    { weight: 60,   label_uk: "Звичайний",   label_en: "Common",    badge: "rarity-common" },
+        rare:      { weight: 25,   label_uk: "Рідкісний",   label_en: "Rare",      badge: "rarity-rare" },
+        epic:      { weight: 11,   label_uk: "Епічний",     label_en: "Epic",      badge: "rarity-epic" },
         legendary: { weight: 3.5,  label_uk: "Легендарний", label_en: "Legendary", badge: "rarity-legendary" },
-        mythic:    { weight: 0.5,  label_uk: "Міфічний",   label_en: "Mythic",    badge: "rarity-mythic" }
+        mythic:    { weight: 0.5,  label_uk: "Міфічний",    label_en: "Mythic",    badge: "rarity-mythic" }
     };
 
     const PATTERNS_BY_RARITY = {
@@ -1378,11 +1340,9 @@
     };
 
     const ALL_PATTERNS = ["standard", "dots", "grid", "stripes", "waves", "hex", "leopard", "stars", "cracks", "nacre", "mythic-aura"];
-
     const GEM_NAMES_UK = ["Кристал", "Камінь", "Самоцвіт", "Мінерал", "Аметист", "Смарагд", "Рубін", "Сапфір", "Топаз", "Опал"];
     const GEM_NAMES_EN = ["Crystal", "Stone", "Gem", "Mineral", "Amethyst", "Emerald", "Ruby", "Sapphire", "Topaz", "Opal"];
 
-    /* ===== i18n ===== */
     const I18N = {
         uk: {
             ph_username: "Логін", ph_password: "Пароль", ph_new_password: "Новий пароль", ph_old_password: "Старий пароль",
@@ -1391,8 +1351,7 @@
             toggle_to_register: "Ще немає акаунта? Зареєструватись", toggle_to_login: "Вже є акаунт? Увійти",
             toggle_back_to_login: "Повернутися до входу", toggle_change_pass: "Змінити пароль",
             tab_mine: "Шахта", tab_inventory: "Інвентар", tab_chat: "Чат", tab_market: "Ринок",
-            btn_dig: "Викопати камінь",
-            mine_cooldown: "Наступне викопування через",
+            btn_dig: "Викопати камінь", mine_cooldown: "Наступне викопування через",
             inv_empty: "Інвентар порожній. Відкрийте перший кейс!",
             sort_rarity: "↓ Рідкість", sort_date: "↓ Дата",
             chat_empty: "Повідомлень ще немає. Напишіть першим!",
@@ -1415,8 +1374,7 @@
             toast_register_ok: "Акаунт створено! Вітаємо!", toast_pass_changed: "Пароль успішно змінено!",
             toast_wait: "Зачекайте...", toast_error: "Помилка: ", toast_logged_out: "Ви вийшли з акаунта",
             toast_chat_empty: "Повідомлення не може бути порожнім",
-            toast_cooldown: "Шахта ще відновлюється!",
-            toast_activated: "Камінь активовано!",
+            toast_cooldown: "Шахта ще відновлюється!", toast_activated: "Камінь активовано!",
             toast_no_stones: "У вас ще немає каменів!"
         },
         en: {
@@ -1426,8 +1384,7 @@
             toggle_to_register: "No account yet? Sign up", toggle_to_login: "Already have an account? Log in",
             toggle_back_to_login: "Back to login", toggle_change_pass: "Change password",
             tab_mine: "Mine", tab_inventory: "Inventory", tab_chat: "Chat", tab_market: "Market",
-            btn_dig: "Dig a stone",
-            mine_cooldown: "Next dig in",
+            btn_dig: "Dig a stone", mine_cooldown: "Next dig in",
             inv_empty: "Inventory is empty. Open your first case!",
             sort_rarity: "↓ Rarity", sort_date: "↓ Date",
             chat_empty: "No messages yet. Be the first to write!",
@@ -1450,15 +1407,13 @@
             toast_register_ok: "Account created! Welcome!", toast_pass_changed: "Password changed successfully!",
             toast_wait: "Please wait...", toast_error: "Error: ", toast_logged_out: "You have logged out",
             toast_chat_empty: "Message cannot be empty",
-            toast_cooldown: "The mine is still recovering!",
-            toast_activated: "Stone activated!",
+            toast_cooldown: "The mine is still recovering!", toast_activated: "Stone activated!",
             toast_no_stones: "You don't have any stones yet!"
         }
     };
 
     function t(key) { return I18N[currentLang][key] || key; }
 
-    /* ===== ГЕНЕРАЦІЯ КАМЕНІВ ===== */
     function randomRarity() {
         const total = Object.values(RARITIES).reduce((s, r) => s + r.weight, 0);
         let roll = Math.random() * total;
@@ -1467,28 +1422,6 @@
             roll -= r.weight;
         }
         return "common";
-    }
-
-    function randomHex() {
-        return "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, "0");
-    }
-
-    function hexToHsl(hex) {
-        let r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255;
-        let max = Math.max(r,g,b), min = Math.min(r,g,b);
-        let h, s, l = (max+min)/2;
-        if (max === min) { h = s = 0; }
-        else {
-            let d = max - min;
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-            switch (max) {
-                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                case g: h = (b - r) / d + 2; break;
-                case b: h = (r - g) / d + 4; break;
-            }
-            h /= 6;
-        }
-        return { h: Math.round(h*360), s: Math.round(s*100), l: Math.round(l*100) };
     }
 
     function hslToHex(h, s, l) {
@@ -1583,7 +1516,6 @@
         refreshAuthUI();
     }
 
-    /* ===== АВТОРИЗАЦІЯ ===== */
     window.switchAuthMode = function(targetMode) { mode = targetMode; refreshAuthUI(); };
 
     function refreshAuthUI() {
@@ -1660,7 +1592,6 @@
         }
     };
 
-    /* ===== ПОКАЗ ЗАСТОСУНКУ ===== */
     async function showApp() {
         document.getElementById("auth-screen").style.display = "none";
         document.getElementById("auth-lang-btn").style.display = "none";
@@ -1687,7 +1618,6 @@
         renderInventory();
     }
 
-    /* ===== ВКЛАДКИ ===== */
     window.switchTab = function(tab) {
         currentTab = tab;
         document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
@@ -1700,7 +1630,6 @@
         if (tab === "inventory") renderInventory();
     };
 
-    /* ===== ШАХТА ===== */
     async function updateMineUI() {
         const btn = document.getElementById("mine-btn");
         const timerEl = document.getElementById("mine-timer");
@@ -1765,7 +1694,6 @@
         }
     };
 
-    /* ===== МОДАЛКА ВИКОПАНОГО КАМЕНЮ ===== */
     function showStoneReveal(stone) {
         document.getElementById("reveal-name").textContent = stone.name;
         const rarityEl = document.getElementById("reveal-rarity");
@@ -1786,7 +1714,6 @@
         closeStoneModal();
     };
 
-    /* ===== ІНВЕНТАР ===== */
     window.toggleSort = function() {
         inventorySort = inventorySort === "rarity" ? "date" : "rarity";
         document.getElementById("sort-btn").innerText = inventorySort === "rarity" ? t("sort_rarity") : t("sort_date");
@@ -1835,7 +1762,6 @@
         return String(d.getDate()).padStart(2,"0") + "." + String(d.getMonth()+1).padStart(2,"0") + "." + d.getFullYear();
     }
 
-    /* ===== ДЕТАЛІ КАМЕНЮ ===== */
     window.openStoneDetail = function(id) {
         const s = inventory[id]; if (!s) return;
         pendingDetailStone = s;
@@ -1872,557 +1798,11 @@
         } catch(e) { toast("error", t("toast_error") + e.message); }
     }
 
-<!-- Місце для 6/6 -->
+// КІНЕЦЬ ЧАСТИНИ 5/6
 
-   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, get, child, update, push, onChildAdded, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+          /* ===== ЧАТ ===== */
+    const otherStyles = {};
 
-    const APP_VERSION = "1.0.0";
-    const DIG_COOLDOWN_MS = 12 * 60 * 60 * 1000; // 12 годин
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyDGltUohufVAc-FMIbO1sIvpd6xWSiaKdU",
-        authDomain: "uniquestone.firebaseapp.com",
-        databaseURL: "https://uniquestone-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "uniquestone",
-        storageBucket: "uniquestone.firebasestorage.app",
-        messagingSenderId: "114557024409",
-        appId: "1:114557024409:web:23f1e0ad213e9cf7d2e008",
-        measurementId: "G-TZ6SZXTJTF"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    let mode = "login";
-    let currentUsername = "";
-    let currentLang = "uk";
-    let currentTab = "mine";
-    let chatStarted = false;
-    let inventory = {};
-    let activeStoneId = null;
-    let bubbleStyle = { pattern: null, grad1: null, grad2: null };
-    let inventorySort = "rarity";
-    let pendingRevealStone = null;
-    let pendingDetailStone = null;
-    let mineTimerInterval = null;
-
-    /* ===== КОНСТАНТИ КАМЕНІВ ===== */
-    const RARITIES = {
-        common:    { weight: 60,   label_uk: "Звичайний",  label_en: "Common",    badge: "rarity-common" },
-        rare:      { weight: 25,   label_uk: "Рідкісний",  label_en: "Rare",      badge: "rarity-rare" },
-        epic:      { weight: 11,   label_uk: "Епічний",    label_en: "Epic",      badge: "rarity-epic" },
-        legendary: { weight: 3.5,  label_uk: "Легендарний", label_en: "Legendary", badge: "rarity-legendary" },
-        mythic:    { weight: 0.5,  label_uk: "Міфічний",   label_en: "Mythic",    badge: "rarity-mythic" }
-    };
-
-    const PATTERNS_BY_RARITY = {
-        common:    ["standard", "dots", "grid"],
-        rare:      ["stripes", "waves", "hex"],
-        epic:      ["leopard", "stars", "cracks"],
-        legendary: ["nacre"],
-        mythic:    ["mythic-aura"]
-    };
-
-    const ALL_PATTERNS = ["standard", "dots", "grid", "stripes", "waves", "hex", "leopard", "stars", "cracks", "nacre", "mythic-aura"];
-
-    const GEM_NAMES_UK = ["Кристал", "Камінь", "Самоцвіт", "Мінерал", "Аметист", "Смарагд", "Рубін", "Сапфір", "Топаз", "Опал"];
-    const GEM_NAMES_EN = ["Crystal", "Stone", "Gem", "Mineral", "Amethyst", "Emerald", "Ruby", "Sapphire", "Topaz", "Opal"];
-
-    /* ===== i18n ===== */
-    const I18N = {
-        uk: {
-            ph_username: "Логін", ph_password: "Пароль", ph_new_password: "Новий пароль", ph_old_password: "Старий пароль",
-            btn_login: "Увійти", btn_register: "Створити акаунт", btn_change_pass: "Змінити пароль", btn_cancel: "Скасувати",
-            btn_close: "Закрити", btn_activate: "Активувати", btn_reset_gradient: "Скинути градієнт",
-            toggle_to_register: "Ще немає акаунта? Зареєструватись", toggle_to_login: "Вже є акаунт? Увійти",
-            toggle_back_to_login: "Повернутися до входу", toggle_change_pass: "Змінити пароль",
-            tab_mine: "Шахта", tab_inventory: "Інвентар", tab_chat: "Чат", tab_market: "Ринок",
-            btn_dig: "Викопати камінь",
-            mine_cooldown: "Наступне викопування через",
-            inv_empty: "Інвентар порожній. Відкрийте перший кейс!",
-            sort_rarity: "↓ Рідкість", sort_date: "↓ Дата",
-            chat_empty: "Повідомлень ще немає. Напишіть першим!",
-            chat_placeholder: "Напишіть повідомлення...", chat_send: "Надіслати",
-            settings_title: "Налаштування", settings_user: "Користувач: ",
-            stone_found: "Ви знайшли камінь!", stone_rarity: "Рідкість:", stone_pattern: "Патерн:", stone_obtained: "Отримано:",
-            stone_details_title: "Деталі каменю",
-            profile_title: "Мій профіль", profile_other_title: "Профіль гравця",
-            profile_active_stone: "Активний камінь", profile_no_stone: "Немає активного каменю",
-            profile_active_note: "Активний камінь визначає стиль ваших повідомлень у чаті.",
-            profile_pattern: "Патерн", profile_pattern_note: "Доступні лише патерни з ваших каменів.",
-            profile_text_gradient: "Градієнт тексту", profile_gradient_note: "Доступні лише кольори з ваших каменів.",
-            profile_preview: "Попередній перегляд", profile_preview_text: "Привіт! Це моє повідомлення.",
-            chances_title: "Шанси рідкості", chances_rarity: "Рідкість", chances_chance: "Шанс",
-            market_title: "Ринок", market_desc: "Тут незабаром з'явиться ринок.",
-            toast_fill_all: "Заповніть усі поля!", toast_login_short: "Логін має бути мінімум 3 символи!",
-            toast_pass_short: "Пароль має бути мінімум 4 символи!", toast_user_exists: "Такий користувач вже існує!",
-            toast_wrong_creds: "Невірний логін або пароль!", toast_wrong_old_pass: "Невірний старий пароль!",
-            toast_enter_new_pass: "Введіть новий пароль!", toast_new_pass_short: "Новий пароль має бути мінімум 4 символи!",
-            toast_register_ok: "Акаунт створено! Вітаємо!", toast_pass_changed: "Пароль успішно змінено!",
-            toast_wait: "Зачекайте...", toast_error: "Помилка: ", toast_logged_out: "Ви вийшли з акаунта",
-            toast_chat_empty: "Повідомлення не може бути порожнім",
-            toast_cooldown: "Шахта ще відновлюється!",
-            toast_activated: "Камінь активовано!",
-            toast_no_stones: "У вас ще немає каменів!"
-        },
-        en: {
-            ph_username: "Username", ph_password: "Password", ph_new_password: "New password", ph_old_password: "Old password",
-            btn_login: "Log in", btn_register: "Create account", btn_change_pass: "Change password", btn_cancel: "Cancel",
-            btn_close: "Close", btn_activate: "Activate", btn_reset_gradient: "Reset gradient",
-            toggle_to_register: "No account yet? Sign up", toggle_to_login: "Already have an account? Log in",
-            toggle_back_to_login: "Back to login", toggle_change_pass: "Change password",
-            tab_mine: "Mine", tab_inventory: "Inventory", tab_chat: "Chat", tab_market: "Market",
-            btn_dig: "Dig a stone",
-            mine_cooldown: "Next dig in",
-            inv_empty: "Inventory is empty. Open your first case!",
-            sort_rarity: "↓ Rarity", sort_date: "↓ Date",
-            chat_empty: "No messages yet. Be the first to write!",
-            chat_placeholder: "Type a message...", chat_send: "Send",
-            settings_title: "Settings", settings_user: "User: ",
-            stone_found: "You found a stone!", stone_rarity: "Rarity:", stone_pattern: "Pattern:", stone_obtained: "Obtained:",
-            stone_details_title: "Stone details",
-            profile_title: "My profile", profile_other_title: "Player profile",
-            profile_active_stone: "Active stone", profile_no_stone: "No active stone",
-            profile_active_note: "Active stone determines the style of your chat messages.",
-            profile_pattern: "Pattern", profile_pattern_note: "Only patterns from your stones are available.",
-            profile_text_gradient: "Text gradient", profile_gradient_note: "Only colors from your stones are available.",
-            profile_preview: "Preview", profile_preview_text: "Hi! This is my message.",
-            chances_title: "Rarity chances", chances_rarity: "Rarity", chances_chance: "Chance",
-            market_title: "Market", market_desc: "The market will appear here soon.",
-            toast_fill_all: "Fill in all fields!", toast_login_short: "Username must be at least 3 characters!",
-            toast_pass_short: "Password must be at least 4 characters!", toast_user_exists: "This user already exists!",
-            toast_wrong_creds: "Wrong username or password!", toast_wrong_old_pass: "Wrong old password!",
-            toast_enter_new_pass: "Enter a new password!", toast_new_pass_short: "New password must be at least 4 characters!",
-            toast_register_ok: "Account created! Welcome!", toast_pass_changed: "Password changed successfully!",
-            toast_wait: "Please wait...", toast_error: "Error: ", toast_logged_out: "You have logged out",
-            toast_chat_empty: "Message cannot be empty",
-            toast_cooldown: "The mine is still recovering!",
-            toast_activated: "Stone activated!",
-            toast_no_stones: "You don't have any stones yet!"
-        }
-    };
-
-    function t(key) { return I18N[currentLang][key] || key; }
-
-    /* ===== ГЕНЕРАЦІЯ КАМЕНІВ ===== */
-    function randomRarity() {
-        const total = Object.values(RARITIES).reduce((s, r) => s + r.weight, 0);
-        let roll = Math.random() * total;
-        for (const [key, r] of Object.entries(RARITIES)) {
-            if (roll < r.weight) return key;
-            roll -= r.weight;
-        }
-        return "common";
-    }
-
-    function randomHex() {
-        return "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, "0");
-    }
-
-    function hexToHsl(hex) {
-        let r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255;
-        let max = Math.max(r,g,b), min = Math.min(r,g,b);
-        let h, s, l = (max+min)/2;
-        if (max === min) { h = s = 0; }
-        else {
-            let d = max - min;
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-            switch (max) {
-                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                case g: h = (b - r) / d + 2; break;
-                case b: h = (r - g) / d + 4; break;
-            }
-            h /= 6;
-        }
-        return { h: Math.round(h*360), s: Math.round(s*100), l: Math.round(l*100) };
-    }
-
-    function hslToHex(h, s, l) {
-        s /= 100; l /= 100;
-        const a = s * Math.min(l, 1 - l);
-        const f = n => {
-            const k = (n + h / 30) % 12;
-            const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-            return Math.round(255 * color).toString(16).padStart(2, "0");
-        };
-        return `#${f(0)}${f(8)}${f(4)}`;
-    }
-
-    function rarityColors(rarity) {
-        const ranges = {
-            common:    { h: [200, 220], s: [10, 30], l: [55, 70] },
-            rare:      { h: [180, 230], s: [50, 80], l: [50, 65] },
-            epic:      { h: [260, 300], s: [60, 85], l: [55, 70] },
-            legendary: { h: [35, 55],   s: [80, 100], l: [50, 65] },
-            mythic:    { h: [0, 20],    s: [80, 100], l: [50, 60] }
-        };
-        const r = ranges[rarity];
-        const h = Math.floor(Math.random() * (r.h[1] - r.h[0]) + r.h[0]);
-        const s = Math.floor(Math.random() * (r.s[1] - r.s[0]) + r.s[0]);
-        const l = Math.floor(Math.random() * (r.l[1] - r.l[0]) + r.l[0]);
-        const h2 = (h + Math.floor(Math.random() * 40 + 20)) % 360;
-        return { primary: hslToHex(h, s, l), secondary: hslToHex(h2, s, l) };
-    }
-
-    function generateStone() {
-        const rarity = randomRarity();
-        const patterns = PATTERNS_BY_RARITY[rarity];
-        const pattern = patterns[Math.floor(Math.random() * patterns.length)];
-        const colors = rarityColors(rarity);
-        const names = currentLang === "uk" ? GEM_NAMES_UK : GEM_NAMES_EN;
-        const baseName = names[Math.floor(Math.random() * names.length)];
-        const number = Math.floor(Math.random() * 9000 + 1000);
-        const id = "s_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
-        return {
-            id, rarity, pattern,
-            primaryColor: colors.primary,
-            secondaryColor: colors.secondary,
-            name: baseName + " #" + number,
-            obtainedAt: Date.now()
-        };
-    }
-
-    function getRarityLabel(rarity) { return currentLang === "uk" ? RARITIES[rarity].label_uk : RARITIES[rarity].label_en; }
-
-    function getPatternLabel(pattern) {
-        const labels = currentLang === "uk"
-            ? { standard: "Стандарт", dots: "Точки", grid: "Сітка", stripes: "Смуги", waves: "Хвилі", hex: "Шестикутники", leopard: "Леопард", stars: "Зорі", cracks: "Тріщини", nacre: "Перламутр", "mythic-aura": "Міфічна аура" }
-            : { standard: "Standard", dots: "Dots", grid: "Grid", stripes: "Stripes", waves: "Waves", hex: "Hex", leopard: "Leopard", stars: "Stars", cracks: "Cracks", nacre: "Nacre", "mythic-aura": "Mythic aura" };
-        return labels[pattern] || pattern;
-    }
-
-    async function sha256(text) {
-        const buf = new TextEncoder().encode(text);
-        const hash = await crypto.subtle.digest("SHA-256", buf);
-        return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, "0")).join("");
-    }
-
-    window.toast = function(type, msg) {
-        const container = document.getElementById("toast-container");
-        const el = document.createElement("div");
-        el.className = "toast " + type;
-        el.textContent = msg;
-        container.appendChild(el);
-        setTimeout(() => { el.classList.add("hide"); setTimeout(() => el.remove(), 300); }, 2800);
-    };
-
-    window.setLang = function(lang) {
-        currentLang = lang;
-        document.documentElement.lang = lang;
-        const authLangBtn = document.getElementById("auth-lang-btn");
-        if (authLangBtn) authLangBtn.textContent = lang === "uk" ? "UA" : "EN";
-        const btnLang = document.getElementById("btn-lang");
-        if (btnLang) btnLang.textContent = lang === "uk" ? "UA" : "EN";
-        applyI18n();
-        if (currentUsername) {
-            renderInventory();
-            updateMineUI();
-            if (document.getElementById("my-profile-modal").classList.contains("active")) renderMyProfile();
-        }
-    };
-
-    window.toggleLang = function() { setLang(currentLang === "uk" ? "en" : "uk"); };
-
-    function applyI18n() {
-        document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.getAttribute("data-i18n")); });
-        document.querySelectorAll("[data-i18n-placeholder]").forEach(el => { el.placeholder = t(el.getAttribute("data-i18n-placeholder")); });
-        refreshAuthUI();
-    }
-
-    /* ===== АВТОРИЗАЦІЯ ===== */
-    window.switchAuthMode = function(targetMode) { mode = targetMode; refreshAuthUI(); };
-
-    function refreshAuthUI() {
-        const btn = document.getElementById("auth-btn");
-        const toggleMode = document.getElementById("auth-toggle-mode");
-        const togglePass = document.getElementById("auth-toggle-pass");
-        const newPassContainer = document.getElementById("new-password-container");
-        if (!btn) return;
-
-        if (mode === "login") {
-            btn.innerText = t("btn_login");
-            toggleMode.innerText = t("toggle_to_register"); toggleMode.onclick = () => switchAuthMode("register");
-            togglePass.style.display = "block"; togglePass.innerText = t("toggle_change_pass"); togglePass.onclick = () => switchAuthMode("change-pass");
-            newPassContainer.classList.add("hidden");
-        } else if (mode === "register") {
-            btn.innerText = t("btn_register");
-            toggleMode.innerText = t("toggle_to_login"); toggleMode.onclick = () => switchAuthMode("login");
-            togglePass.style.display = "none"; newPassContainer.classList.add("hidden");
-        } else if (mode === "change-pass") {
-            btn.innerText = t("btn_change_pass");
-            toggleMode.innerText = t("toggle_back_to_login"); toggleMode.onclick = () => switchAuthMode("login");
-            togglePass.style.display = "none"; newPassContainer.classList.remove("hidden");
-        }
-    }
-
-    window.handleAuth = async function() {
-        const user = document.getElementById("username").value.trim();
-        const pass = document.getElementById("password").value;
-        const btn = document.getElementById("auth-btn");
-
-        if (!user || !pass) { toast("error", t("toast_fill_all")); return; }
-        if (user.length < 3) { toast("error", t("toast_login_short")); return; }
-        if (pass.length < 4) { toast("error", t("toast_pass_short")); return; }
-
-        btn.disabled = true;
-        const btnText = btn.innerText;
-        btn.innerText = t("toast_wait");
-
-        try {
-            const dbRef = ref(db);
-            const passHash = await sha256(pass);
-
-            if (mode === "register") {
-                const snapshot = await get(child(dbRef, `users/${user}`));
-                if (snapshot.exists()) { toast("error", t("toast_user_exists")); return; }
-                await set(ref(db, "users/" + user), { password: passHash, createdAt: Date.now(), lastOnline: Date.now(), lastDig: 0 });
-                toast("success", t("toast_register_ok"));
-                currentUsername = user;
-                try { localStorage.setItem("auth_username", user); localStorage.setItem("auth_hash", passHash); } catch(e) {}
-                showApp();
-            } else if (mode === "login") {
-                const snapshot = await get(child(dbRef, `users/${user}`));
-                if (!snapshot.exists() || snapshot.val().password !== passHash) { toast("error", t("toast_wrong_creds")); return; }
-                currentUsername = user;
-                try { localStorage.setItem("auth_username", user); localStorage.setItem("auth_hash", passHash); } catch(e) {}
-                try { await update(ref(db, `users/${user}`), { lastOnline: Date.now() }); } catch(e) {}
-                showApp();
-            } else if (mode === "change-pass") {
-                const newPass = document.getElementById("new-password").value;
-                if (!newPass) { toast("error", t("toast_enter_new_pass")); return; }
-                if (newPass.length < 4) { toast("error", t("toast_new_pass_short")); return; }
-                const snapshot = await get(child(dbRef, `users/${user}`));
-                if (!snapshot.exists() || snapshot.val().password !== passHash) { toast("error", t("toast_wrong_old_pass")); return; }
-                const newHash = await sha256(newPass);
-                await set(ref(db, `users/${user}/password`), newHash);
-                toast("success", t("toast_pass_changed"));
-                switchAuthMode("login");
-            }
-        } catch (error) {
-            console.error("Помилка:", error);
-            toast("error", t("toast_error") + error.message);
-        } finally {
-            btn.disabled = false; btn.innerText = btnText;
-        }
-    };
-
-    /* ===== ПОКАЗ ЗАСТОСУНКУ ===== */
-    async function showApp() {
-        document.getElementById("auth-screen").style.display = "none";
-        document.getElementById("auth-lang-btn").style.display = "none";
-        document.getElementById("app-screen").classList.add("active");
-        document.getElementById("top-username").textContent = currentUsername || "---";
-        document.getElementById("top-avatar").textContent = (currentUsername || "?").charAt(0).toUpperCase();
-        document.getElementById("settings-username").textContent = currentUsername || "---";
-        await loadUserData();
-        switchTab("mine");
-        startChatListener();
-    }
-
-    async function loadUserData() {
-        try {
-            const snap = await get(child(ref(db), `users/${currentUsername}`));
-            if (snap.exists()) {
-                const data = snap.val();
-                inventory = data.inventory || {};
-                activeStoneId = data.activeStone || null;
-                bubbleStyle = data.bubbleStyle || { pattern: null, grad1: null, grad2: null };
-            }
-        } catch(e) { console.error("loadUserData:", e); }
-        updateMineUI();
-        renderInventory();
-    }
-
-    /* ===== ВКЛАДКИ ===== */
-    window.switchTab = function(tab) {
-        currentTab = tab;
-        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-        document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-        const page = document.getElementById("page-" + tab);
-        const nav = document.getElementById("nav-" + tab);
-        if (page) page.classList.add("active");
-        if (nav) nav.classList.add("active");
-        if (tab === "chat") { const m = document.getElementById("chat-messages"); m.scrollTop = m.scrollHeight; }
-        if (tab === "inventory") renderInventory();
-    };
-
-    /* ===== ШАХТА ===== */
-    async function updateMineUI() {
-        const btn = document.getElementById("mine-btn");
-        const timerEl = document.getElementById("mine-timer");
-        if (!btn) return;
-
-        try {
-            const snap = await get(child(ref(db), `users/${currentUsername}/lastDig`));
-            const lastDig = snap.exists() ? snap.val() : 0;
-            const now = Date.now();
-            const nextDig = lastDig + DIG_COOLDOWN_MS;
-
-            if (mineTimerInterval) { clearInterval(mineTimerInterval); mineTimerInterval = null; }
-
-            if (now < nextDig) {
-                btn.disabled = true;
-                btn.innerText = t("btn_dig");
-                timerEl.classList.remove("hidden");
-                const tick = () => {
-                    const remaining = nextDig - Date.now();
-                    if (remaining <= 0) {
-                        clearInterval(mineTimerInterval); mineTimerInterval = null;
-                        btn.disabled = false; timerEl.classList.add("hidden"); updateMineUI();
-                    } else {
-                        const h = Math.floor(remaining / 3600000);
-                        const m = Math.floor((remaining % 3600000) / 60000);
-                        const s = Math.floor((remaining % 60000) / 1000);
-                        timerEl.textContent = t("mine_cooldown") + " " + String(h).padStart(2,"0") + ":" + String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
-                    }
-                };
-                tick();
-                mineTimerInterval = setInterval(tick, 1000);
-            } else {
-                btn.disabled = false;
-                btn.innerText = t("btn_dig");
-                timerEl.classList.add("hidden");
-            }
-        } catch(e) { console.error(e); }
-    }
-
-    window.digMine = async function() {
-        if (!currentUsername) return;
-        const btn = document.getElementById("mine-btn");
-        btn.disabled = true;
-
-        try {
-            const snap = await get(child(ref(db), `users/${currentUsername}/lastDig`));
-            const lastDig = snap.exists() ? snap.val() : 0;
-            if (Date.now() < lastDig + DIG_COOLDOWN_MS) { toast("info", t("toast_cooldown")); updateMineUI(); return; }
-
-            const stone = generateStone();
-            await set(ref(db, `users/${currentUsername}/inventory/${stone.id}`), stone);
-            await update(ref(db, `users/${currentUsername}`), { lastDig: Date.now() });
-
-            inventory[stone.id] = stone;
-            pendingRevealStone = stone;
-            showStoneReveal(stone);
-            updateMineUI();
-            renderInventory();
-        } catch(e) {
-            console.error(e);
-            toast("error", t("toast_error") + e.message);
-        }
-    };
-
-    /* ===== МОДАЛКА ВИКОПАНОГО КАМЕНЮ ===== */
-    function showStoneReveal(stone) {
-        document.getElementById("reveal-name").textContent = stone.name;
-        const rarityEl = document.getElementById("reveal-rarity");
-        rarityEl.textContent = getRarityLabel(stone.rarity);
-        rarityEl.className = "rarity-badge " + RARITIES[stone.rarity].badge;
-        document.getElementById("reveal-preview").style.background = `linear-gradient(135deg, ${stone.primaryColor}, ${stone.secondaryColor})`;
-        const pat = document.getElementById("reveal-pattern");
-        pat.className = "bubble-pattern pattern-" + stone.pattern;
-        document.getElementById("reveal-gem").style.color = stone.primaryColor;
-        document.getElementById("reveal-gem").style.background = `linear-gradient(135deg, ${stone.primaryColor}, ${stone.secondaryColor})`;
-        document.getElementById("stone-modal").classList.add("active");
-    }
-    window.closeStoneModal = function() { document.getElementById("stone-modal").classList.remove("active"); pendingRevealStone = null; };
-
-    window.activateFromReveal = async function() {
-        if (!pendingRevealStone) return;
-        await activateStone(pendingRevealStone.id);
-        closeStoneModal();
-    };
-
-    /* ===== ІНВЕНТАР ===== */
-    window.toggleSort = function() {
-        inventorySort = inventorySort === "rarity" ? "date" : "rarity";
-        document.getElementById("sort-btn").innerText = inventorySort === "rarity" ? t("sort_rarity") : t("sort_date");
-        renderInventory();
-    };
-
-    function rarityOrder(r) { return { mythic: 5, legendary: 4, epic: 3, rare: 2, common: 1 }[r] || 0; }
-
-    function renderInventory() {
-        const grid = document.getElementById("inventory-grid");
-        const empty = document.getElementById("inv-empty");
-        if (!grid) return;
-        const items = Object.values(inventory);
-        grid.innerHTML = "";
-        if (items.length === 0) { empty.classList.remove("hidden"); grid.style.display = "none"; return; }
-        empty.classList.add("hidden"); grid.style.display = "grid";
-        items.sort((a, b) => {
-            if (inventorySort === "rarity") {
-                const d = rarityOrder(b.rarity) - rarityOrder(a.rarity);
-                if (d !== 0) return d;
-            }
-            return (b.obtainedAt || 0) - (a.obtainedAt || 0);
-        });
-        items.forEach(s => {
-            const card = document.createElement("div");
-            card.className = "inv-card" + (s.id === activeStoneId ? " is-active" : "");
-            card.onclick = () => openStoneDetail(s.id);
-            card.innerHTML = `
-                <div class="stone-preview" style="background:linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor});">
-                    <div class="bubble-pattern pattern-${s.pattern}" style="position:absolute;inset:0;"></div>
-                    <div class="gem-shape" style="color:${s.primaryColor};background:linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor});position:relative;z-index:2;"></div>
-                </div>
-                <div class="stone-name">${s.name}</div>
-                <div class="stone-meta">
-                    <span class="rarity-badge ${RARITIES[s.rarity].badge}">${getRarityLabel(s.rarity)}</span>
-                    <span>${formatDate(s.obtainedAt)}</span>
-                </div>
-            `;
-            grid.appendChild(card);
-        });
-    }
-
-    function formatDate(ts) {
-        if (!ts) return "—";
-        const d = new Date(ts);
-        return String(d.getDate()).padStart(2,"0") + "." + String(d.getMonth()+1).padStart(2,"0") + "." + d.getFullYear();
-    }
-
-    /* ===== ДЕТАЛІ КАМЕНЮ ===== */
-    window.openStoneDetail = function(id) {
-        const s = inventory[id]; if (!s) return;
-        pendingDetailStone = s;
-        document.getElementById("detail-name").textContent = s.name;
-        const r = document.getElementById("detail-rarity");
-        r.textContent = getRarityLabel(s.rarity); r.className = "rarity-badge " + RARITIES[s.rarity].badge;
-        document.getElementById("detail-pattern-name").textContent = getPatternLabel(s.pattern);
-        document.getElementById("detail-obtained").textContent = formatDate(s.obtainedAt);
-        document.getElementById("detail-preview").style.background = `linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor})`;
-        document.getElementById("detail-pattern").className = "bubble-pattern pattern-" + s.pattern;
-        const gem = document.getElementById("detail-gem");
-        gem.style.color = s.primaryColor;
-        gem.style.background = `linear-gradient(135deg, ${s.primaryColor}, ${s.secondaryColor})`;
-        const btn = document.getElementById("detail-activate-btn");
-        btn.disabled = s.id === activeStoneId;
-        btn.textContent = s.id === activeStoneId ? "✓" : t("btn_activate");
-        document.getElementById("stone-detail-modal").classList.add("active");
-    };
-    window.closeStoneDetail = function() { document.getElementById("stone-detail-modal").classList.remove("active"); pendingDetailStone = null; };
-
-    window.activateFromDetail = async function() {
-        if (!pendingDetailStone) return;
-        await activateStone(pendingDetailStone.id);
-        closeStoneDetail();
-    };
-
-    async function activateStone(id) {
-        try {
-            await update(ref(db, `users/${currentUsername}`), { activeStone: id });
-            activeStoneId = id;
-            renderInventory();
-            toast("success", t("toast_activated"));
-            refreshChatStyles();
-        } catch(e) { toast("error", t("toast_error") + e.message); }
-    }
-
-<!-- Місце для 6/6 -->
-
-       /* ===== ЧАТ ===== */
     function startChatListener() {
         if (chatStarted) return;
         chatStarted = true;
@@ -2436,8 +1816,6 @@
             }
         });
     }
-
-    const otherStyles = {};
 
     async function loadOtherBubbleStyle(username) {
         if (otherStyles[username] !== undefined) return;
@@ -2557,7 +1935,6 @@
     }
 
     function refreshChatStyles() {
-        const me = getMyStyle();
         document.querySelectorAll(".chat-msg.own .bubble").forEach(b => {
             b.style.background = ""; b.style.boxShadow = "";
             const pat = b.querySelector(".bubble-pattern"); if (pat) pat.className = "bubble-pattern";
@@ -2604,7 +1981,6 @@
 
         get(child(ref(db), `users/${currentUsername}/createdAt`)).then(snap => {
             if (snap.exists()) {
-                const d = new Date(snap.val());
                 document.getElementById("profile-created").textContent = t("stone_obtained") + " " + formatDate(snap.val());
             }
         });
@@ -2844,3 +2220,8 @@
 </script>
 </body>
 </html>
+
+      
+
+      
+   
