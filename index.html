@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="version" content="1.0.0">
-<meta name="app-version" content="1.0.0">
-<title>UniqueStone — v1.0.0</title>
+<meta name="version" content="0.1.1">
+<meta name="app-version" content="0.1.1">
+<title>UniqueStone — v0.1.1</title>
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     html, body { height: 100%; width: 100%; overflow: hidden; }
@@ -71,18 +71,18 @@
     }
     .lang-switch {
         position: absolute;
-        top: 20px; right: 20px;
+        top: 16px; right: 16px;
         display: flex; gap: 6px;
         z-index: 1001;
     }
     .lang-switch button {
-        padding: 6px 12px;
+        padding: 5px 10px;
         border-radius: 8px;
         border: 1px solid rgba(255,255,255,0.2);
         background: rgba(255,255,255,0.08);
         color: #cbd5e1;
         cursor: pointer;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 600;
         transition: all 0.2s;
     }
@@ -145,7 +145,6 @@
     }
     #app-screen.active { display: flex; }
 
-    /* Верхня панель */
     .top-bar {
         flex-shrink: 0;
         display: flex;
@@ -189,13 +188,16 @@
         flex-shrink: 0;
     }
     .icon-btn {
-        width: 36px; height: 36px;
+        height: 36px;
+        min-width: 36px;
+        padding: 0 10px;
         border-radius: 10px;
         border: 1px solid rgba(255,255,255,0.15);
         background: rgba(255,255,255,0.06);
         color: #cbd5e1;
         cursor: pointer;
-        font-size: 16px;
+        font-size: 13px;
+        font-weight: 700;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -203,8 +205,8 @@
     }
     .icon-btn:hover { background: rgba(255,255,255,0.14); color: #fff; }
     .icon-btn.danger:hover { background: rgba(239,68,68,0.3); border-color: rgba(239,68,68,0.5); color: #fff; }
+    .icon-btn.lang { letter-spacing: 0.5px; }
 
-    /* Контент */
     .content {
         flex: 1;
         overflow: hidden;
@@ -225,7 +227,6 @@
         min-height: 0;
     }
     .page.active { display: flex; }
-    .page.scrollable { overflow-y: auto; overflow-x: hidden; }
 
     .page-title {
         font-size: 22px;
@@ -237,7 +238,6 @@
         flex-shrink: 0;
     }
 
-    /* Заглушки */
     .placeholder-card {
         padding: 40px 24px;
         display: flex;
@@ -386,7 +386,7 @@
     }
     .nav-btn.active .nav-icon { transform: translateY(-1px) scale(1.1); }
 
-    /* ===== НАЛАШТУВАННЯ (модалка) ===== */
+    /* ===== МОДАЛКА НАЛАШТУВАНЬ ===== */
     .modal-overlay {
         position: fixed; inset: 0;
         background: rgba(0,0,0,0.6);
@@ -416,6 +416,12 @@
         font-size: 12px;
         color: #94a3b8;
         text-align: center;
+    }
+    .modal .version-line {
+        font-size: 11px;
+        color: #64748b;
+        text-align: center;
+        margin-top: 4px;
     }
     .modal-actions {
         display: flex;
@@ -472,7 +478,7 @@
     @media (max-width: 480px) {
         .auth-box { padding: 26px 20px; }
         .lang-switch { top: 12px; right: 12px; }
-        .lang-switch button { padding: 5px 10px; font-size: 11px; }
+        .lang-switch button { padding: 4px 8px; font-size: 10px; }
         .content { padding: 12px 12px 90px; }
         .page-title { font-size: 20px; }
         .nav-btn { font-size: 10px; }
@@ -493,7 +499,7 @@
 <div id="auth-screen">
     <div class="auth-box glass">
         <h2>UniqueStone</h2>
-        <div class="version">v1.0.0</div>
+        <div class="version">v0.1.1</div>
         <div class="field">
             <input type="text" id="username" data-i18n-placeholder="ph_username" placeholder="Логін" autocomplete="username">
         </div>
@@ -518,6 +524,7 @@
             <div class="user-name" id="top-username">---</div>
         </div>
         <div class="top-actions">
+            <button class="icon-btn lang" id="btn-lang" onclick="toggleLang()" title="Мова">UA</button>
             <button class="icon-btn" id="btn-settings" onclick="openSettings()" title="Налаштування">⚙️</button>
             <button class="icon-btn danger" id="btn-logout" onclick="logout()" title="Вийти">⎋</button>
         </div>
@@ -595,14 +602,15 @@
             <button class="btn-secondary" onclick="closeSettings()" data-i18n="btn_cancel">Скасувати</button>
             <button class="btn-primary" onclick="changePasswordFromSettings()" data-i18n="btn_change_pass" style="margin-top:0;">Змінити пароль</button>
         </div>
+        <div class="version-line">v0.1.1</div>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, get, child, update, push, onChildAdded, query, limitToLast, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, get, child, update, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    const APP_VERSION = "1.0.0";
+    const APP_VERSION = "0.1.1";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDGltUohufVAc-FMIbO1sIvpd6xWSiaKdU",
@@ -664,8 +672,7 @@
             toast_wait: "Зачекайте...",
             toast_error: "Помилка: ",
             toast_logged_out: "Ви вийшли з акаунта",
-            toast_chat_empty: "Повідомлення не може бути порожнім",
-            toast_chat_sent: "Повідомлення надіслано"
+            toast_chat_empty: "Повідомлення не може бути порожнім"
         },
         en: {
             ph_username: "Username",
@@ -705,8 +712,7 @@
             toast_wait: "Please wait...",
             toast_error: "Error: ",
             toast_logged_out: "You have logged out",
-            toast_chat_empty: "Message cannot be empty",
-            toast_chat_sent: "Message sent"
+            toast_chat_empty: "Message cannot be empty"
         }
     };
 
@@ -717,7 +723,13 @@
         document.documentElement.lang = lang;
         document.getElementById('lang-ua').classList.toggle('active', lang === 'uk');
         document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+        const btnLang = document.getElementById('btn-lang');
+        if (btnLang) btnLang.textContent = lang === 'uk' ? 'UA' : 'EN';
         applyI18n();
+    };
+
+    window.toggleLang = function() {
+        setLang(currentLang === 'uk' ? 'en' : 'uk');
     };
 
     function applyI18n() {
@@ -759,6 +771,7 @@
         const toggleMode = document.getElementById('auth-toggle-mode');
         const togglePass = document.getElementById('auth-toggle-pass');
         const newPassContainer = document.getElementById('new-password-container');
+        if (!btn) return;
 
         if (mode === 'login') {
             btn.innerText = t('btn_login');
@@ -870,7 +883,7 @@
         }
     };
 
-    /* ===== Налаштування (модалка) ===== */
+    /* ===== Налаштування ===== */
     window.openSettings = function() {
         document.getElementById('settings-username').textContent = currentUsername || '---';
         document.getElementById('settings-modal').classList.add('active');
@@ -1006,7 +1019,30 @@
         toast('info', t('toast_logged_out'));
     };
 
-    /* ===== Автовхід ===== */
+    /* ===== АВТООНОВЛЕННЯ ПРИ ЗМІНІ ВЕРСІЇ ===== */
+    async function fetchServerVersion() {
+        try {
+            const res = await fetch('index.html?t=' + Date.now(), { cache: 'no-store' });
+            if (!res.ok) return null;
+            const html = await res.text();
+            const match = html.match(/<meta\s+name=["']version["']\s+content=["']([^"']+)["']/i);
+            return match ? match[1] : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    async function checkVersion() {
+        const serverVersion = await fetchServerVersion();
+        if (!serverVersion) return;
+        if (serverVersion !== APP_VERSION) {
+            try { localStorage.setItem('app_version', serverVersion); } catch (e) {}
+            console.log('Нова версія:', serverVersion, '— перезавантаження...');
+            location.reload();
+        }
+    }
+
+    /* ===== АВТОВХІД ===== */
     (async function autoLogin() {
         try {
             const savedUser = localStorage.getItem('auth_username');
@@ -1036,6 +1072,11 @@
             if (el) el.addEventListener('keydown', (e) => { if (e.key === 'Enter') changePasswordFromSettings(); });
         });
         applyI18n();
+
+        try { localStorage.setItem('app_version', APP_VERSION); } catch (e) {}
+        checkVersion();
+        setInterval(checkVersion, 60000);
+
         console.log('%cUniqueStone v' + APP_VERSION, 'color:#38bdf8;font-weight:bold;font-size:14px;');
     });
 </script>
