@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="version" content="1.1.6">
-<meta name="app-version" content="1.1.6">
-<title>UniqueStone — v1.1.6</title>
+<meta name="version" content="1.1.7">
+<meta name="app-version" content="1.1.7">
+<title>UniqueStone — v1.1.7</title>
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     html, body { height: 100%; width: 100%; overflow: hidden; }
@@ -535,6 +535,21 @@
         justify-content: center;
         flex-shrink: 0;
     }
+    .inv-card .active-badge {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        background: #38bdf8;
+        color: #0f172a;
+        font-size: 9px;
+        font-weight: 800;
+        padding: 3px 7px;
+        border-radius: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        z-index: 3;
+        box-shadow: 0 2px 8px rgba(56,189,248,0.6);
+    }
 
     .rarity-badge {
         padding: 2px 6px;
@@ -675,7 +690,11 @@
         border: 1px solid rgba(148,163,184,0.6) !important;
     }
     .chat-msg.own .bubble:hover { filter: brightness(1.05); }
-    .chat-msg .bubble .bubble-text { position: relative; z-index: 2; }
+    .chat-msg .bubble .bubble-text {
+        position: relative;
+        z-index: 2;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.85), 0 0 6px rgba(0,0,0,0.5);
+    }
     .chat-msg .bubble .bubble-pattern {
         position: absolute;
         inset: 0;
@@ -700,6 +719,7 @@
         color: #94a3b8 !important;
         -webkit-text-fill-color: #94a3b8 !important;
         background: none !important;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.6);
     }
     .chat-msg.deleted .bubble .bubble-pattern { display: none; }
 
@@ -1115,7 +1135,7 @@
         display: flex;
         align-items: center;
     }
-    .profile-preview-bubble .bubble-text { position: relative; z-index: 2; }
+    .profile-preview-bubble .bubble-text { position: relative; z-index: 2; text-shadow: 0 1px 3px rgba(0,0,0,0.85), 0 0 6px rgba(0,0,0,0.5); }
     .profile-preview-bubble .bubble-pattern { position: absolute; inset: 0; z-index: 1; opacity: 0.55; pointer-events: none; }
 
     .chances-table {
@@ -1155,7 +1175,7 @@
 <div id="auth-screen">
     <div class="auth-box glass">
         <h2>UniqueStone</h2>
-        <div class="version">v1.1.6</div>
+        <div class="version">v1.1.7</div>
         <div class="field">
             <input type="text" id="username" data-i18n-placeholder="ph_username" placeholder="Логін" autocomplete="username">
         </div>
@@ -1309,7 +1329,7 @@
             <button class="btn-primary" onclick="changePasswordFromSettings()" data-i18n="btn_change_pass" style="margin-top:0;">Змінити пароль</button>
         </div>
         <button class="btn-wipe hidden" id="wipe-btn" onclick="wipeAll()" data-i18n="btn_wipe">⚠ Вайп</button>
-        <div class="version-line">v1.1.6</div>
+        <div class="version-line">v1.1.7</div>
     </div>
 </div>
 
@@ -1437,7 +1457,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, get, child, update, remove, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    const APP_VERSION = "1.1.6";
+    const APP_VERSION = "1.1.7";
     const DIG_COOLDOWN_MS = 12 * 60 * 60 * 1000;
     const UNLIMITED_DIG_USER = "Fulter";
     const WIPE_USER = "Fulter";
@@ -1583,6 +1603,7 @@
             stone_base_mod: "Модифікатор бази:", stone_pattern_mod: "Модифікатор патерну:",
             stone_glow: "Світіння:", stone_yes: "Так",
             stone_details_title: "Деталі каменю",
+            active_badge: "Активний",
             profile_title: "Мій профіль", profile_other_title: "Профіль гравця",
             profile_active_stone: "Активний камінь", profile_no_stone: "Немає активного каменю",
             profile_active_note: "Активний камінь визначає стиль ваших повідомлень у чаті.",
@@ -1622,6 +1643,7 @@
             stone_base_mod: "Base modifier:", stone_pattern_mod: "Pattern modifier:",
             stone_glow: "Glow:", stone_yes: "Yes",
             stone_details_title: "Stone details",
+            active_badge: "Active",
             profile_title: "My profile", profile_other_title: "Player profile",
             profile_active_stone: "Active stone", profile_no_stone: "No active stone",
             profile_active_note: "Active stone determines the style of your chat messages.",
@@ -2071,6 +2093,7 @@
         }
     }
 
+    /* ВИПРАВЛЕНО: gradient тепер задіює ОБИДВА кольори у ВСІХ патернах */
     function applyPatternStyle(el, pattern, colors, mod) {
         if (!el) return;
         el.className = "bubble-pattern pattern-" + pattern;
@@ -2088,53 +2111,98 @@
         const c1 = cols[0] || "rgba(255,255,255,0.5)";
         const c2 = cols[1] || c1;
         const c3 = cols[2] || c1;
+        const useGradient = (mod === "gradient");
 
         let bgImg = "";
         let bgSize = "";
 
         switch (pattern) {
             case "dots":
-                bgImg = `radial-gradient(circle, ${c1} 1.5px, transparent 2px)`;
+                if (useGradient) {
+                    bgImg = `radial-gradient(circle at 30% 30%, ${c1} 1.5px, transparent 2px), radial-gradient(circle at 70% 70%, ${c2} 1.5px, transparent 2px)`;
+                } else {
+                    bgImg = `radial-gradient(circle, ${c1} 1.5px, transparent 2px)`;
+                }
                 bgSize = "14px 14px";
                 break;
             case "grid":
-                bgImg = `linear-gradient(${c1} 1px, transparent 1px), linear-gradient(90deg, ${c1} 1px, transparent 1px)`;
+                if (useGradient) {
+                    bgImg = `linear-gradient(${c1} 1px, transparent 1px), linear-gradient(90deg, ${c2} 1px, transparent 1px)`;
+                } else {
+                    bgImg = `linear-gradient(${c1} 1px, transparent 1px), linear-gradient(90deg, ${c1} 1px, transparent 1px)`;
+                }
                 bgSize = "16px 16px";
                 break;
             case "stripes":
-                bgImg = `repeating-linear-gradient(45deg, ${c1} 0px, ${c2} 12px, transparent 12px, transparent 24px)`;
+                if (useGradient) {
+                    bgImg = `repeating-linear-gradient(45deg, ${c1} 0px, ${c2} 12px, transparent 12px, transparent 24px)`;
+                } else {
+                    bgImg = `repeating-linear-gradient(45deg, ${c1} 0 6px, transparent 6px 14px)`;
+                }
                 bgSize = "auto";
                 break;
             case "waves":
-                bgImg = `repeating-radial-gradient(circle at 0 0, transparent 0 8px, ${c1} 8px 10px, ${c2} 10px 12px, transparent 12px 22px)`;
+                if (useGradient) {
+                    bgImg = `repeating-radial-gradient(circle at 0 0, transparent 0 8px, ${c1} 8px 10px, ${c2} 10px 12px, transparent 12px 22px)`;
+                } else {
+                    bgImg = `repeating-radial-gradient(circle at 0 0, transparent 0 10px, ${c1} 10px 12px, transparent 12px 22px)`;
+                }
                 bgSize = "40px 40px";
                 break;
             case "hex":
-                bgImg = `radial-gradient(circle at 50% 50%, ${c1} 2px, ${c2} 3px, transparent 4px), radial-gradient(circle at 50% 50%, ${c2} 8px, ${c1} 9px, transparent 10px)`;
+                if (useGradient) {
+                    bgImg = `radial-gradient(circle at 50% 50%, ${c1} 2px, transparent 3px), radial-gradient(circle at 50% 50%, ${c2} 8px, transparent 9px)`;
+                } else {
+                    bgImg = `radial-gradient(circle at 50% 50%, ${c1} 2px, transparent 3px), radial-gradient(circle at 50% 50%, ${c1} 8px, transparent 9px)`;
+                }
                 bgSize = "24px 24px";
                 break;
             case "leopard":
-                bgImg = `radial-gradient(circle at 20% 30%, ${c1} 4px, ${c2} 5px, transparent 6px), radial-gradient(circle at 70% 60%, ${c2} 5px, ${c1} 6px, transparent 7px), radial-gradient(circle at 45% 85%, ${c1} 3px, ${c2} 4px, transparent 5px)`;
+                if (useGradient) {
+                    bgImg = `radial-gradient(circle at 20% 30%, ${c1} 4px, transparent 5px), radial-gradient(circle at 70% 60%, ${c2} 5px, transparent 6px), radial-gradient(circle at 45% 85%, ${c1} 3px, transparent 4px)`;
+                } else {
+                    bgImg = `radial-gradient(circle at 20% 30%, ${c1} 4px, transparent 5px), radial-gradient(circle at 70% 60%, ${c1} 5px, transparent 6px), radial-gradient(circle at 45% 85%, ${c1} 3px, transparent 4px)`;
+                }
                 bgSize = "30px 30px";
                 break;
             case "stars":
-                bgImg = `radial-gradient(circle, ${c1} 1px, transparent 2px), radial-gradient(circle, ${c2} 1.5px, transparent 2px)`;
+                if (useGradient) {
+                    bgImg = `radial-gradient(circle, ${c1} 1px, transparent 2px), radial-gradient(circle, ${c2} 1.5px, transparent 2px)`;
+                } else {
+                    bgImg = `radial-gradient(circle, ${c1} 1px, transparent 2px), radial-gradient(circle, ${c1} 1.5px, transparent 2px)`;
+                }
                 bgSize = "25px 25px, 18px 18px";
                 break;
             case "cracks":
-                bgImg = `linear-gradient(115deg, transparent 45%, ${c1} 46%, ${c2} 47%, transparent 48%), linear-gradient(65deg, transparent 40%, ${c1} 41%, ${c2} 42%, transparent 43%)`;
+                if (useGradient) {
+                    bgImg = `linear-gradient(115deg, transparent 45%, ${c1} 46%, ${c2} 47%, transparent 48%), linear-gradient(65deg, transparent 40%, ${c1} 41%, ${c2} 42%, transparent 43%)`;
+                } else {
+                    bgImg = `linear-gradient(115deg, transparent 45%, ${c1} 46%, ${c1} 47%, transparent 48%), linear-gradient(65deg, transparent 40%, ${c1} 41%, ${c1} 42%, transparent 43%)`;
+                }
                 bgSize = "40px 40px, 50px 50px";
                 break;
             case "diamonds":
-                bgImg = `conic-gradient(from 45deg, ${c1} 25%, transparent 25% 50%, ${c2} 50% 75%, transparent 75%)`;
+                if (useGradient) {
+                    bgImg = `conic-gradient(from 45deg, ${c1} 25%, transparent 25% 50%, ${c2} 50% 75%, transparent 75%)`;
+                } else {
+                    bgImg = `conic-gradient(from 45deg, ${c1} 25%, transparent 25% 50%, ${c1} 50% 75%, transparent 75%)`;
+                }
                 bgSize = "24px 24px";
                 break;
             case "shards":
-                bgImg = `linear-gradient(135deg, ${c1} 0 25%, transparent 25% 50%, ${c2} 50% 75%, transparent 75%), linear-gradient(45deg, ${c2} 0 25%, transparent 25% 50%, ${c1} 50% 75%, transparent 75%)`;
+                if (useGradient) {
+                    bgImg = `linear-gradient(135deg, ${c1} 0 25%, transparent 25% 50%, ${c2} 50% 75%, transparent 75%), linear-gradient(45deg, ${c2} 0 25%, transparent 25% 50%, ${c1} 50% 75%, transparent 75%)`;
+                } else {
+                    bgImg = `linear-gradient(135deg, ${c1} 0 25%, transparent 25% 50%, ${c1} 50% 75%, transparent 75%), linear-gradient(45deg, ${c1} 0 25%, transparent 25% 50%, ${c1} 50% 75%, transparent 75%)`;
+                }
                 bgSize = "28px 28px";
                 break;
             case "spiral":
-                bgImg = `repeating-radial-gradient(circle at 50% 50%, ${c1} 0 3px, ${c2} 3px 6px)`;
+                if (useGradient) {
+                    bgImg = `repeating-radial-gradient(circle at 50% 50%, ${c1} 0 3px, ${c2} 3px 6px)`;
+                } else {
+                    bgImg = `repeating-radial-gradient(circle at 50% 50%, ${c1} 0 3px, ${c1} 3px 6px)`;
+                }
                 bgSize = "30px 30px";
                 break;
             case "nacre":
@@ -2289,7 +2357,9 @@
             card.className = "inv-card" + (s.id === activeStoneId ? " is-active" : "");
             card.dataset.stoneId = s.id;
 
+            const isActive = s.id === activeStoneId;
             card.innerHTML = `
+                ${isActive ? `<div class="active-badge">✓ ${t("active_badge")}</div>` : ""}
                 <div class="stone-preview">
                     <div class="bubble-pattern" style="position:absolute;inset:0;"></div>
                 </div>
@@ -2362,8 +2432,21 @@
             activateBtn.style.display = "none";
         } else {
             activateBtn.style.display = "";
-            activateBtn.disabled = s.id === activeStoneId;
-            activateBtn.textContent = s.id === activeStoneId ? "✓" : t("btn_activate");
+            const isActive = s.id === activeStoneId;
+            activateBtn.disabled = false;
+            activateBtn.textContent = isActive ? "✕ " + t("btn_deactivate_stone") : "✓ " + t("btn_activate");
+            activateBtn.onclick = isActive ? deactivateStone : activateFromDetail;
+            activateBtn.classList.toggle("btn-danger-outline", isActive);
+            activateBtn.classList.toggle("btn-primary", !isActive);
+            if (isActive) {
+                activateBtn.style.background = "rgba(239,68,68,0.1)";
+                activateBtn.style.border = "1px solid rgba(239,68,68,0.4)";
+                activateBtn.style.color = "#fca5a5";
+            } else {
+                activateBtn.style.background = "";
+                activateBtn.style.border = "";
+                activateBtn.style.color = "";
+            }
         }
 
         document.getElementById("stone-detail-modal").classList.add("active");
@@ -2406,6 +2489,7 @@
             renderMyProfile();
             toast("success", t("toast_deactivated"));
             refreshChatStyles();
+            closeStoneDetail();
         } catch(e) { toast("error", t("toast_error") + e.message); }
     };
 
