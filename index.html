@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="version" content="1.1.2">
-<meta name="app-version" content="1.1.2">
-<title>UniqueStone — v1.1.2</title>
+<meta name="version" content="1.1.3">
+<meta name="app-version" content="1.1.3">
+<title>UniqueStone — v1.1.3</title>
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     html, body { height: 100%; width: 100%; overflow: hidden; }
@@ -344,7 +344,7 @@
         .nav-btn .nav-icon { font-size: 17px; }
     }
 
-/* КІНЕЦЬ ЧАСТИНИ 1/6 */
+/* КІНЕЦЬ ЧАСТИНИ 1/7 */
 
        /* ===== ШАХТА ===== */
     .mine-visual {
@@ -588,7 +588,7 @@
         .inventory-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
-/* КІНЕЦЬ ЧАСТИНИ 2/6 */
+/* КІНЕЦЬ ЧАСТИНИ 2/7 */
 
        /* ===== ЧАТ ===== */
     .chat-layout {
@@ -809,7 +809,9 @@
         100% { background-position: 200% 200%; }
     }
 
-    /* ===== МОДАЛКИ ===== */
+/* КІНЕЦЬ ЧАСТИНИ 3/7 */
+
+       /* ===== МОДАЛКИ ===== */
     .modal-overlay {
         position: fixed; inset: 0;
         background: rgba(0,0,0,0.65);
@@ -959,6 +961,8 @@
         display: flex;
         align-items: center;
         gap: 6px;
+        justify-content: flex-end;
+        text-align: right;
     }
     .stone-details .color-dot {
         width: 14px;
@@ -966,6 +970,7 @@
         border-radius: 50%;
         border: 1px solid rgba(255,255,255,0.3);
         flex-shrink: 0;
+        display: inline-block;
     }
 
     .profile-header {
@@ -1072,9 +1077,7 @@
 </head>
 <body>
 
-<!-- КІНЕЦЬ ЧАСТИНИ 3/6 -->
-
-   <button class="lang-btn-corner" id="auth-lang-btn" onclick="toggleLang()" title="Мова">UA</button>
+<button class="lang-btn-corner" id="auth-lang-btn" onclick="toggleLang()" title="Мова">UA</button>
 
 <div id="toast-container"></div>
 
@@ -1087,7 +1090,7 @@
 <div id="auth-screen">
     <div class="auth-box glass">
         <h2>UniqueStone</h2>
-        <div class="version">v1.1.2</div>
+        <div class="version">v1.1.3</div>
         <div class="field">
             <input type="text" id="username" data-i18n-placeholder="ph_username" placeholder="Логін" autocomplete="username">
         </div>
@@ -1197,7 +1200,9 @@
 
 </div>
 
-<!-- ===== МОДАЛКА: ВИКОПАНИЙ КАМІНЬ ===== -->
+<!-- КІНЕЦЬ ЧАСТИНИ 4/7 -->
+
+   <!-- ===== МОДАЛКА: ВИКОПАНИЙ КАМІНЬ ===== -->
 <div class="modal-overlay" id="stone-modal">
     <div class="modal glass">
         <h3 data-i18n="stone_found">Ви знайшли камінь!</h3>
@@ -1208,9 +1213,9 @@
             <div class="stone-title" id="reveal-name">---</div>
             <div class="stone-details">
                 <div class="row"><span data-i18n="stone_rarity">Рідкість:</span><span class="val"><span id="reveal-rarity" class="rarity-badge">---</span></span></div>
-                <div class="row"><span data-i18n="stone_base_color">Колір бази:</span><span class="val"><span class="color-dot" id="reveal-base-dot"></span><span id="reveal-base-name">---</span></span></div>
+                <div class="row"><span data-i18n="stone_base_color">Колір бази:</span><span class="val"><span class="color-dot" id="reveal-base-dot"></span><span class="color-dot" id="reveal-base-dot2" style="display:none;"></span><span id="reveal-base-name">---</span></span></div>
                 <div class="row"><span data-i18n="stone_pattern">Патерн:</span><span class="val" id="reveal-pattern-name">---</span></div>
-                <div class="row"><span data-i18n="stone_pattern_color">Колір патерну:</span><span class="val"><span class="color-dot" id="reveal-pat-dot"></span><span id="reveal-pat-name">---</span></span></div>
+                <div class="row"><span data-i18n="stone_pattern_color">Колір патерну:</span><span class="val"><span class="color-dot" id="reveal-pat-dot"></span><span class="color-dot" id="reveal-pat-dot2" style="display:none;"></span><span id="reveal-pat-name">---</span></span></div>
                 <div class="row"><span data-i18n="stone_base_mod">Модифікатор бази:</span><span class="val" id="reveal-base-mod">---</span></div>
                 <div class="row"><span data-i18n="stone_pattern_mod">Модифікатор патерну:</span><span class="val" id="reveal-pat-mod">---</span></div>
                 <div class="row" id="reveal-glow-row" style="display:none;"><span data-i18n="stone_glow">Світіння:</span><span class="val"><span class="color-dot" id="reveal-glow-dot"></span><span data-i18n="stone_yes">Так</span></span></div>
@@ -1239,7 +1244,7 @@
             <button class="btn-primary" onclick="changePasswordFromSettings()" data-i18n="btn_change_pass" style="margin-top:0;">Змінити пароль</button>
         </div>
         <button class="btn-wipe hidden" id="wipe-btn" onclick="wipeAll()" data-i18n="btn_wipe">⚠ Вайп</button>
-        <div class="version-line">v1.1.2</div>
+        <div class="version-line">v1.1.3</div>
     </div>
 </div>
 
@@ -1333,9 +1338,9 @@
             </div>
             <div class="stone-details">
                 <div class="row"><span data-i18n="stone_rarity">Рідкість:</span><span class="val"><span id="detail-rarity" class="rarity-badge">---</span></span></div>
-                <div class="row"><span data-i18n="stone_base_color">Колір бази:</span><span class="val"><span class="color-dot" id="detail-base-dot"></span><span id="detail-base-name">---</span></span></div>
+                <div class="row"><span data-i18n="stone_base_color">Колір бази:</span><span class="val"><span class="color-dot" id="detail-base-dot"></span><span class="color-dot" id="detail-base-dot2" style="display:none;"></span><span id="detail-base-name">---</span></span></div>
                 <div class="row"><span data-i18n="stone_pattern">Патерн:</span><span class="val" id="detail-pattern-name">---</span></div>
-                <div class="row"><span data-i18n="stone_pattern_color">Колір патерну:</span><span class="val"><span class="color-dot" id="detail-pat-dot"></span><span id="detail-pat-name">---</span></span></div>
+                <div class="row"><span data-i18n="stone_pattern_color">Колір патерну:</span><span class="val"><span class="color-dot" id="detail-pat-dot"></span><span class="color-dot" id="detail-pat-dot2" style="display:none;"></span><span id="detail-pat-name">---</span></span></div>
                 <div class="row"><span data-i18n="stone_base_mod">Модифікатор бази:</span><span class="val" id="detail-base-mod">---</span></div>
                 <div class="row"><span data-i18n="stone_pattern_mod">Модифікатор патерну:</span><span class="val" id="detail-pat-mod">---</span></div>
                 <div class="row" id="detail-glow-row" style="display:none;"><span data-i18n="stone_glow">Світіння:</span><span class="val"><span class="color-dot" id="detail-glow-dot"></span><span data-i18n="stone_yes">Так</span></span></div>
@@ -1361,13 +1366,13 @@
     </div>
 </div>
 
-<!-- КІНЕЦЬ ЧАСТИНИ 4/6 -->
+<!-- КІНЕЦЬ ЧАСТИНИ 5/7 -->
 
    <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, get, child, update, remove, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    const APP_VERSION = "1.1.2";
+    const APP_VERSION = "1.1.3";
     const DIG_COOLDOWN_MS = 12 * 60 * 60 * 1000;
     const UNLIMITED_DIG_USER = "Fulter";
     const WIPE_USER = "Fulter";
@@ -1424,6 +1429,15 @@
         epic:      ["solid", "gradient", "shimmer"],
         legendary: ["solid", "gradient", "shimmer", "pulse"],
         mythic:    ["solid", "gradient", "shimmer", "pulse", "wave"]
+    };
+
+    // Модифікатори патерну — БЕЗ solid (патерн завжди має ефект)
+    const PATTERN_MODS_BY_RARITY = {
+        common:    ["gradient"],
+        rare:      ["gradient"],
+        epic:      ["gradient", "shimmer"],
+        legendary: ["gradient", "shimmer", "pulse"],
+        mythic:    ["gradient", "shimmer", "pulse", "wave"]
     };
 
     const HUE_NAMES_UK = [
@@ -1644,9 +1658,45 @@
         return list[Math.floor(Math.random() * list.length)];
     }
 
+    function pickPatternMod(rarity) {
+        const list = PATTERN_MODS_BY_RARITY[rarity] || ["gradient"];
+        return list[Math.floor(Math.random() * list.length)];
+    }
+
     function getModLabel(mod) {
         const m = MOD_LABELS[mod] || MOD_LABELS.solid;
         return currentLang === "uk" ? m.uk : m.en;
+    }
+
+    /* Форматування кольору бази для метаданих */
+    function formatBaseColor(s) {
+        const usesTwo = (s.baseMod === "gradient" || s.baseMod === "shimmer" || s.baseMod === "wave");
+        if (usesTwo) {
+            return {
+                text: colorName(s.primaryColor) + " → " + colorName(s.secondaryColor || s.primaryColor),
+                dot1: s.primaryColor,
+                dot2: s.secondaryColor || s.primaryColor,
+                showTwo: true
+            };
+        }
+        return { text: colorName(s.primaryColor), dot1: s.primaryColor, dot2: null, showTwo: false };
+    }
+
+    /* Форматування кольору патерну для метаданих */
+    function formatPatternColor(s) {
+        if (s.pattern === "standard") {
+            return { text: "—", dot1: null, dot2: null, showTwo: false };
+        }
+        const usesTwo = (s.patternMod === "gradient" || s.patternMod === "shimmer" || s.patternMod === "wave");
+        if (usesTwo) {
+            return {
+                text: colorName(s.patternColor) + " → " + colorName(s.patternColor2 || s.patternColor),
+                dot1: s.patternColor,
+                dot2: s.patternColor2 || s.patternColor,
+                showTwo: true
+            };
+        }
+        return { text: colorName(s.patternColor), dot1: s.patternColor, dot2: null, showTwo: false };
     }
 
     function generateStone() {
@@ -1662,7 +1712,11 @@
         const patHsl = hexToHsl(randomColor());
         const patternColor = hslToHex(patHsl.h, patHsl.s, patHsl.l);
         const patternColor2 = randomSecondary(patHsl.h, patHsl.s, patHsl.l);
-        const patternMod = pickMod(rarity);
+        // Для патерну solid не використовуємо; standard — без модифікатора
+        let patternMod = "gradient";
+        if (pattern !== "standard") {
+            patternMod = pickPatternMod(rarity);
+        }
 
         let hasGlow = false;
         let glowColor = null;
@@ -1674,8 +1728,11 @@
             glowColor = randomColor();
         }
 
-        // НАЗВА БЕЗ НОМЕРА: [Колір] [Патерн]
-        const baseName = colorName(primary);
+        // Назва: якщо база градієнтна — зі стрілкою
+        const usesSecondaryBase = (baseMod === "gradient" || baseMod === "shimmer" || baseMod === "wave");
+        const baseName = usesSecondaryBase
+            ? (colorName(primary) + "→" + colorName(secondary))
+            : colorName(primary);
         const patternLabel = getPatternLabel(pattern);
         const name = baseName + " " + patternLabel;
 
@@ -1971,7 +2028,7 @@
         }
     }
 
-    /* Патерн + модифікатор патерну (модифікатор впливає на патерн, не заміняє його) */
+    /* Патерн: модифікатор впливає ТІЛЬКИ на самі елементи, проміжки прозорі */
     function applyPatternStyle(el, pattern, color, color2, mod) {
         if (!el) return;
         el.className = "bubble-pattern pattern-" + pattern;
@@ -1983,68 +2040,51 @@
         el.style.opacity = "";
         el.classList.remove("mod-shimmer", "mod-pulse", "mod-wave");
 
+        if (pattern === "standard") return;
+
         const c1 = color || "rgba(255,255,255,0.5)";
         const c2 = color2 || c1;
+        const useTwo = (mod === "gradient" || mod === "shimmer" || mod === "wave");
 
-        if (pattern === "standard") {
-            if (mod === "gradient") {
-                el.style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
-                el.style.opacity = "0.55";
-            } else if (mod === "shimmer") {
-                el.style.background = `linear-gradient(110deg, ${c1} 0%, ${c2} 25%, ${c1} 50%, ${c2} 75%, ${c1} 100%)`;
-                el.style.backgroundSize = "300% 300%";
-                el.classList.add("mod-shimmer");
-            } else if (mod === "pulse") {
-                el.style.background = c1;
-                el.classList.add("mod-pulse");
-            } else if (mod === "wave") {
-                el.style.background = `linear-gradient(120deg, ${c1} 0%, ${c2} 50%, ${c1} 100%)`;
-                el.style.backgroundSize = "200% 200%";
-                el.classList.add("mod-wave");
-            } else {
-                el.style.background = c1;
-            }
-            return;
-        }
-
-        const useGradient = (mod === "gradient");
         let bgImg = "";
         switch (pattern) {
             case "dots":
-                bgImg = `radial-gradient(circle, ${c1} 1.5px, transparent 2px)`;
+                bgImg = useTwo
+                    ? `radial-gradient(circle at 30% 30%, ${c1} 1.5px, transparent 2px), radial-gradient(circle at 70% 70%, ${c2} 1.5px, transparent 2px)`
+                    : `radial-gradient(circle, ${c1} 1.5px, transparent 2px)`;
                 break;
             case "grid":
-                bgImg = useGradient
+                bgImg = useTwo
                     ? `linear-gradient(${c1} 1px, transparent 1px), linear-gradient(90deg, ${c2} 1px, transparent 1px)`
                     : `linear-gradient(${c1} 1px, transparent 1px), linear-gradient(90deg, ${c1} 1px, transparent 1px)`;
                 break;
             case "stripes":
-                bgImg = useGradient
-                    ? `repeating-linear-gradient(45deg, ${c1} 0 6px, ${c2} 6px 14px)`
+                bgImg = useTwo
+                    ? `repeating-linear-gradient(45deg, ${c1} 0px, ${c2} 6px, transparent 6px, transparent 14px)`
                     : `repeating-linear-gradient(45deg, ${c1} 0 6px, transparent 6px 14px)`;
                 break;
             case "waves":
-                bgImg = useGradient
-                    ? `repeating-radial-gradient(circle at 0 0, transparent 0 10px, ${c1} 10px 12px, transparent 12px 16px, ${c2} 16px 18px, transparent 18px 22px)`
+                bgImg = useTwo
+                    ? `repeating-radial-gradient(circle at 0 0, transparent 0 10px, ${c1} 10px 11px, ${c2} 11px 12px, transparent 12px 22px)`
                     : `repeating-radial-gradient(circle at 0 0, transparent 0 10px, ${c1} 10px 12px, transparent 12px 22px)`;
                 break;
             case "hex":
-                bgImg = useGradient
-                    ? `radial-gradient(circle at 50% 50%, ${c1} 2px, transparent 3px), radial-gradient(circle at 50% 50%, ${c2} 8px, transparent 9px)`
+                bgImg = useTwo
+                    ? `radial-gradient(circle at 50% 50%, ${c1} 2px, ${c2} 3px, transparent 3px), radial-gradient(circle at 50% 50%, ${c2} 8px, ${c1} 9px, transparent 9px)`
                     : `radial-gradient(circle at 50% 50%, ${c1} 2px, transparent 3px), radial-gradient(circle at 50% 50%, ${c1} 8px, transparent 9px)`;
                 break;
             case "leopard":
-                bgImg = useGradient
-                    ? `radial-gradient(circle at 20% 30%, ${c1} 4px, transparent 5px), radial-gradient(circle at 70% 60%, ${c2} 5px, transparent 6px), radial-gradient(circle at 45% 85%, ${c1} 3px, transparent 4px)`
+                bgImg = useTwo
+                    ? `radial-gradient(circle at 20% 30%, ${c1} 4px, ${c2} 5px, transparent 5px), radial-gradient(circle at 70% 60%, ${c2} 5px, ${c1} 6px, transparent 6px), radial-gradient(circle at 45% 85%, ${c1} 3px, ${c2} 4px, transparent 4px)`
                     : `radial-gradient(circle at 20% 30%, ${c1} 4px, transparent 5px), radial-gradient(circle at 70% 60%, ${c1} 5px, transparent 6px), radial-gradient(circle at 45% 85%, ${c1} 3px, transparent 4px)`;
                 break;
             case "stars":
-                bgImg = useGradient
-                    ? `radial-gradient(circle, ${c1} 1px, transparent 2px), radial-gradient(circle, ${c2} 1.5px, transparent 2px)`
+                bgImg = useTwo
+                    ? `radial-gradient(circle at 30% 30%, ${c1} 1px, transparent 2px), radial-gradient(circle at 70% 70%, ${c2} 1.5px, transparent 2px)`
                     : `radial-gradient(circle, ${c1} 1px, transparent 2px), radial-gradient(circle, ${c1} 1.5px, transparent 2px)`;
                 break;
             case "cracks":
-                bgImg = useGradient
+                bgImg = useTwo
                     ? `linear-gradient(115deg, transparent 45%, ${c1} 46%, ${c2} 47%, transparent 48%), linear-gradient(65deg, transparent 40%, ${c1} 41%, ${c2} 42%, transparent 43%)`
                     : `linear-gradient(115deg, transparent 45%, ${c1} 46%, ${c1} 47%, transparent 48%), linear-gradient(65deg, transparent 40%, ${c1} 41%, ${c1} 42%, transparent 43%)`;
                 break;
@@ -2069,7 +2109,6 @@
                 el.style.backgroundSize = "200% 200%";
                 el.classList.add("mod-wave");
                 break;
-            case "solid":
             case "gradient":
             default:
                 break;
@@ -2113,11 +2152,30 @@
         applyGlow(preview, stone);
         applyPatternStyle(document.getElementById("reveal-pattern"), stone.pattern, stone.patternColor, stone.patternColor2, stone.patternMod);
 
-        document.getElementById("reveal-base-dot").style.background = stone.primaryColor;
-        document.getElementById("reveal-base-name").textContent = colorName(stone.primaryColor);
+        const baseMeta = formatBaseColor(stone);
+        document.getElementById("reveal-base-dot").style.background = baseMeta.dot1;
+        document.getElementById("reveal-base-name").textContent = baseMeta.text;
+        const revealBaseDot2 = document.getElementById("reveal-base-dot2");
+        if (baseMeta.showTwo && baseMeta.dot2) {
+            revealBaseDot2.style.display = "inline-block";
+            revealBaseDot2.style.background = baseMeta.dot2;
+        } else {
+            revealBaseDot2.style.display = "none";
+        }
+
         document.getElementById("reveal-pattern-name").textContent = getPatternLabel(stone.pattern);
-        document.getElementById("reveal-pat-dot").style.background = stone.patternColor;
-        document.getElementById("reveal-pat-name").textContent = colorName(stone.patternColor);
+
+        const patMeta = formatPatternColor(stone);
+        document.getElementById("reveal-pat-dot").style.background = patMeta.dot1 || "transparent";
+        document.getElementById("reveal-pat-name").textContent = patMeta.text;
+        const revealPatDot2 = document.getElementById("reveal-pat-dot2");
+        if (patMeta.showTwo && patMeta.dot2) {
+            revealPatDot2.style.display = "inline-block";
+            revealPatDot2.style.background = patMeta.dot2;
+        } else {
+            revealPatDot2.style.display = "none";
+        }
+
         document.getElementById("reveal-base-mod").textContent = getModLabel(stone.baseMod);
         document.getElementById("reveal-pat-mod").textContent = getModLabel(stone.patternMod);
 
@@ -2222,10 +2280,28 @@
         applyGlow(preview, s);
         applyPatternStyle(document.getElementById("detail-pattern"), s.pattern, s.patternColor, s.patternColor2, s.patternMod);
 
-        document.getElementById("detail-base-dot").style.background = s.primaryColor;
-        document.getElementById("detail-base-name").textContent = colorName(s.primaryColor);
-        document.getElementById("detail-pat-dot").style.background = s.patternColor;
-        document.getElementById("detail-pat-name").textContent = colorName(s.patternColor);
+        const baseMeta = formatBaseColor(s);
+        document.getElementById("detail-base-dot").style.background = baseMeta.dot1;
+        document.getElementById("detail-base-name").textContent = baseMeta.text;
+        const detailBaseDot2 = document.getElementById("detail-base-dot2");
+        if (baseMeta.showTwo && baseMeta.dot2) {
+            detailBaseDot2.style.display = "inline-block";
+            detailBaseDot2.style.background = baseMeta.dot2;
+        } else {
+            detailBaseDot2.style.display = "none";
+        }
+
+        const patMeta = formatPatternColor(s);
+        document.getElementById("detail-pat-dot").style.background = patMeta.dot1 || "transparent";
+        document.getElementById("detail-pat-name").textContent = patMeta.text;
+        const detailPatDot2 = document.getElementById("detail-pat-dot2");
+        if (patMeta.showTwo && patMeta.dot2) {
+            detailPatDot2.style.display = "inline-block";
+            detailPatDot2.style.background = patMeta.dot2;
+        } else {
+            detailPatDot2.style.display = "none";
+        }
+
         document.getElementById("detail-base-mod").textContent = getModLabel(s.baseMod);
         document.getElementById("detail-pat-mod").textContent = getModLabel(s.patternMod);
 
@@ -2315,7 +2391,7 @@
         }
     };
 
-// КІНЕЦЬ ЧАСТИНИ 5/6
+// КІНЕЦЬ ЧАСТИНИ 6/7
 
           /* ===== ЧАТ ===== */
     const otherStyles = {};
