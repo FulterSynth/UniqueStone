@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="version" content="1.1.5">
-<meta name="app-version" content="1.1.5">
-<title>UniqueStone — v1.1.5</title>
+<meta name="version" content="1.1.6">
+<meta name="app-version" content="1.1.6">
+<title>UniqueStone — v1.1.6</title>
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     html, body { height: 100%; width: 100%; overflow: hidden; }
@@ -150,24 +150,26 @@
         z-index: 10;
     }
     .user-info {
-        display: flex;
+        display: inline-flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
         min-width: 0;
-        flex: 1;
+        max-width: 60%;
         cursor: pointer;
-        padding: 4px 8px;
-        border-radius: 10px;
-        transition: background 0.2s;
+        padding: 4px 10px 4px 4px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.25);
+        background: rgba(255,255,255,0.05);
+        transition: background 0.2s, border-color 0.2s;
     }
-    .user-info:hover { background: rgba(255,255,255,0.06); }
+    .user-info:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.4); }
     .avatar {
-        width: 36px; height: 36px;
+        width: 32px; height: 32px;
         border-radius: 50%;
         background: linear-gradient(135deg, #7c3aed, #0ea5e9);
         display: flex; align-items: center; justify-content: center;
         font-weight: 700;
-        font-size: 15px;
+        font-size: 14px;
         flex-shrink: 0;
     }
     .user-name {
@@ -342,6 +344,9 @@
         .page-title { font-size: 20px; }
         .nav-btn { font-size: 9px; }
         .nav-btn .nav-icon { font-size: 17px; }
+        .user-info { max-width: 55%; padding: 3px 8px 3px 3px; }
+        .avatar { width: 28px; height: 28px; font-size: 12px; }
+        .user-name { font-size: 13px; }
     }
 
 /* КІНЕЦЬ ЧАСТИНИ 1/7 */
@@ -624,6 +629,7 @@
         gap: 3px;
         max-width: 85%;
         animation: fadeIn 0.2s ease;
+        align-items: flex-start;
     }
     .chat-msg.own { align-self: flex-end; align-items: flex-end; }
     .chat-msg .author {
@@ -637,6 +643,9 @@
     .chat-msg .author:hover { color: #38bdf8; }
     .chat-msg.own .author { color: #a78bfa; }
     .chat-msg .bubble {
+        display: inline-block;
+        width: fit-content;
+        max-width: 100%;
         padding: 10px 14px;
         border-radius: 14px;
         font-size: 14px;
@@ -647,7 +656,7 @@
         border: 1px solid rgba(255,255,255,0.12);
         position: relative;
         overflow: hidden;
-        transition: box-shadow 0.3s;
+        transition: box-shadow 0.3s, background 0.3s;
         user-select: none;
         -webkit-user-select: none;
         -webkit-touch-callout: none;
@@ -655,6 +664,15 @@
     .chat-msg.own .bubble {
         background: linear-gradient(135deg, rgba(124,58,237,0.55), rgba(14,165,233,0.55));
         border-color: rgba(255,255,255,0.2);
+    }
+    /* Без активного каменю — прозора бульбашка з сірою обводкою */
+    .chat-msg .bubble.no-stone {
+        background: transparent !important;
+        border: 1px solid rgba(148,163,184,0.5) !important;
+        box-shadow: none !important;
+    }
+    .chat-msg.own .bubble.no-stone {
+        border: 1px solid rgba(148,163,184,0.6) !important;
     }
     .chat-msg.own .bubble:hover { filter: brightness(1.05); }
     .chat-msg .bubble .bubble-text { position: relative; z-index: 2; }
@@ -756,14 +774,13 @@
     .msg-context-menu button.danger { color: #fca5a5; }
     .msg-context-menu button.danger:hover { background: rgba(239,68,68,0.25); }
 
-    /* ===== КРУЖЕЧКИ КОЛЬОРІВ (клікабельні з tooltip) ===== */
+    /* ===== КРУЖЕЧКИ КОЛЬОРІВ ===== */
     .color-dots-wrap {
         display: flex;
         gap: 6px;
         align-items: center;
         flex-wrap: wrap;
         justify-content: flex-end;
-        position: relative;
     }
     .color-dot-btn {
         width: 18px;
@@ -774,46 +791,56 @@
         padding: 0;
         flex-shrink: 0;
         transition: transform 0.15s, border-color 0.15s;
-        position: relative;
     }
     .color-dot-btn:hover {
         transform: scale(1.15);
         border-color: rgba(255,255,255,0.7);
     }
-    .color-tooltip {
-        position: absolute;
-        bottom: calc(100% + 6px);
-        left: 50%;
-        transform: translateX(-50%);
+
+    /* ===== TOOLTIP НАЗВИ КОЛЬОРУ — ПО ЦЕНТРУ ЕКРАНА ===== */
+    .color-tooltip-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 4000;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        pointer-events: none;
+    }
+    .color-tooltip-overlay.active { display: flex; }
+    .color-tooltip-box {
         background: rgba(15,23,42,0.98);
         color: #fff;
-        padding: 6px 10px;
-        border-radius: 8px;
-        font-size: 11px;
-        font-weight: 600;
-        white-space: nowrap;
-        border: 1px solid rgba(255,255,255,0.2);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-        pointer-events: none;
-        z-index: 10;
-        opacity: 0;
-        transition: opacity 0.15s;
+        padding: 14px 26px;
+        border-radius: 14px;
+        font-size: 16px;
+        font-weight: 700;
+        border: 1px solid rgba(255,255,255,0.25);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+        animation: tooltipIn 0.2s ease;
+        text-align: center;
+        max-width: 80vw;
+        pointer-events: auto;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
     }
-    .color-tooltip.visible { opacity: 1; }
-    .color-tooltip::after {
-        content: '';
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        transform: translateX(-50%);
-        border: 5px solid transparent;
-        border-top-color: rgba(15,23,42,0.98);
+    .color-tooltip-box .tt-color {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 2px solid rgba(255,255,255,0.4);
+    }
+    @keyframes tooltipIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to   { opacity: 1; transform: scale(1); }
     }
 
     /* ===== ПАТЕРНИ ===== */
     .pattern-standard { background: transparent; }
 
-    /* nacre — перламутр, багатобарвний перелив */
     .pattern-nacre {
         animation: nacreShift 8s linear infinite;
     }
@@ -1111,6 +1138,14 @@
 
 <div id="toast-container"></div>
 
+<!-- ===== TOOLTIP НАЗВИ КОЛЬОРУ ===== -->
+<div class="color-tooltip-overlay" id="color-tooltip-overlay" onclick="closeColorTooltip()">
+    <div class="color-tooltip-box">
+        <div class="tt-color" id="color-tooltip-swatch"></div>
+        <span id="color-tooltip-name">---</span>
+    </div>
+</div>
+
 <!-- ===== КОНТЕКСТНЕ МЕНЮ ПОВІДОМЛЕННЯ ===== -->
 <div class="msg-context-menu" id="msg-context-menu">
     <button class="danger" id="ctx-delete-btn" onclick="ctxDeleteMessage()" data-i18n="ctx_delete">🗑 Видалити</button>
@@ -1120,7 +1155,7 @@
 <div id="auth-screen">
     <div class="auth-box glass">
         <h2>UniqueStone</h2>
-        <div class="version">v1.1.5</div>
+        <div class="version">v1.1.6</div>
         <div class="field">
             <input type="text" id="username" data-i18n-placeholder="ph_username" placeholder="Логін" autocomplete="username">
         </div>
@@ -1274,7 +1309,7 @@
             <button class="btn-primary" onclick="changePasswordFromSettings()" data-i18n="btn_change_pass" style="margin-top:0;">Змінити пароль</button>
         </div>
         <button class="btn-wipe hidden" id="wipe-btn" onclick="wipeAll()" data-i18n="btn_wipe">⚠ Вайп</button>
-        <div class="version-line">v1.1.5</div>
+        <div class="version-line">v1.1.6</div>
     </div>
 </div>
 
@@ -1402,7 +1437,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, get, child, update, remove, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    const APP_VERSION = "1.1.5";
+    const APP_VERSION = "1.1.6";
     const DIG_COOLDOWN_MS = 12 * 60 * 60 * 1000;
     const UNLIMITED_DIG_USER = "Fulter";
     const WIPE_USER = "Fulter";
@@ -1436,7 +1471,6 @@
     let viewingOtherUsername = "";
     let mineTimerInterval = null;
     let ctxTargetMsgId = null;
-    let activeTooltip = null;
 
     const RARITIES = {
         common:    { weight: 60,   label_uk: "Звичайний",   label_en: "Common",    badge: "rarity-common" },
@@ -1703,7 +1737,6 @@
         const patterns = PATTERNS_BY_RARITY[rarity];
         const pattern = patterns[Math.floor(Math.random() * patterns.length)];
 
-        // БАЗА
         const primaryHsl = hexToHsl(randomColor());
         const primary = hslToHex(primaryHsl.h, primaryHsl.s, primaryHsl.l);
         const secondary = randomSecondary(primaryHsl.h, primaryHsl.s, primaryHsl.l);
@@ -1711,7 +1744,6 @@
         const usesSecondaryBase = (baseMod === "gradient" || baseMod === "shimmer" || baseMod === "wave");
         const baseColors = usesSecondaryBase ? [primary, secondary] : [primary];
 
-        // ПАТЕРН
         const patHsl = hexToHsl(randomColor());
         const patternColor = hslToHex(patHsl.h, patHsl.s, patHsl.l);
         const patternColor2 = randomSecondary(patHsl.h, patHsl.s, patHsl.l);
@@ -1724,7 +1756,6 @@
 
         let patternColors;
         if (pattern === "nacre") {
-            // перламутр — 3 кольори
             patternColors = [patternColor, patternColor2, patternColor3];
         } else if (patternMod === "gradient" || patternMod === "shimmer" || patternMod === "wave") {
             patternColors = [patternColor, patternColor2];
@@ -1732,7 +1763,6 @@
             patternColors = [patternColor];
         }
 
-        // GLOW
         let hasGlow = false;
         let glowColor = null;
         if (rarity === "legendary" && Math.random() < 0.5) {
@@ -1743,7 +1773,6 @@
             glowColor = randomColor();
         }
 
-        // НАЗВА
         const baseName = usesSecondaryBase
             ? (colorName(primary) + "→" + colorName(secondary))
             : colorName(primary);
@@ -2042,7 +2071,6 @@
         }
     }
 
-    /* Патерн — кольори масивом, нові патерни diamonds/shards/spiral, nacre багатобарвний */
     function applyPatternStyle(el, pattern, colors, mod) {
         if (!el) return;
         el.className = "bubble-pattern pattern-" + pattern;
@@ -2162,7 +2190,6 @@
         });
     }
 
-    /* Рендер кружечків кольорів з tooltip */
     function renderColorDots(container, colors, useButtons) {
         if (!container) return;
         container.innerHTML = "";
@@ -2174,10 +2201,9 @@
                 el.className = "color-dot-btn";
                 el.dataset.color = c;
                 el.dataset.name = colorName(c);
-                el.setAttribute("aria-label", colorName(c));
                 el.onclick = (ev) => {
                     ev.stopPropagation();
-                    showColorTooltip(el);
+                    showColorTooltip(c, colorName(c));
                 };
             } else {
                 el.className = "color-dot";
@@ -2186,29 +2212,18 @@
         });
     }
 
-    function showColorTooltip(dotEl) {
-        closeColorTooltip();
-        const tooltip = document.createElement("div");
-        tooltip.className = "color-tooltip";
-        tooltip.textContent = dotEl.dataset.name;
-        dotEl.appendChild(tooltip);
-        activeTooltip = tooltip;
-        requestAnimationFrame(() => tooltip.classList.add("visible"));
-        setTimeout(() => closeColorTooltip(), 2200);
-    }
+    window.showColorTooltip = function(color, name) {
+        const overlay = document.getElementById("color-tooltip-overlay");
+        document.getElementById("color-tooltip-swatch").style.background = color;
+        document.getElementById("color-tooltip-name").textContent = name;
+        overlay.classList.add("active");
+        clearTimeout(window._tooltipTimer);
+        window._tooltipTimer = setTimeout(() => closeColorTooltip(), 2200);
+    };
 
-    function closeColorTooltip() {
-        if (activeTooltip) {
-            activeTooltip.remove();
-            activeTooltip = null;
-        }
-    }
-
-    document.addEventListener("click", (e) => {
-        if (activeTooltip && !e.target.classList.contains("color-dot-btn")) {
-            closeColorTooltip();
-        }
-    });
+    window.closeColorTooltip = function() {
+        document.getElementById("color-tooltip-overlay").classList.remove("active");
+    };
 
     function showStoneReveal(stone) {
         document.getElementById("reveal-name").textContent = stone.name;
@@ -2463,7 +2478,18 @@
     }
 
     function applyBubbleStyle(bubbleEl, patEl, stone) {
-        if (!stone) return;
+        if (!stone) {
+            bubbleEl.classList.add("no-stone");
+            bubbleEl.style.background = "";
+            bubbleEl.style.backgroundImage = "";
+            bubbleEl.style.backgroundSize = "";
+            bubbleEl.style.filter = "";
+            bubbleEl.style.boxShadow = "";
+            bubbleEl.classList.remove("mod-shimmer", "mod-pulse", "mod-wave");
+            if (patEl) { patEl.className = "bubble-pattern"; patEl.style.background = ""; patEl.style.backgroundImage = ""; patEl.style.backgroundSize = ""; patEl.style.backgroundPosition = ""; patEl.classList.remove("mod-shimmer", "mod-pulse", "mod-wave"); }
+            return;
+        }
+        bubbleEl.classList.remove("no-stone");
         applyBaseStyle(bubbleEl, stone);
         applyGlow(bubbleEl, stone);
         const colors = stone.patternColors || (stone.patternColor ? [stone.patternColor, stone.patternColor2] : null);
@@ -2588,7 +2614,6 @@
 
     function applyMyBubbleStyle(bubbleEl, patEl) {
         const s = getMyStone();
-        if (!s) return;
         applyBubbleStyle(bubbleEl, patEl, s);
     }
 
@@ -2596,6 +2621,7 @@
         document.querySelectorAll(".chat-msg.own .bubble").forEach(b => {
             b.style.background = ""; b.style.backgroundImage = ""; b.style.backgroundSize = ""; b.style.filter = ""; b.style.boxShadow = "";
             b.classList.remove("mod-shimmer", "mod-pulse", "mod-wave");
+            b.classList.remove("no-stone");
             const pat = b.querySelector(".bubble-pattern");
             if (pat) { pat.className = "bubble-pattern"; pat.style.background = ""; pat.style.backgroundImage = ""; pat.style.backgroundSize = ""; pat.style.backgroundPosition = ""; pat.classList.remove("mod-shimmer", "mod-pulse", "mod-wave"); }
             applyMyBubbleStyle(b, pat);
@@ -2616,7 +2642,7 @@
             if (el) {
                 el.classList.add("deleted");
                 const bubble = el.querySelector(".bubble");
-                if (bubble) { bubble.style.background = ""; bubble.style.backgroundImage = ""; bubble.style.boxShadow = ""; bubble.classList.remove("mod-shimmer", "mod-pulse", "mod-wave"); }
+                if (bubble) { bubble.style.background = ""; bubble.style.backgroundImage = ""; bubble.style.boxShadow = ""; bubble.classList.remove("mod-shimmer", "mod-pulse", "mod-wave", "no-stone"); }
                 const pat = el.querySelector(".bubble-pattern");
                 if (pat) pat.className = "bubble-pattern";
                 const txt = el.querySelector(".bubble-text");
